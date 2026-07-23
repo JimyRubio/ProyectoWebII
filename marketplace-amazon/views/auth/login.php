@@ -3,79 +3,80 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Iniciar Sesión | Sistema</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Iniciar Sesión</title>
+    
+    <!-- Enlaces corregidos a la carpeta public -->
+    <link rel="stylesheet" href="../../public/css/layout.css">
+    <link rel="stylesheet" href="../../public/css/main.css">
+    
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body class="bg-slate-900 min-h-screen flex items-center justify-center p-4">
+<body>
 
-    <!-- Contenedor Principal -->
-    <div class="w-full max-w-md bg-slate-800/80 backdrop-blur-md border border-slate-700/50 rounded-2xl shadow-2xl p-8 space-y-6">
-        
-        <!-- Encabezado / Logo -->
-        <div class="text-center space-y-2">
-            <div class="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-indigo-600 text-white shadow-lg shadow-indigo-500/30 mb-2">
-                <i class="fa-solid fa-lock text-xl"></i>
-            </div>
-            <h2 class="text-2xl font-bold text-white tracking-wide">Bienvenido de nuevo</h2>
-            <p class="text-sm text-slate-400">Ingresa tus credenciales para acceder</p>
+    <!-- Header del proyecto -->
+    <header class="main-header">
+        <div class="logo">
+            <h2>SISTEMA <span>STORE</span></h2>
         </div>
+        <div class="user-nav">
+            <a href="register.php" class="nav-link"><i class="fa-solid fa-user-plus"></i> Registrarse</a>
+        </div>
+    </header>
 
-        <!-- Formulario -->
-        <form action="login.php" method="POST" class="space-y-5">
-            
-            <!-- Campo: Email o Usuario -->
-            <div>
-                <label for="email_or_user" class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Correo o Usuario</label>
-                <div class="relative">
-                    <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-slate-400">
-                        <i class="fa-regular fa-envelope"></i>
-                    </span>
-                    <input type="text" id="email_or_user" name="email_or_user" required 
-                        class="w-full pl-10 pr-4 py-2.5 bg-slate-900/60 border border-slate-700 rounded-xl text-white placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
-                        placeholder="usuario@ejemplo.com">
-                </div>
+    <!-- Formulario de Login -->
+    <div class="container auth-wrapper">
+        <div class="auth-card">
+            <div class="auth-header">
+                <h2>Bienvenido de nuevo</h2>
+                <p>Ingresa tus credenciales para acceder</p>
             </div>
 
-            <!-- Campo: Contraseña -->
-            <div>
-                <div class="flex justify-between items-center mb-2">
-                    <label for="password" class="block text-xs font-semibold text-slate-300 uppercase tracking-wider">Contraseña</label>
-                    <a href="#" class="text-xs text-indigo-400 hover:text-indigo-300 hover:underline">¿Olvidaste tu contraseña?</a>
+            <form action="login.php" method="POST">
+                <!-- Usuario / Correo -->
+                <div class="form-group">
+                    <label for="email_or_user">Correo o Usuario</label>
+                    <div class="input-container">
+                        <i class="fa-regular fa-envelope input-icon"></i>
+                        <input type="text" id="email_or_user" name="email_or_user" class="form-control" placeholder="usuario@ejemplo.com" required>
+                    </div>
                 </div>
-                <div class="relative">
-                    <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-slate-400">
-                        <i class="fa-solid fa-key"></i>
-                    </span>
-                    <input type="password" id="password" name="password" required 
-                        class="w-full pl-10 pr-10 py-2.5 bg-slate-900/60 border border-slate-700 rounded-xl text-white placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
-                        placeholder="••••••••">
-                    <button type="button" onclick="togglePassword('password', 'icon-pass')" class="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-slate-200">
-                        <i id="icon-pass" class="fa-regular fa-eye"></i>
-                    </button>
+
+                <!-- Contraseña -->
+                <div class="form-group">
+                    <label for="password">Contraseña</label>
+                    <div class="input-container">
+                        <i class="fa-solid fa-key input-icon"></i>
+                        <input type="password" id="password" name="password" class="form-control" placeholder="••••••••" required>
+                        <button type="button" class="toggle-password" onclick="togglePassword('password', 'icon-pass')">
+                            <i id="icon-pass" class="fa-regular fa-eye"></i>
+                        </button>
+                    </div>
                 </div>
+
+                <!-- Opciones -->
+                <div class="form-options">
+                    <label class="remember-me">
+                        <input type="checkbox" name="remember"> Recordar mi sesión
+                    </label>
+                    <a href="#" class="forgot-link">¿Olvidaste tu contraseña?</a>
+                </div>
+
+                <button type="submit" class="btn-primary">
+                    <i class="fa-solid fa-right-to-bracket"></i> Iniciar Sesión
+                </button>
+            </form>
+
+            <div class="switch-auth">
+                ¿No tienes una cuenta? <a href="register.php">Regístrate aquí</a>
             </div>
-
-            <!-- Opción: Recordarme -->
-            <div class="flex items-center">
-                <input type="checkbox" id="remember" name="remember" class="w-4 h-4 text-indigo-600 bg-slate-900 border-slate-700 rounded focus:ring-indigo-500 focus:ring-offset-slate-800">
-                <label for="remember" class="ml-2 text-xs text-slate-300 select-none">Recordar mi sesión</label>
-            </div>
-
-            <!-- Botón de Envío -->
-            <button type="submit" class="w-full py-3 px-4 bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-sm rounded-xl shadow-lg shadow-indigo-600/30 transition-all transform active:scale-[0.98]">
-                Iniciar Sesión
-            </button>
-        </form>
-
-        <!-- Pie de tarjeta -->
-        <p class="text-center text-xs text-slate-400">
-            ¿No tienes una cuenta? 
-            <a href="register.php" class="text-indigo-400 font-semibold hover:text-indigo-300 hover:underline">Regístrate aquí</a>
-        </p>
+        </div>
     </div>
+
+    <!-- Footer del proyecto -->
+    <footer class="main-footer">
+        <p>&copy; 2026 Todos los derechos reservados.</p>
+    </footer>
 
     <script>
         function togglePassword(inputId, iconId) {
