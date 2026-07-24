@@ -7,6 +7,14 @@ $method = $_SERVER['REQUEST_METHOD'];
 $action = $_GET['action'] ?? null;
 $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
+// Validación CSRF para métodos POST
+if ($method === 'POST') {
+    $token = $_POST['csrf_token'] ?? $_SERVER['HTTP_X_CSRF_TOKEN'] ?? null;
+    if (!Security::verifyCsrfToken($token)) {
+        Response::error('Token CSRF no válido o expirado', 403);
+    }
+}
+
 switch ($method) {
     case 'GET':
         if ($action === 'rastreo' && $id > 0) {

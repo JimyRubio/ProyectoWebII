@@ -1,0 +1,297 @@
+/* ==========================================================================
+   MARKETPLACE AMAZON - MÓDULO CSS DE PRODUCTOS (productos.css)
+   ========================================================================== */
+
+/* Catálogo de Productos */
+.catalogo-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.catalogo-filters {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.catalogo-filters select,
+.catalogo-filters input {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+    color: var(--text-primary);
+    padding: 10px 14px;
+    font-size: 0.9rem;
+    outline: none;
+}
+
+.catalogo-filters select option {
+    background: #0B0F17;
+    color: #F3F4F6;
+}
+
+/* Detalle de Producto */
+.producto-detalle {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    margin-bottom: 40px;
+}
+
+.producto-gallery {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.producto-main-image {
+    width: 100%;
+    height: 400px;
+    object-fit: contain;
+    border-radius: 16px;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    padding: 20px;
+}
+
+.producto-thumbs {
+    display: flex;
+    gap: 10px;
+}
+
+.producto-thumb {
+    width: 70px;
+    height: 70px;
+    object-fit: contain;
+    border-radius: 8px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    background: var(--card-bg);
+    padding: 5px;
+    transition: all 0.2s;
+}
+
+.producto-thumb:hover,
+.producto-thumb.active {
+    border-color: var(--secondary-accent);
+}
+
+.producto-info-detalle h1 {
+    font-size: 1.8rem;
+    margin-bottom: 15px;
+}
+
+.producto-info-detalle .producto-sku {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-bottom: 10px;
+}
+
+.producto-info-detalle .producto-categoria {
+    display: inline-block;
+    background: rgba(59,130,246,0.1);
+    color: #60A5FA;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    margin-bottom: 20px;
+}
+
+.producto-precios {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.producto-precio-actual {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--price-color);
+}
+
+.producto-precio-anterior {
+    font-size: 1.2rem;
+    color: var(--text-secondary);
+    text-decoration: line-through;
+}
+
+.producto-stock {
+    margin-bottom: 20px;
+}
+
+.stock-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.stock-status.in-stock {
+    background: rgba(16,185,129,0.1);
+    color: #34D399;
+}
+
+.stock-status.out-of-stock {
+    background: rgba(239,68,68,0.1);
+    color: #F87171;
+}
+
+.producto-descripcion {
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin-bottom: 25px;
+}
+
+.producto-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.producto-actions .btn-primary {
+    width: auto;
+    padding: 14px 28px;
+}
+
+/* Gestión de Productos - Admin/Seller */
+.gestion-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.gestion-table-wrapper {
+    overflow-x: auto;
+}
+
+.gestion-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    color: var(--text-primary);
+}
+
+.gestion-table th {
+    background: rgba(255,255,255,0.03);
+    color: var(--text-secondary);
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    padding: 14px 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--card-border);
+}
+
+.gestion-table td {
+    padding: 14px 16px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    vertical-align: middle;
+}
+
+.gestion-table tr:hover td {
+    background: rgba(255,255,255,0.03);
+}
+
+/* Formulario de producto */
+.producto-form {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 16px;
+    padding: 30px;
+    max-width: 800px;
+}
+
+.producto-form .form-section {
+    margin-bottom: 25px;
+}
+
+.producto-form .form-section h3 {
+    font-size: 1.1rem;
+    margin-bottom: 15px;
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--card-border);
+    padding-bottom: 10px;
+}
+
+/* Tabla de productos en gestión */
+.producto-thumb-sm {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+    border-radius: 6px;
+    background: rgba(255,255,255,0.05);
+}
+
+.action-btn {
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.action-btn.edit {
+    background: rgba(59,130,246,0.1);
+    color: #60A5FA;
+}
+
+.action-btn.edit:hover {
+    background: rgba(59,130,246,0.2);
+}
+
+.action-btn.delete {
+    background: rgba(239,68,68,0.1);
+    color: #F87171;
+}
+
+.action-btn.delete:hover {
+    background: rgba(239,68,68,0.2);
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .producto-detalle {
+        grid-template-columns: 1fr;
+        gap: 25px;
+    }
+
+    .producto-main-image {
+        height: 300px;
+    }
+}
+
+@media (max-width: 768px) {
+    .catalogo-filters {
+        width: 100%;
+    }
+
+    .catalogo-filters select,
+    .catalogo-filters input {
+        flex: 1;
+    }
+
+    .producto-precio-actual {
+        font-size: 1.8rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .producto-main-image {
+        height: 250px;
+    }
+}
+

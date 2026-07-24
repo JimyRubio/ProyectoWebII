@@ -18,11 +18,11 @@ class Database {
                     PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
                     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
                     PDO::ATTR_EMULATE_PREPARES => false,
-                    PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES " . DB_CHARSET
                 ];
+$options[defined('Pdo\Mysql::ATTR_INIT_COMMAND') ? Pdo\Mysql::ATTR_INIT_COMMAND : PDO::MYSQL_ATTR_INIT_COMMAND] = "SET NAMES " . DB_CHARSET;
                 self::$instance = new PDO($dsn, DB_USER, DB_PASS, $options);
             } catch (PDOException $e) {
-                // Registrar error en log si existe la tabla o archivo
+                // Registrar error en log
                 error_log("Error de conexión a la Base de Datos: " . $e->getMessage());
                 die(json_encode([
                     'success' => false,
@@ -31,5 +31,20 @@ class Database {
             }
         }
         return self::$instance;
+    }
+
+    /**
+     * Verifica si la base de datos está conectada
+     */
+    public static function isConnected(): bool {
+        try {
+            if (self::$instance === null) {
+                return false;
+            }
+            self::$instance->query('SELECT 1');
+            return true;
+        } catch (\PDOException $e) {
+            return false;
+        }
     }
 }

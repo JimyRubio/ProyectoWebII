@@ -10,6 +10,9 @@
     <!-- Chart.js CDN (Para dashboards y gráficas) -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
+    <!-- Variable BASE_URL global para JS -->
+    <script>var BASE_URL = '<?php echo BASE_URL; ?>';</script>
+    
     <!-- JS Globales y Utilidades AJAX -->
     <script src="<?php echo BASE_URL; ?>public/js/utils.js"></script>
     <script src="<?php echo BASE_URL; ?>public/js/main.js"></script>

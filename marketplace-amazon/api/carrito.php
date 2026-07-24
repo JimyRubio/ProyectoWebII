@@ -6,6 +6,14 @@ $controller = new CarritoController();
 $method = $_SERVER['REQUEST_METHOD'];
 $action = $_GET['action'] ?? $_POST['action'] ?? null;
 
+// Validación CSRF para métodos POST
+if ($method === 'POST') {
+    $token = $_POST['csrf_token'] ?? $_SERVER['HTTP_X_CSRF_TOKEN'] ?? null;
+    if (!Security::verifyCsrfToken($token)) {
+        Response::error('Token CSRF no válido o expirado', 403);
+    }
+}
+
 switch ($method) {
     case 'GET':
         $controller->index();

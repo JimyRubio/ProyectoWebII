@@ -96,7 +96,8 @@ class PedidoModel extends Model {
 
         if (!$pedido) return null;
 
-        $sqlItems = "SELECT pi.*, pr.nombre as producto_nombre, pr.sku, pr.imagen_url
+        $sqlItems = "SELECT pi.*, pr.nombre as producto_nombre, pr.sku,
+                            (SELECT url FROM imagenes_productos WHERE producto_id = pr.id ORDER BY principal DESC, orden ASC LIMIT 1) as imagen_url
                      FROM pedido_items pi
                      INNER JOIN productos pr ON pi.producto_id = pr.id
                      WHERE pi.pedido_id = :pedido_id";

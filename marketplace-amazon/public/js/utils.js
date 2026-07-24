@@ -3,7 +3,7 @@
    ========================================================================== */
 
 const App = {
-    baseUrl: 'http://localhost:8080/ProyectoWebII/marketplace-amazon/',
+    baseUrl: (typeof BASE_URL !== 'undefined') ? BASE_URL : window.location.protocol + '//' + window.location.hostname + (window.location.port ? ':' + window.location.port : '') + '/',
 
     /**
      * Obtiene el Token CSRF activo desde la etiqueta META

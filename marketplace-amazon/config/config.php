@@ -9,11 +9,11 @@ if (session_status() === PHP_SESSION_NONE) {
 define('DB_HOST', 'localhost');
 define('DB_NAME', 'marketplace_db');
 define('DB_USER', 'root');
-define('DB_PASS', '');
+define('DB_PASS', 'password');
 define('DB_CHARSET', 'utf8mb4');
 
 // URL Base Exacta
-define('BASE_URL', 'http://localhost:8080/ProyectoWebII/marketplace-amazon/');
+define('BASE_URL', 'http://localhost:8080/');
 
 // Nombre del Proyecto
 define('APP_NAME', 'Marketplace Amazon');
