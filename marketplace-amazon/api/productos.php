@@ -11,6 +11,8 @@ switch ($method) {
     case 'GET':
         if ($action === 'destacados') {
             $controller->destacados();
+        } elseif ($action === 'categorias') {
+            $controller->categorias();
         } elseif ($id !== null && $id > 0) {
             $controller->show($id);
         } else {

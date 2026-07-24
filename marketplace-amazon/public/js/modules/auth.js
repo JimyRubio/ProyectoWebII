@@ -61,4 +61,54 @@ $(document).ready(function () {
             }
         });
     });
+
+    // Interceptar envío de formulario de Olvidé Contraseña
+    $('#form-forgot-password').on('submit', function (e) {
+        e.preventDefault();
+        const email = $('#forgot-email').val();
+
+        App.ajax({
+            url: App.baseUrl + 'api/auth.php?action=forgot_password',
+            method: 'POST',
+            data: { email: email },
+            success: function (response) {
+                if (response.success) {
+                    $('#form-forgot-password').hide();
+                    $('#forgot-success-msg').show();
+                }
+            }
+        });
+    });
+
+    // Interceptar envío de formulario de Resetear Contraseña
+    $('#form-reset-password').on('submit', function (e) {
+        e.preventDefault();
+        const $form = $(this);
+        const token = $form.find('input[name="token"]').val();
+        const password = $form.find('input[name="password"]').val();
+        const confirm = $form.find('input[name="confirm_password"]').val();
+
+        if (password !== confirm) {
+            App.notify('Las contraseñas no coinciden', 'error');
+            return;
+        }
+
+        App.ajax({
+            url: App.baseUrl + 'api/auth.php?action=reset_password',
+            method: 'POST',
+            data: {
+                token: token,
+                password: password,
+                confirm_password: confirm
+            },
+            success: function (response) {
+                if (response.success) {
+                    App.notify('Contraseña restablecida exitosamente', 'success');
+                    setTimeout(function () {
+                        window.location.href = App.baseUrl + 'views/auth/login.php';
+                    }, 1500);
+                }
+            }
+        });
+    });
 });

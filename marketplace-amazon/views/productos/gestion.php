@@ -37,8 +37,8 @@ require_once __DIR__ . '/../layouts/header.php';
                     <input type="number" name="stock" class="form-control" value="10">
                 </div>
                 <div class="form-group">
-                    <label>SKU</label>
-                    <input type="text" name="sku" class="form-control" placeholder="SKU-XXXX">
+                    <label>SKU (autogenerado)</label>
+                    <input type="text" name="sku" class="form-control" id="sku-field" placeholder="Se genera automáticamente" readonly style="background:var(--bg-secondary);opacity:0.8;cursor:not-allowed;">
                 </div>
             </div>
             <div class="form-group">

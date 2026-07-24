@@ -90,11 +90,96 @@ class AuthController {
         }
     }
 
-    /**
+/**
      * Cierra la sesión
      */
     public function logout(): void {
         AuthHelper::logout();
         Response::success(null, 'Sesión cerrada correctamente');
+    }
+
+    /**
+     * Procesa solicitud de restablecimiento de contraseña (Forgot Password)
+     */
+    public function forgotPassword(): void {
+        $email = Security::sanitizeString($_POST['email'] ?? '');
+        if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            Response::error('Correo electrónico inválido', 400);
+        }
+
+        $user = $this->model->findByEmail($email);
+        if (!$user) {
+            // No revelar si el correo existe o no por seguridad
+            Response::success(null, 'Si el correo está registrado, recibirás instrucciones para restablecer tu contraseña.');
+        }
+
+        try {
+            // Generar token único
+            $token = bin2hex(random_bytes(32));
+            $expiry = date('Y-m-d H:i:s', strtotime('+1 hour'));
+
+            // Guardar token en BD
+            $stmt = $this->model->db->prepare("UPDATE usuarios SET reset_token = :token, reset_token_expiry = :expiry WHERE email = :email");
+            $stmt->execute([
+                ':token' => $token,
+                ':expiry' => $expiry,
+                ':email' => $email
+            ]);
+
+            // En un entorno real, aquí se enviaría un correo electrónico con el enlace:
+            // $resetLink = BASE_URL . "views/auth/reset_password.php?token=" . $token;
+            // Por ahora simulamos el envío devolviendo el token en la respuesta
+            // (En producción se debería enviar por email)
+
+            Response::success([
+                'token' => $token,
+                'reset_url' => BASE_URL . 'views/auth/forgot_password.php?token=' . $token
+            ], 'Instrucciones enviadas. Revisa tu correo electrónico.');
+        } catch (Exception $e) {
+            Response::error('Error al procesar la solicitud: ' . $e->getMessage(), 500);
+        }
+    }
+
+    /**
+     * Procesa el restablecimiento de contraseña con token
+     */
+    public function resetPassword(): void {
+        $token = Security::sanitizeString($_POST['token'] ?? '');
+        $password = $_POST['password'] ?? '';
+        $confirm = $_POST['confirm_password'] ?? '';
+
+        if (empty($token) || empty($password)) {
+            Response::error('Token y nueva contraseña son requeridos', 400);
+        }
+
+        if ($password !== $confirm) {
+            Response::error('Las contraseñas no coinciden', 400);
+        }
+
+        if (strlen($password) < 6) {
+            Response::error('La contraseña debe tener al menos 6 caracteres', 400);
+        }
+
+        try {
+            // Buscar usuario por token válido y no expirado
+            $stmt = $this->model->db->prepare("SELECT id FROM usuarios WHERE reset_token = :token AND reset_token_expiry > NOW() AND activo = 1");
+            $stmt->execute([':token' => $token]);
+            $user = $stmt->fetch();
+
+            if (!$user) {
+                Response::error('Token inválido o expirado. Solicita un nuevo restablecimiento.', 400);
+            }
+
+            // Actualizar contraseña y limpiar token
+            $stmtUpd = $this->model->db->prepare("UPDATE usuarios SET password_hash = :password_hash, reset_token = NULL, reset_token_expiry = NULL WHERE id = :id");
+            $stmtUpd->execute([
+                ':password_hash' => Security::hashPassword($password),
+                ':id' => $user['id']
+            ]);
+
+            Response::success(null, 'Contraseña restablecida exitosamente. Ya puedes iniciar sesión con tu nueva contraseña.');
+        } catch (Exception $e) {
+            Response::error('Error al restablecer la contraseña: ' . $e->getMessage(), 500);
+        }
     }
 }

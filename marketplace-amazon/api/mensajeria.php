@@ -24,7 +24,11 @@ switch ($method) {
         break;
 
     case 'POST':
-        $controller->enviar();
+        if ($action === 'crear') {
+            $controller->crear();
+        } else {
+            $controller->enviar();
+        }
         break;
 
     default:

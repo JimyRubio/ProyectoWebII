@@ -39,7 +39,7 @@ require_once '../../views/layouts/header.php';
                 <label class="remember-me">
                     <input type="checkbox" name="remember"> Recordar mi sesión
                 </label>
-                <a href="#" class="forgot-link">¿Olvidaste tu contraseña?</a>
+                <a href="forgot_password.php" class="forgot-link">¿Olvidaste tu contraseña?</a>
             </div>
 
             <button type="submit" class="btn-primary">

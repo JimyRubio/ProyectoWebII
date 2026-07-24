@@ -68,7 +68,15 @@ class ProductoController {
 
         $nombre = Security::sanitizeString($_POST['nombre'] ?? '');
         $precio = (float)($_POST['precio'] ?? 0);
-        $sku = Security::sanitizeString($_POST['sku'] ?? ('SKU-' . rand(1000, 9999)));
+        // Generar SKU automático formato código de barras: MKT-YYYYMMDD-XXXX
+        $skuInput = Security::sanitizeString($_POST['sku'] ?? '');
+        if (empty($skuInput)) {
+            $datePart = date('Ymd');
+            $randomPart = str_pad(mt_rand(1, 9999), 4, '0', STR_PAD_LEFT);
+            $sku = 'MKT-' . $datePart . '-' . $randomPart;
+        } else {
+            $sku = $skuInput;
+        }
         $categoriaId = (int)($_POST['categoria_id'] ?? 1);
         $tiendaId = (int)($_POST['tienda_id'] ?? 1);
 
@@ -118,6 +126,14 @@ class ProductoController {
         } catch (Exception $e) {
             Response::error('Error al ejecutar SP actualizar_stock: ' . $e->getMessage(), 500);
         }
+    }
+
+    /**
+     * Retorna la lista de categorías activas
+     */
+    public function categorias(): void {
+        $categorias = $this->model->getCategorias();
+        Response::success($categorias, 'Categorías obtenidas');
     }
 
     /**

@@ -96,7 +96,8 @@ class ProductoModel extends Model {
      * Obtiene el detalle de un producto por ID
      */
     public function getById(int $id): ?array {
-        $sql = "SELECT p.*, c.nombre as categoria_nombre, t.nombre_tienda, v.nombre_empresa as vendedor_nombre
+        $sql = "SELECT p.*, c.nombre as categoria_nombre, t.nombre_tienda, v.nombre_empresa as vendedor_nombre,
+                       v.id as id_vendedor, t.id as tienda_id_ref
                 FROM productos p
                 INNER JOIN categorias c ON p.categoria_id = c.id
                 INNER JOIN tiendas t ON p.tienda_id = t.id

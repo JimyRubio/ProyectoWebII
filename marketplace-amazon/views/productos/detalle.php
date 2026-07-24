@@ -20,6 +20,13 @@ if ($id <= 0) {
         </div>
     </div>
 
+    <!-- Botón Contactar Vendedor -->
+    <div id="contact-vendor-container" style="display:none;margin-top:20px;text-align:center;">
+        <button id="btn-contactar-vendedor" class="btn-primary" style="background:var(--secondary-accent);padding:12px 30px;">
+            <i class="fa-solid fa-comment"></i> Contactar Vendedor
+        </button>
+    </div>
+
     <!-- Sección de reseñas -->
     <div class="producto-resenas" style="margin-top:40px;">
         <h3><i class="fa-solid fa-star"></i> Reseñas de Clientes</h3>
@@ -33,4 +40,9 @@ if ($id <= 0) {
         <h3 class="section-title">Productos Relacionados</h3>
         <div id="productos-relacionados" class="product-grid" style="margin-top:20px;">
             <!-- Carga dinámica vía AJAX -->
+        </div>
+    </div>
+</div>
+
+<?php require_once __DIR__ . '/../layouts/footer.php'; ?>
        

@@ -18,6 +18,10 @@ switch ($method) {
             $controller->register();
         } elseif ($action === 'logout') {
             $controller->logout();
+        } elseif ($action === 'forgot_password') {
+            $controller->forgotPassword();
+        } elseif ($action === 'reset_password') {
+            $controller->resetPassword();
         } else {
             Response::error('Acción no reconocida', 400);
         }

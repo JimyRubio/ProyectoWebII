@@ -22,10 +22,13 @@ $is_auth_page = $is_auth_page ?? false;
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>public/css/main.css">
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>public/css/layout.css">
 
-    <?php if (isset($module_css) && !empty($module_css)): ?>
+<?php if (isset($module_css) && !empty($module_css)): ?>
         <!-- CSS Módulo Específico -->
         <link rel="stylesheet" href="<?php echo BASE_URL; ?>public/css/modules/<?php echo $module_css; ?>">
     <?php endif; ?>
+    
+    <!-- jQuery CDN (Cargado en HEAD para que esté disponible para scripts inline) -->
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
 </head>
 <body>
     <header class="main-header">
@@ -67,6 +70,7 @@ $is_auth_page = $is_auth_page ?? false;
                         <a href="<?php echo BASE_URL; ?>views/productos/gestion.php"><i class="fa-solid fa-box"></i> Mis Productos</a>
                         <a href="<?php echo BASE_URL; ?>views/pedidos/historial.php"><i class="fa-solid fa-receipt"></i> Pedidos</a>
                         <a href="<?php echo BASE_URL; ?>views/promociones/gestion.php"><i class="fa-solid fa-tags"></i> Promociones</a>
+                        <a href="<?php echo BASE_URL; ?>views/mensajeria/chat.php"><i class="fa-solid fa-comment"></i> Mensajes</a>
                     </div>
                 </div>
 
@@ -77,6 +81,7 @@ $is_auth_page = $is_auth_page ?? false;
                         <a href="<?php echo BASE_URL; ?>views/clientes/perfil.php"><i class="fa-regular fa-id-card"></i> Mi Perfil</a>
                         <a href="<?php echo BASE_URL; ?>views/pedidos/historial.php"><i class="fa-solid fa-clock-rotate-left"></i> Mis Pedidos</a>
                         <a href="<?php echo BASE_URL; ?>views/clientes/historial.php"><i class="fa-solid fa-receipt"></i> Historial</a>
+                        <a href="<?php echo BASE_URL; ?>views/mensajeria/chat.php"><i class="fa-solid fa-comment"></i> Mensajes</a>
                     </div>
                 </div>
 

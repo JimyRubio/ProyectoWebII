@@ -6,16 +6,28 @@ class MensajeriaModel extends Model {
     /**
      * Obtiene conversaciones de un cliente o vendedor
      */
-    public function getConversaciones(int $clienteId): array {
-        $sql = "SELECT c.*, v.nombre_empresa as vendedor_nombre, u.nombre as cliente_nombre, u.apellido as cliente_apellido
-                FROM conversaciones c
-                LEFT JOIN vendedores v ON v.id = c.vendedor_id
-                LEFT JOIN clientes cl ON cl.id = c.cliente_id
-                LEFT JOIN usuarios u ON u.id = cl.usuario_id
-                WHERE c.cliente_id = :cliente_id
-                ORDER BY c.updated_at DESC";
+    public function getConversaciones(int $usuarioId, ?string $tipo = 'cliente'): array {
+        if ($tipo === 'vendedor') {
+            // Si es vendedor, busca conversaciones donde su vendedor_id coincida
+            $sql = "SELECT c.*, v.nombre_empresa as vendedor_nombre, u.nombre as cliente_nombre, u.apellido as cliente_apellido,
+                           cl.id as cliente_id_ref
+                    FROM conversaciones c
+                    LEFT JOIN vendedores v ON v.id = c.vendedor_id
+                    LEFT JOIN clientes cl ON cl.id = c.cliente_id
+                    LEFT JOIN usuarios u ON u.id = cl.usuario_id
+                    WHERE c.vendedor_id = (SELECT id FROM vendedores WHERE usuario_id = :usuario_id LIMIT 1)
+                    ORDER BY c.updated_at DESC";
+        } else {
+            $sql = "SELECT c.*, v.nombre_empresa as vendedor_nombre, u.nombre as cliente_nombre, u.apellido as cliente_apellido
+                    FROM conversaciones c
+                    LEFT JOIN vendedores v ON v.id = c.vendedor_id
+                    LEFT JOIN clientes cl ON cl.id = c.cliente_id
+                    LEFT JOIN usuarios u ON u.id = cl.usuario_id
+                    WHERE c.cliente_id = (SELECT id FROM clientes WHERE usuario_id = :usuario_id LIMIT 1)
+                    ORDER BY c.updated_at DESC";
+        }
         $stmt = $this->db->prepare($sql);
-        $stmt->execute([':cliente_id' => $clienteId]);
+        $stmt->execute([':usuario_id' => $usuarioId]);
         return $stmt->fetchAll() ?: [];
     }
 

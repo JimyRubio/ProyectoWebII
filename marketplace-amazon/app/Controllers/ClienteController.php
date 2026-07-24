@@ -66,8 +66,9 @@ class ClienteController {
         AuthHelper::requireAuth();
         $user = AuthHelper::user();
         $roleName = strtolower($user['rol_nombre'] ?? '');
+        $roleId = (int)($user['rol_id'] ?? 0);
 
-        if ($roleName !== 'administrador' && $roleName !== 'admin') {
+        if ($roleId !== 1 && $roleName !== 'administrador' && $roleName !== 'admin') {
             Response::error('Acceso denegado. Solo administradores', 403);
         }
 

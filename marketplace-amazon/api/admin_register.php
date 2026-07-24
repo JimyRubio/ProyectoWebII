@@ -36,6 +36,10 @@ $apellido = Security::sanitizeString($_POST['apellido'] ?? '');
 $email = Security::sanitizeString($_POST['email'] ?? '');
 $password = $_POST['password'] ?? '';
 $rolId = (int)($_POST['rol_id'] ?? 3);
+$telefono = Security::sanitizeString($_POST['telefono'] ?? '');
+$genero = Security::sanitizeString($_POST['genero'] ?? '');
+$fechaNacimiento = Security::sanitizeString($_POST['fecha_nacimiento'] ?? '');
+$direccion = Security::sanitizeString($_POST['direccion'] ?? '');
 
 // Validaciones
 if (empty($nombre) || empty($email) || empty($password)) {
@@ -56,6 +60,11 @@ if (!in_array($rolId, $rolesPermitidos)) {
     Response::error('Rol no válido. Use: 1=Admin, 2=Vendedor, 3=Cliente', 400);
 }
 
+// Validar género si se proporciona
+if (!empty($genero) && !in_array($genero, ['M', 'F', 'O'])) {
+    Response::error('Género no válido. Use M, F u O', 400);
+}
+
 $model = new ClienteModel();
 
 // Verificar email único
@@ -67,8 +76,8 @@ try {
     $model->beginTransaction();
 
     // 1. Insertar usuario
-    $sqlUser = "INSERT INTO usuarios (email, password_hash, nombre, apellido, rol_id, activo, created_at)
-                VALUES (:email, :password_hash, :nombre, :apellido, :rol_id, 1, NOW())";
+    $sqlUser = "INSERT INTO usuarios (email, password_hash, nombre, apellido, telefono, genero, fecha_nacimiento, direccion, rol_id, activo, created_at)
+                VALUES (:email, :password_hash, :nombre, :apellido, :telefono, :genero, :fecha_nacimiento, :direccion, :rol_id, 1, NOW())";
     
     $stmtUser = $model->db->prepare($sqlUser);
     $stmtUser->execute([
@@ -76,6 +85,10 @@ try {
         ':password_hash' => Security::hashPassword($password),
         ':nombre' => $nombre,
         ':apellido' => $apellido,
+        ':telefono' => $telefono ?: null,
+        ':genero' => $genero ?: null,
+        ':fecha_nacimiento' => $fechaNacimiento ?: null,
+        ':direccion' => $direccion ?: null,
         ':rol_id' => $rolId
     ]);
 
