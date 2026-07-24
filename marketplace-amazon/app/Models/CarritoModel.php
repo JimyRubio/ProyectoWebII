@@ -6,7 +6,20 @@ class CarritoModel extends Model {
     /**
      * Obtiene o crea el carrito activo de un cliente
      */
-    public function getCartByClienteId(int $clienteId): array {
+    public function getCartByClienteId(?int $clienteId): array {
+        // Si no hay cliente autenticado, devolver carrito vacío
+        if ($clienteId === null || $clienteId <= 0) {
+            return [
+                'id' => 0,
+                'cliente_id' => 0,
+                'total_items' => 0,
+                'subtotal' => 0.00,
+                'descuentos' => 0.00,
+                'total' => 0.00,
+                'items' => []
+            ];
+        }
+
         $stmt = $this->db->prepare("SELECT * FROM carritos WHERE cliente_id = :cliente_id");
         $stmt->execute([':cliente_id' => $clienteId]);
         $cart = $stmt->fetch();

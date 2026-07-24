@@ -11,13 +11,25 @@ class CarritoController {
         $this->productoModel = new ProductoModel();
     }
 
-    private function getClienteId(): int {
+    private function getClienteId(): ?int {
         $user = AuthHelper::user();
-        return $user['cliente_id'] ?? 1; // Fallback cliente_id para invitados de prueba
+        return $user['cliente_id'] ?? null;
     }
 
     public function index(): void {
         $clienteId = $this->getClienteId();
+        if ($clienteId === null) {
+            Response::success([
+                'id' => 0,
+                'cliente_id' => 0,
+                'total_items' => 0,
+                'subtotal' => 0.00,
+                'descuentos' => 0.00,
+                'total' => 0.00,
+                'items' => []
+            ], 'Debe iniciar sesión para ver el carrito');
+            return;
+        }
         $cart = $this->model->getCartByClienteId($clienteId);
         Response::success($cart, 'Contenido del carrito');
     }
