@@ -4,14 +4,14 @@
         <p>&copy; <?php echo date('Y'); ?> <?php echo APP_NAME; ?> - Todos los derechos reservados.</p>
     </footer>
 
+    <!-- Variable BASE_URL global para JS -->
+    <script>var BASE_URL = '<?php echo BASE_URL; ?>';</script>
+    
     <!-- jQuery CDN (Obligatorio por los requerimientos del proyecto) -->
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
     
     <!-- Chart.js CDN (Para dashboards y gráficas) -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
-    <!-- Variable BASE_URL global para JS -->
-    <script>var BASE_URL = '<?php echo BASE_URL; ?>';</script>
     
     <!-- JS Globales y Utilidades AJAX -->
     <script src="<?php echo BASE_URL; ?>public/js/utils.js"></script>

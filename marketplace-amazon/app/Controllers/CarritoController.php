@@ -49,6 +49,32 @@ class CarritoController {
         }
     }
 
+    public function updateQty(): void {
+        $itemId = (int)($_POST['item_id'] ?? 0);
+        $cantidad = max(1, (int)($_POST['cantidad'] ?? 1));
+
+        if ($itemId <= 0) {
+            Response::error('ID de ítem no válido', 400);
+        }
+
+        // Obtener precio unitario del item actual
+        $stmt = $this->model->db->prepare("SELECT precio_unitario FROM carrito_items WHERE id = :id");
+        $stmt->execute([':id' => $itemId]);
+        $item = $stmt->fetch();
+
+        if (!$item) {
+            Response::error('Ítem no encontrado en el carrito', 404);
+        }
+
+        if ($this->model->updateItemQty($itemId, $cantidad, (float)$item['precio_unitario'])) {
+            $clienteId = $this->getClienteId();
+            $updatedCart = $this->model->getCartByClienteId($clienteId);
+            Response::success($updatedCart, 'Cantidad actualizada');
+        } else {
+            Response::error('Error al actualizar cantidad', 500);
+        }
+    }
+
     public function remove(): void {
         $itemId = (int)($_POST['item_id'] ?? $_GET['item_id'] ?? 0);
         if ($itemId <= 0) {

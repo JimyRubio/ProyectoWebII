@@ -139,3 +139,486 @@
     font-size: 0.9rem;
     margin-top: auto;
 }
+
+/* ==========================================================================
+   DROPDOWN MENUS - NAVEGACIÓN POR ROLES
+   ========================================================================== */
+
+.nav-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.nav-dropdown .dropdown-content {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: rgba(22, 28, 45, 0.95);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--card-border);
+    border-radius: 10px;
+    min-width: 200px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+    z-index: 1001;
+    padding: 8px 0;
+    margin-top: 8px;
+}
+
+.nav-dropdown .dropdown-content a {
+    color: #9CA3AF;
+    padding: 10px 18px;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+}
+
+.nav-dropdown .dropdown-content a:hover {
+    color: #FFFFFF;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* Se activa con JS al hacer click - se mantiene abierto */
+.nav-dropdown.open .dropdown-content {
+    display: block;
+}
+
+/* ==========================================================================
+   QUANTITY SELECTOR EN TARJETAS DE PRODUCTO
+   ========================================================================== */
+
+.product-card .qty-selector {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.product-card .qty-selector label {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    font-weight: 600;
+}
+
+.product-card .qty-selector input {
+    width: 60px;
+    padding: 6px 10px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--card-border);
+    border-radius: 6px;
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    text-align: center;
+    outline: none;
+}
+
+.product-card .qty-selector input:focus {
+    border-color: var(--primary-accent);
+}
+
+/* ==========================================================================
+   CARRITO - CONTROLES DE CANTIDAD
+   ========================================================================== */
+
+.carrito-page .carrito-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.carrito-page .carrito-header h2 {
+    font-size: 1.6rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.carrito-items {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.carrito-item {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 14px;
+    padding: 18px 22px;
+    transition: all 0.3s ease;
+}
+
+.carrito-item:hover {
+    border-color: rgba(255, 153, 0, 0.3);
+}
+
+.carrito-item img {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.03);
+    padding: 8px;
+}
+
+.carrito-item .item-info {
+    flex: 1;
+}
+
+.carrito-item .item-info h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.carrito-item .item-info .item-sku {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    margin-bottom: 4px;
+}
+
+.carrito-item .item-info .item-price {
+    font-size: 0.9rem;
+    color: var(--price-color);
+    font-weight: 600;
+}
+
+.carrito-item .item-qty {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.carrito-item .item-qty .qty-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    border: 1px solid var(--card-border);
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-primary);
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.carrito-item .item-qty .qty-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--primary-accent);
+}
+
+.carrito-item .item-qty .qty-value {
+    font-size: 1.05rem;
+    font-weight: 700;
+    min-width: 30px;
+    text-align: center;
+}
+
+.carrito-item .item-subtotal {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--price-color);
+    min-width: 100px;
+    text-align: right;
+}
+
+.carrito-item .item-remove {
+    background: rgba(239, 68, 68, 0.1);
+    border: none;
+    color: #EF4444;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.carrito-item .item-remove:hover {
+    background: rgba(239, 68, 68, 0.25);
+}
+
+.carrito-footer {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 14px;
+    padding: 24px;
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.carrito-totals {
+    min-width: 250px;
+}
+
+.total-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    font-size: 0.95rem;
+}
+
+.total-row.grand-total {
+    font-size: 1.2rem;
+    font-weight: 700;
+    border-top: 1px solid var(--card-border);
+    padding-top: 12px;
+    margin-top: 8px;
+    color: var(--price-color);
+}
+
+.carrito-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.btn-secondary {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--card-border);
+    color: var(--text-primary);
+    padding: 12px 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: var(--text-secondary);
+}
+
+.empty-cart {
+    text-align: center;
+    padding: 60px 20px;
+}
+
+/* ==========================================================================
+   GESTIÓN DE PRODUCTOS - TABLA
+   ========================================================================== */
+
+.gestion-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.gestion-header h1 {
+    font-size: 1.6rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.gestion-table-wrapper {
+    overflow-x: auto;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 14px;
+}
+
+.gestion-table {
+    width: 100%;
+    border-collapse: collapse;
+    color: var(--text-primary);
+}
+
+.gestion-table th {
+    background: rgba(255, 255, 255, 0.03);
+    color: var(--text-secondary);
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    padding: 14px 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--card-border);
+}
+
+.gestion-table td {
+    padding: 14px 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    vertical-align: middle;
+}
+
+.gestion-table tr:hover td {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.gestion-table tr:last-child td {
+    border-bottom: none;
+}
+
+.producto-thumb-sm {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.action-btn {
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 3px;
+}
+
+.action-btn.edit {
+    background: rgba(59, 130, 246, 0.1);
+    color: #60A5FA;
+}
+
+.action-btn.edit:hover {
+    background: rgba(59, 130, 246, 0.25);
+}
+
+.action-btn.delete {
+    background: rgba(239, 68, 68, 0.1);
+    color: #F87171;
+}
+
+.action-btn.delete:hover {
+    background: rgba(239, 68, 68, 0.25);
+}
+
+/* ==========================================================================
+   PRODUCTO - FORMULARIO
+   ========================================================================== */
+
+.producto-form {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 14px;
+    padding: 28px;
+}
+
+.producto-form h3 {
+    font-size: 1.15rem;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.producto-form .form-section {
+    margin-bottom: 25px;
+}
+
+/* ==========================================================================
+   PÁGINA DE INICIO - AJUSTES
+   ========================================================================== */
+
+.catalogo-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.catalogo-header h2 {
+    font-size: 1.6rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.catalogo-filters {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.catalogo-filters select,
+.catalogo-filters input {
+    padding: 10px 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    outline: none;
+}
+
+.catalogo-filters select:focus,
+.catalogo-filters input:focus {
+    border-color: var(--primary-accent);
+}
+
+.no-products-msg {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 60px;
+    color: var(--text-secondary);
+}
+
+/* ==========================================================================
+   PAGINATION
+   ========================================================================== */
+
+.pagination-wrapper {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    margin-top: 25px;
+}
+
+.page-btn {
+    padding: 8px 16px;
+    border: 1px solid var(--card-border);
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 8px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.page-btn:hover:not(.disabled) {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text-primary);
+    border-color: var(--primary-accent);
+}
+
+.page-btn.active {
+    background: var(--primary-accent);
+    border-color: var(--primary-accent);
+    color: #FFFFFF;
+}
+
+.page-btn.disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}

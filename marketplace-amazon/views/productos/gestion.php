@@ -49,9 +49,19 @@ require_once __DIR__ . '/../layouts/header.php';
                 <label>Descripción Larga</label>
                 <textarea name="descripcion_larga" class="form-control" rows="4"></textarea>
             </div>
-            <div class="form-group">
-                <label>URL de Imagen Principal</label>
-                <input type="url" name="imagen_url" class="form-control" placeholder="https://ejemplo.com/imagen.jpg">
+<div class="form-group">
+                <label>Imagen del Producto</label>
+                <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+                    <input type="file" id="prod-image-file" accept="image/jpeg,image/png,image/gif,image/webp" style="flex:1;padding:10px;background:rgba(255,255,255,0.05);border:1px solid var(--card-border);border-radius:8px;color:var(--text-primary);">
+                    <button type="button" class="btn-primary" id="btn-upload-image" style="padding:10px 20px;width:auto;" onclick="uploadProductImage()">
+                        <i class="fa-solid fa-cloud-arrow-up"></i> Subir
+                    </button>
+                </div>
+                <div id="image-upload-preview" style="display:none;margin-top:10px;padding:10px;background:rgba(16,185,129,0.1);border-radius:8px;border:1px solid rgba(16,185,129,0.3);">
+                    <img id="preview-img" src="" alt="Preview" style="max-width:150px;max-height:150px;border-radius:8px;display:block;margin-bottom:8px;">
+                    <span id="uploaded-url" style="color:var(--price-color);font-size:0.85rem;word-break:break-all;"></span>
+                    <input type="hidden" name="imagen_url" id="imagen_url_hidden" value="">
+                </div>
             </div>
         </div>
         <button type="submit" class="btn-primary">
@@ -167,6 +177,72 @@ function renderGestionProductos(productos) {
         `;
     });
     $tbody.html(html);
+}
+
+// Función para subir imagen con preview
+function uploadProductImage() {
+    const fileInput = document.getElementById('prod-image-file');
+    const file = fileInput.files[0];
+    
+    if (!file) {
+        App.notify('Selecciona una imagen primero', 'warning');
+        return;
+    }
+
+    // Validar tipo
+    const tiposPermitidos = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    if (!tiposPermitidos.includes(file.type)) {
+        App.notify('Formato no permitido. Usa JPG, PNG, GIF o WebP', 'error');
+        return;
+    }
+
+    // Validar tamaño (5MB)
+    if (file.size > 5 * 1024 * 1024) {
+        App.notify('La imagen excede el tamaño máximo de 5MB', 'error');
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append('imagen', file);
+    formData.append('csrf_token', App.getCsrfToken());
+
+    const $btn = $('#btn-upload-image');
+    $btn.prop('disabled', true).html('<i class="fa-solid fa-spinner fa-spin"></i> Subiendo...');
+
+    $.ajax({
+        url: App.baseUrl + 'api/upload.php',
+        type: 'POST',
+        data: formData,
+        processData: false,
+        contentType: false,
+        dataType: 'json',
+        success: function(response) {
+            if (response.success) {
+                const url = response.data.url;
+                $('#preview-img').attr('src', url);
+                $('#uploaded-url').text(url);
+                $('#imagen_url_hidden').val(url);
+                $('#image-upload-preview').show();
+                App.notify('Imagen subida exitosamente', 'success');
+            } else {
+                App.notify(response.message || 'Error al subir imagen', 'error');
+            }
+        },
+        error: function() {
+            App.notify('Error de conexión al subir imagen', 'error');
+        },
+        complete: function() {
+            $btn.prop('disabled', false).html('<i class="fa-solid fa-cloud-arrow-up"></i> Subir');
+        }
+    });
+}
+
+function clearImagePreview() {
+    $('#image-upload-preview').hide();
+    $('#preview-img').attr('src', '');
+    $('#uploaded-url').text('');
+    $('#imagen_url_hidden').val('');
+    $('#prod-image-file').val('');
 }
 
 function eliminarProducto(id) {

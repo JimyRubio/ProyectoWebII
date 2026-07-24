@@ -68,6 +68,15 @@ class CarritoModel extends Model {
     }
 
     /**
+     * Actualiza la cantidad de un ítem en el carrito
+     */
+    public function updateItemQty(int $itemId, int $cantidad, float $precioUnitario = 0.00): bool {
+        $subtotal = $cantidad * $precioUnitario;
+        $stmt = $this->db->prepare("UPDATE carrito_items SET cantidad = :cantidad, subtotal = :subtotal, updated_at = NOW() WHERE id = :id");
+        return $stmt->execute([':cantidad' => $cantidad, ':subtotal' => $subtotal, ':id' => $itemId]);
+    }
+
+    /**
      * Remueve un ítem del carrito
      */
     public function removeItem(int $itemId): bool {

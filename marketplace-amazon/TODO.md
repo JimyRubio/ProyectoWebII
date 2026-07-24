@@ -1,37 +1,57 @@
-# PLAN DE IMPLEMENTACIÓN - MARKETZONE ✅ COMPLETED
+# TODO - Plan de Mejora MarketZone ✅
 
-## FASE 0: BUG FIXES ✅
-- [x] Fix PedidoModel.php (campo `imagen_url` inexistente)
-- [x] Fix promociones/gestion.php (doble header)
-- [x] Fix api/vendedores.php (router completo)
-- [x] Agregar CSRF verification a todas las APIs (carrito, pedidos, pagos, clientes, mensajeria, promociones, vendedores)
-- [x] Fix utils.js BASE_URL dinámica
-- [x] Agregar variable BASE_URL global en footer.php
+## Completado:
 
-## FASE 1: JS MODULES (8 archivos) ✅
-- [x] public/js/modules/carrito.js - Carrito AJAX, modal, CRUD items
-- [x] public/js/modules/clientes.js - Perfil, direcciones, historial pedidos
-- [x] public/js/modules/pedidos.js - Detalle pedido, rastreo timeline
-- [x] public/js/modules/pagos.js - Checkout, métodos pago, resumen
-- [x] public/js/modules/mensajeria.js - Chat en vivo, conversaciones
-- [x] public/js/modules/promociones.js - Promociones grid, validar cupón
-- [x] public/js/modules/tiendas.js - Tiendas grid, detalle, gestión
-- [x] public/js/modules/vendedores.js - Vendedores grid, seller dashboard
+### 1. 🔐 Sistema de Roles y Navegación por Rol ✅
+- Header.php con menús desplegables según rol (Admin/Vendedor/Cliente)
+- main.js detecta rol vía API auth.php y muestra menú correspondiente
+- Logout funcional en header
 
-## FASE 2: CSS MODULES (2 archivos) ✅
-- [x] public/css/modules/carrito.css - Estilos carrito, checkout, modal
-- [x] public/css/modules/productos.css - Estilos catálogo, detalle, gestión
+### 2. 🛒 Carrito de Compras - Cantidad Selectable ✅
+- Input number para cantidad en cada tarjeta de producto
+- función addToCart() envía cantidad seleccionada
+- API update_qty creada para actualizar cantidades
+- Botones + y - en carrito funcionan con update_qty
 
-## FASE 3: VISTAS (12 archivos) ✅
-- [x] views/clientes/perfil.php - Perfil + direcciones + formularios
-- [x] views/clientes/historial.php - Historial de pedidos con tabla
-- [x] views/carrito/index.php - Carrito completo con items y totales
-- [x] views/productos/detalle.php - Detalle producto con galería
-- [x] views/productos/gestion.php - CRUD productos con formulario
-- [x] views/tiendas/detalle.php - Detalle tienda + productos
-- [x] views/tiendas/gestion.php - Gestión de tiendas tabla
-- [x] views/mensajeria/chat.php - Chat en vivo completo
-- [x] views/pedidos/historial.php - Historial pedidos con badges
-- [x] views/pedidos/rastreo.php - Timeline de rastreo
-- [x] views/pagos/checkout.php - Checkout completo con métodos pago
-- [x] views/vendedores/dashboard.php - Seller dashboard con KPIs
+### 3. 💳 Checkout y Pago con Tarjeta ✅
+- Formulario completo de tarjeta (número, titular, expiración, CVV)
+- Auto-formateo de número (espacios cada 4 dígitos)
+- Auto-formateo de fecha (MM/YY)
+- Validaciones del lado cliente (largo, formato, CVV)
+- Validaciones del lado servidor en PagoController
+- Creación de pedido + pago + vaciar carrito en transacción
+
+### 4. 👤 Vista de Cliente ✅
+- Perfil con datos personales y direcciones (clientes.js)
+- Historial de pedidos (clientes.js)
+- Rastreo de pedidos (pedidos.js + rastreo.php)
+
+### 5. 🛠️ Vista de Administrador ✅
+- Dashboard analytics con métricas globales
+- Gestión de productos con tabla y paginación
+- Admin ve menú de admin + vendedor + cliente
+
+### 6. 🏪 Vista de Vendedor ✅
+- Seller Dashboard con enlaces rápidos
+- Gestión de productos desde vista vendedor
+
+### 7. 🔄 Cerrar Sesión ✅
+- Botón de logout visible solo cuando autenticado
+- Función confirm() antes de cerrar sesión
+- Redirección a home después de logout
+
+### 8. 🔍 Botón Carrito y Barra de Búsqueda ✅
+- Barra de búsqueda redirige a catálogo con query
+- Botón carrito redirige a página de carrito
+
+### 9. 💰 Moneda en Lempiras (HNL) ✅
+- config.php: CURRENCY_SYMBOL = 'L.', CURRENCY_CODE = 'HNL'
+- utils.js: formatCurrency devuelve 'L. 1,234.56'
+- Sin doble símbolo (solamente 'L. ' al inicio)
+
+### 10. 📸 Subida de Imágenes para Productos
+- [ ] Crear endpoint para upload de imágenes
+- [ ] Modificar formulario de gestión de productos para usar file input
+- [ ] Guardar imágenes en public/uploads/
+- [ ] Mostrar preview de imagen antes de subir
+

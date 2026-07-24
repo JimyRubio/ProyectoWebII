@@ -60,6 +60,64 @@ class ClienteController {
     }
 
     /**
+     * [Admin] Obtiene lista de todos los usuarios del sistema
+     */
+    public function listaUsuarios(): void {
+        AuthHelper::requireAuth();
+        $user = AuthHelper::user();
+        $roleName = strtolower($user['rol_nombre'] ?? '');
+
+        if ($roleName !== 'administrador' && $roleName !== 'admin') {
+            Response::error('Acceso denegado. Solo administradores', 403);
+        }
+
+        $stmt = $this->model->db->query("SELECT u.id, u.nombre, u.apellido, u.email, u.rol_id, r.nombre as rol_nombre, u.activo, u.created_at
+                                          FROM usuarios u
+                                          INNER JOIN roles r ON u.rol_id = r.id
+                                          ORDER BY u.id ASC");
+        $usuarios = $stmt->fetchAll() ?: [];
+        Response::success($usuarios, 'Lista de usuarios');
+    }
+
+    /**
+     * [Admin] Activa/Desactiva un usuario
+     */
+    public function toggleUsuario(): void {
+        AuthHelper::requireAuth();
+        $user = AuthHelper::user();
+        $roleName = strtolower($user['rol_nombre'] ?? '');
+
+        if ($roleName !== 'administrador' && $roleName !== 'admin') {
+            Response::error('Acceso denegado. Solo administradores', 403);
+        }
+
+        $usuarioId = (int)($_POST['usuario_id'] ?? 0);
+        if ($usuarioId <= 0) {
+            Response::error('ID de usuario no válido', 400);
+        }
+
+        // Obtener estado actual
+        $stmt = $this->model->db->prepare("SELECT activo, rol_id FROM usuarios WHERE id = :id");
+        $stmt->execute([':id' => $usuarioId]);
+        $usuario = $stmt->fetch();
+
+        if (!$usuario) {
+            Response::error('Usuario no encontrado', 404);
+        }
+
+        // No permitir desactivar a otro admin
+        if ((int)$usuario['rol_id'] === 1 && $usuarioId !== $user['id']) {
+            Response::error('No puedes desactivar a otro administrador', 403);
+        }
+
+        $nuevoEstado = $usuario['activo'] ? 0 : 1;
+        $stmtUpd = $this->model->db->prepare("UPDATE usuarios SET activo = :activo WHERE id = :id");
+        $stmtUpd->execute([':activo' => $nuevoEstado, ':id' => $usuarioId]);
+
+        Response::success(['activo' => (bool)$nuevoEstado], $nuevoEstado ? 'Usuario activado' : 'Usuario desactivado');
+    }
+
+    /**
      * Registra una nueva dirección
      */
     public function storeDireccion(): void {

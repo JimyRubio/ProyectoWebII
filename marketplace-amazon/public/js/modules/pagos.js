@@ -135,32 +135,95 @@ function renderDireccionesCheckout(direcciones) {
 function procesarPago() {
     const metodoPagoId = $('input[name="metodo_pago_id"]:checked').val();
     const direccionId = $('input[name="direccion_id"]:checked').val();
-    const totalText = $('#resumen-compra .grand-total span:last').text();
-    const monto = parseFloat(totalText.replace(/[$,]/g, ''));
+    
+    // Datos de la tarjeta
+    const cardNumber = $('#card_number').val().replace(/\s/g, '');
+    const cardName = $('#card_name').val().trim();
+    const cardExpiry = $('#card_expiry').val().trim();
+    const cardCvv = $('#card_cvv').val().trim();
 
+    // Validaciones
     if (!metodoPagoId) {
         App.notify('Selecciona un método de pago', 'error');
         return;
     }
+
+    if (!cardNumber || cardNumber.length < 13) {
+        App.notify('Ingresa un número de tarjeta válido', 'error');
+        $('#card_number').focus();
+        return;
+    }
+
+    if (!cardName) {
+        App.notify('Ingresa el nombre del titular', 'error');
+        $('#card_name').focus();
+        return;
+    }
+
+    if (!cardExpiry || !/^\d{2}\/\d{2}$/.test(cardExpiry)) {
+        App.notify('Ingresa una fecha de expiración válida (MM/YY)', 'error');
+        $('#card_expiry').focus();
+        return;
+    }
+
+    if (!cardCvv || !/^\d{3,4}$/.test(cardCvv)) {
+        App.notify('Ingresa un CVV válido (3 o 4 dígitos)', 'error');
+        $('#card_cvv').focus();
+        return;
+    }
+
+    // Deshabilitar botón para evitar doble clic
+    const $btn = $('#btn-procesar-pago');
+    $btn.prop('disabled', true).html('<i class="fa-solid fa-spinner fa-spin"></i> Procesando...');
 
     App.ajax({
         url: App.baseUrl + 'api/pagos.php',
         method: 'POST',
         data: {
             action: 'procesar',
-            pedido_id: 0, // Se creará en backend
             metodo_pago_id: metodoPagoId,
-            monto: monto,
-            direccion_id: direccionId
+            direccion_id: direccionId,
+            card_number: cardNumber,
+            card_name: cardName,
+            card_expiry: cardExpiry,
+            card_cvv: cardCvv
         },
         success: function (response) {
             if (response.success) {
-                App.notify('Pago procesado exitosamente', 'success');
+                App.notify('¡Pago procesado exitosamente!', 'success');
                 setTimeout(function () {
                     window.location.href = App.baseUrl + 'views/pedidos/historial.php';
-                }, 1500);
+                }, 2000);
+            } else {
+                $btn.prop('disabled', false).html('<i class="fa-solid fa-check-circle"></i> Confirmar y Pagar');
             }
+        },
+        error: function() {
+            $btn.prop('disabled', false).html('<i class="fa-solid fa-check-circle"></i> Confirmar y Pagar');
         }
     });
 }
+
+// Auto-formatear número de tarjeta (agregar espacios cada 4 dígitos)
+$(document).ready(function() {
+    $('#card_number').on('input', function() {
+        let val = $(this).val().replace(/\D/g, '');
+        let formatted = val.replace(/(.{4})/g, '$1 ').trim();
+        $(this).val(formatted);
+    });
+
+    // Auto-formatear fecha expiración
+    $('#card_expiry').on('input', function() {
+        let val = $(this).val().replace(/\D/g, '');
+        if (val.length >= 2) {
+            val = val.substring(0, 2) + '/' + val.substring(2, 4);
+        }
+        $(this).val(val);
+    });
+
+    // Solo números para CVV
+    $('#card_cvv').on('input', function() {
+        $(this).val($(this).val().replace(/\D/g, ''));
+    });
+});
 

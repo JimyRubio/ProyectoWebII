@@ -222,21 +222,32 @@ function clearCart() {
 }
 
 function updateQty(itemId, delta) {
+    // Obtener cantidad actual y actualizar
+    const $item = $(`.carrito-item[data-id="${itemId}"]`);
+    const $qtySpan = $item.find('.qty-value');
+    const currentQty = parseInt($qtySpan.text()) || 1;
+    const newQty = currentQty + delta;
+    
+    if (newQty <= 0) {
+        removeFromCart(itemId);
+        return;
+    }
+    
+    // Llamar a la API para actualizar (re-add con la nueva cantidad)
     App.ajax({
-        url: App.baseUrl + 'api/carrito.php',
-        method: 'GET',
+        url: App.baseUrl + 'api/carrito.php?action=update_qty',
+        method: 'POST',
+        data: {
+            item_id: itemId,
+            cantidad: newQty
+        },
         success: function (response) {
-            if (response.success && response.data.items) {
-                const item = response.data.items.find(i => i.id === itemId);
-                if (item) {
-                    const newQty = item.cantidad + delta;
-                    if (newQty <= 0) {
-                        removeFromCart(itemId);
-                        return;
-                    }
+            if (response.success) {
+                renderCarrito(response.data);
+                if (response.data.total_items !== undefined) {
+                    $('#global-cart-badge').text(response.data.total_items);
                 }
             }
-            loadCarrito();
         }
     });
 }

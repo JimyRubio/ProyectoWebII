@@ -22,6 +22,8 @@ switch ($method) {
     case 'POST':
         if ($action === 'add') {
             $controller->add();
+        } elseif ($action === 'update_qty') {
+            $controller->updateQty();
         } elseif ($action === 'remove') {
             $controller->remove();
         } elseif ($action === 'clear') {

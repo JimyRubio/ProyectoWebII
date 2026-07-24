@@ -79,9 +79,15 @@ function renderProductsGrid(containerSelector, products) {
         html += `
             <div class="product-card" data-id="${p.id}">
                 ${badge}
-                <img src="${imgUrl}" alt="${p.nombre}">
-                <h3>${p.nombre}</h3>
+                <a href="${App.baseUrl}views/productos/detalle.php?id=${p.id}" style="text-decoration:none;color:inherit;">
+                    <img src="${imgUrl}" alt="${p.nombre}">
+                    <h3>${p.nombre}</h3>
+                </a>
                 <p class="price">${App.formatCurrency(p.precio)}</p>
+                <div class="qty-selector">
+                    <label>Cant:</label>
+                    <input type="number" class="product-qty-input" value="1" min="1" max="${p.stock || 99}">
+                </div>
                 <button class="btn-primary add-to-cart-btn" data-id="${p.id}">
                     <i class="fa-solid fa-cart-plus"></i> Agregar al Carrito
                 </button>
@@ -91,11 +97,13 @@ function renderProductsGrid(containerSelector, products) {
 
     $container.html(html);
 
-    // Event listener para agregar al carrito vía AJAX
+    // Event listener para agregar al carrito vía AJAX con cantidad seleccionada
     $container.find('.add-to-cart-btn').off('click').on('click', function (e) {
         e.preventDefault();
         const productoId = $(this).data('id');
-        addToCart(productoId, 1);
+        const $card = $(this).closest('.product-card');
+        const cantidad = parseInt($card.find('.product-qty-input').val()) || 1;
+        addToCart(productoId, cantidad);
     });
 }
 

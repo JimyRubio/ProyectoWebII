@@ -1,4 +1,7 @@
-<?php require_once __DIR__ . '/../../config/config.php'; ?>
+<?php 
+require_once __DIR__ . '/../../config/config.php';
+$is_auth_page = $is_auth_page ?? false;
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -32,22 +35,61 @@
             </a>
         </div>
 
-        <?php if (!isset($is_auth_page) || !$is_auth_page): ?>
-            <!-- Elementos visibles en la tienda principal -->
+        <?php if (!$is_auth_page): ?>
+            <!-- Elementos visibles en páginas de tienda -->
             <div class="search-bar">
                 <input type="text" id="global-search-input" placeholder="Buscar productos, marcas, SKU...">
                 <button id="global-search-btn"><i class="fa-solid fa-magnifying-glass"></i></button>
             </div>
             <nav class="user-nav">
-                <a href="<?php echo BASE_URL; ?>views/analytics/dashboard.php" class="nav-link"><i class="fa-solid fa-chart-line"></i> Dashboard</a>
-                <a href="<?php echo BASE_URL; ?>views/auth/login.php" id="nav-user-account" class="nav-link"><i class="fa-regular fa-user"></i> Mi Cuenta</a>
-                <a href="#" id="open-cart-btn" class="cart-btn">
+                <!-- Menú para Admin -->
+                <div class="nav-dropdown" id="admin-menu" style="display:none;">
+                    <a href="#" class="nav-link dropdown-trigger"><i class="fa-solid fa-shield-hooded"></i> Admin ▾</a>
+                    <div class="dropdown-content">
+                        <a href="<?php echo BASE_URL; ?>views/analytics/dashboard.php"><i class="fa-solid fa-chart-line"></i> Dashboard</a>
+                        <a href="<?php echo BASE_URL; ?>views/productos/gestion.php"><i class="fa-solid fa-boxes"></i> Productos</a>
+                        <a href="<?php echo BASE_URL; ?>views/admin/usuarios.php"><i class="fa-solid fa-users-gear"></i> Usuarios</a>
+                    </div>
+                </div>
+
+                <!-- Menú para Vendedor -->
+                <div class="nav-dropdown" id="seller-menu" style="display:none;">
+                    <a href="#" class="nav-link dropdown-trigger"><i class="fa-solid fa-store"></i> Vendedor ▾</a>
+                    <div class="dropdown-content">
+                        <a href="<?php echo BASE_URL; ?>views/vendedores/dashboard.php"><i class="fa-solid fa-chart-simple"></i> Dashboard</a>
+                        <a href="<?php echo BASE_URL; ?>views/productos/gestion.php"><i class="fa-solid fa-box"></i> Mis Productos</a>
+                        <a href="<?php echo BASE_URL; ?>views/pedidos/historial.php"><i class="fa-solid fa-receipt"></i> Pedidos</a>
+                        <a href="<?php echo BASE_URL; ?>views/promociones/gestion.php"><i class="fa-solid fa-tags"></i> Promociones</a>
+                    </div>
+                </div>
+
+                <!-- Menú para Cliente -->
+                <div class="nav-dropdown" id="client-menu" style="display:none;">
+                    <a href="#" class="nav-link dropdown-trigger"><i class="fa-regular fa-user"></i> Mi Cuenta ▾</a>
+                    <div class="dropdown-content">
+                        <a href="<?php echo BASE_URL; ?>views/clientes/perfil.php"><i class="fa-regular fa-id-card"></i> Mi Perfil</a>
+                        <a href="<?php echo BASE_URL; ?>views/pedidos/historial.php"><i class="fa-solid fa-clock-rotate-left"></i> Mis Pedidos</a>
+                        <a href="<?php echo BASE_URL; ?>views/clientes/historial.php"><i class="fa-solid fa-receipt"></i> Historial</a>
+                    </div>
+                </div>
+
+                <!-- Botón carrito siempre visible -->
+                <a href="<?php echo BASE_URL; ?>views/carrito/index.php" id="open-cart-btn" class="cart-btn">
                     <i class="fa-solid fa-cart-shopping"></i> Carrito
                     <span class="badge" id="global-cart-badge">0</span>
                 </a>
+
+                <!-- Invitado / Login -->
+                <a href="<?php echo BASE_URL; ?>views/auth/login.php" id="nav-user-account" class="nav-link">
+                    <i class="fa-solid fa-right-to-bracket"></i> Iniciar Sesión
+                </a>
+
+                <!-- Cerrar Sesión -->
+                <a href="#" id="btn-logout" class="nav-link" style="display:none;color:#EF4444;">
+                    <i class="fa-solid fa-sign-out-alt"></i> Salir
+                </a>
             </nav>
         <?php else: ?>
-            <!-- Elementos visibles en páginas de Login / Registro -->
             <nav class="user-nav">
                 <a href="<?php echo BASE_URL; ?>" class="nav-link"><i class="fa-solid fa-house"></i> Volver a la Tienda</a>
             </nav>

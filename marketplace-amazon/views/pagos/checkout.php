@@ -30,6 +30,43 @@ require_once __DIR__ . '/../layouts/header.php';
                 </div>
             </div>
 
+            <!-- Datos de la Tarjeta de Crédito/Débito -->
+            <div class="checkout-section" id="card-form-section">
+                <h3><i class="fa-regular fa-credit-card"></i> Datos de la Tarjeta</h3>
+                <div class="card-form">
+                    <div class="form-group">
+                        <label>Número de Tarjeta</label>
+                        <div class="input-container">
+                            <i class="fa-regular fa-credit-card input-icon"></i>
+                            <input type="text" id="card_number" class="form-control card-input" placeholder="1234 5678 9012 3456" maxlength="19" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Titular de la Tarjeta</label>
+                        <div class="input-container">
+                            <i class="fa-regular fa-user input-icon"></i>
+                            <input type="text" id="card_name" class="form-control" placeholder="JUAN PÉREZ" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Fecha de Expiración</label>
+                            <div class="input-container">
+                                <i class="fa-regular fa-calendar input-icon"></i>
+                                <input type="text" id="card_expiry" class="form-control" placeholder="MM/YY" maxlength="5" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>CVV</label>
+                            <div class="input-container">
+                                <i class="fa-solid fa-lock input-icon"></i>
+                                <input type="text" id="card_cvv" class="form-control" placeholder="123" maxlength="4" required>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <button class="btn-primary" id="btn-procesar-pago" onclick="procesarPago()" style="width:100%;padding:16px;font-size:1.1rem;margin-top:20px;">
                 <i class="fa-solid fa-check-circle"></i> Confirmar y Pagar
             </button>

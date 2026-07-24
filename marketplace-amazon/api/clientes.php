@@ -18,6 +18,8 @@ switch ($method) {
     case 'GET':
         if ($action === 'direcciones') {
             $controller->direcciones();
+        } elseif ($action === 'lista_usuarios') {
+            $controller->listaUsuarios();
         } else {
             $controller->profile();
         }
@@ -28,6 +30,8 @@ switch ($method) {
             $controller->updateProfile();
         } elseif ($action === 'add_direccion') {
             $controller->storeDireccion();
+        } elseif ($action === 'toggle_usuario') {
+            $controller->toggleUsuario();
         } else {
             Response::error('Acción no válida', 400);
         }

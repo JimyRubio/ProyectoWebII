@@ -16,7 +16,12 @@ define('DB_CHARSET', 'utf8mb4');
 define('BASE_URL', 'http://localhost:8080/');
 
 // Nombre del Proyecto
-define('APP_NAME', 'Marketplace Amazon');
+define('APP_NAME', 'MarketZone HN');
+
+// Moneda del sistema
+define('CURRENCY_SYMBOL', 'L.');
+define('CURRENCY_CODE', 'HNL');
+define('CURRENCY_LOCALE', 'es-HN');
 
 // Rutas absolutas del sistema
 define('ROOT_PATH', dirname(__DIR__) . '/');

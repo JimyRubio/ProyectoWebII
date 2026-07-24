@@ -36,11 +36,12 @@ const App = {
     },
 
     /**
-     * Formatea valores numéricos a formato de moneda ($1,234.56)
+     * Formatea valores numéricos a formato de moneda (L. 1,234.56)
      */
     formatCurrency: function (amount) {
         const num = parseFloat(amount) || 0;
-        return '$' + num.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        const formatted = num.toLocaleString('es-HN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        return 'L. ' + formatted;
     },
 
     /**
