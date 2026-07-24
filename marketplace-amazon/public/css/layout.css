@@ -1,61 +1,112 @@
+/* ==========================================================================
+   MARKETZONE - LAYOUT & NAVIGATION
+   Header | Navigation | Cart | Tables | Footer
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. MAIN HEADER
+   -------------------------------------------------------------------------- */
 .main-header {
-    background: rgba(11, 15, 23, 0.85);
-    backdrop-filter: blur(15px);
-    border-bottom: 1px solid var(--card-border);
+    background: var(--bg-elevated);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border-color);
     position: sticky;
     top: 0;
-    z-index: 1000;
+    z-index: var(--z-sticky);
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 15px 35px;
-    gap: 25px;
+    padding: 14px 35px;
+    gap: 24px;
     flex-wrap: wrap;
+    transition: background-color var(--transition-slow), border-color var(--transition-slow);
+}
+
+.main-header .logo a {
+    text-decoration: none;
 }
 
 .main-header .logo h2 {
     font-size: 1.7rem;
     font-weight: 800;
     letter-spacing: -0.5px;
-    color: #FFFFFF;
+    color: var(--text-primary);
     margin: 0;
+    transition: color var(--transition-base);
 }
 
 .main-header .logo span {
-    background: var(--accent-gradient);
+    background: var(--gradient-primary);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
+/* Theme Toggle Button */
+.theme-toggle {
+    background: var(--bg-input);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-full);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    transition: all var(--transition-base);
+    position: relative;
+    overflow: hidden;
+}
+
+.theme-toggle:hover {
+    background: var(--bg-input-focus);
+    color: var(--text-primary);
+    border-color: var(--border-color-hover);
+    transform: rotate(15deg);
+}
+
+.theme-toggle:active {
+    transform: rotate(15deg) scale(0.92);
+}
+
+/* --------------------------------------------------------------------------
+   2. SEARCH BAR
+   -------------------------------------------------------------------------- */
 .search-bar {
     display: flex;
     flex: 1;
-    max-width: 650px;
+    max-width: 620px;
     position: relative;
     min-width: 200px;
 }
 
 .search-bar input {
     width: 100%;
-    padding: 12px 20px;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: 30px;
-    color: #FFFFFF;
-    font-size: 0.95rem;
+    padding: 11px 48px 11px 20px;
+    background: var(--bg-input);
+    border: 1.5px solid var(--border-color);
+    border-radius: var(--radius-full);
+    color: var(--text-primary);
+    font-size: 0.93rem;
     outline: none;
-    transition: all 0.3s ease;
+    transition: all var(--transition-base);
 }
 
 .search-bar input::placeholder {
-    color: #9CA3AF;
+    color: var(--text-tertiary);
 }
 
 .search-bar input:focus {
-    background: rgba(255, 255, 255, 0.08);
-    border-color: #3B82F6;
-    box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
+    background: var(--bg-input-focus);
+    border-color: var(--border-focus);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12);
+}
+
+[data-theme="light"] .search-bar input:focus {
+    background: #FFFFFF;
 }
 
 .search-bar button {
@@ -63,14 +114,14 @@
     right: 5px;
     top: 50%;
     transform: translateY(-50%);
-    background: var(--accent-gradient);
+    background: var(--gradient-primary);
     border: none;
-    width: 40px;
-    height: 40px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
     color: #FFFFFF;
     cursor: pointer;
-    transition: transform 0.2s ease;
+    transition: all var(--transition-base);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -78,75 +129,92 @@
 
 .search-bar button:hover {
     transform: translateY(-50%) scale(1.08);
+    box-shadow: var(--shadow-glow-primary);
 }
 
+.search-bar button:active {
+    transform: translateY(-50%) scale(0.95);
+}
+
+/* --------------------------------------------------------------------------
+   3. USER NAVIGATION
+   -------------------------------------------------------------------------- */
 .user-nav {
     display: flex;
     align-items: center;
-    gap: 25px;
+    gap: 20px;
     flex-wrap: wrap;
 }
 
 .nav-link {
-    color: #9CA3AF;
+    color: var(--text-secondary);
     text-decoration: none;
     font-weight: 500;
-    font-size: 0.95rem;
-    transition: color 0.3s ease;
+    font-size: 0.92rem;
+    transition: all var(--transition-fast);
     display: flex;
     align-items: center;
     gap: 8px;
+    padding: 6px 10px;
+    border-radius: var(--radius-sm);
 }
 
 .nav-link:hover {
-    color: #FFFFFF;
+    color: var(--text-primary);
+    background: var(--bg-input);
 }
 
+/* --------------------------------------------------------------------------
+   4. CART BUTTON
+   -------------------------------------------------------------------------- */
 .cart-btn {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid var(--card-border);
+    background: var(--bg-input);
+    border: 1px solid var(--border-color);
     padding: 8px 18px;
-    border-radius: 20px;
-    color: #FFFFFF;
+    border-radius: var(--radius-full);
+    color: var(--text-primary);
     text-decoration: none;
     font-weight: 600;
     display: flex;
     align-items: center;
     gap: 10px;
-    transition: all 0.3s ease;
+    transition: all var(--transition-base);
+    position: relative;
 }
 
 .cart-btn:hover {
-    background: rgba(59, 130, 246, 0.15);
-    border-color: #3B82F6;
+    background: var(--gradient-primary-subtle);
+    border-color: var(--primary-500);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-glow-primary);
+}
+
+.cart-btn:active {
+    transform: translateY(0) scale(0.97);
 }
 
 .cart-btn .badge {
-    background: var(--accent-gradient);
+    background: var(--gradient-primary);
     color: #FFFFFF;
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     font-weight: 700;
     padding: 2px 8px;
-    border-radius: 12px;
-}
-
-.main-footer {
-    background: rgba(11, 15, 23, 0.95);
-    border-top: 1px solid var(--card-border);
-    color: #9CA3AF;
+    border-radius: var(--radius-full);
+    min-width: 20px;
     text-align: center;
-    padding: 20px;
-    font-size: 0.9rem;
-    margin-top: auto;
+    line-height: 1.4;
 }
 
-/* ==========================================================================
-   DROPDOWN MENUS - NAVEGACIÓN POR ROLES
-   ========================================================================== */
-
+/* --------------------------------------------------------------------------
+   5. DROPDOWN MENUS
+   -------------------------------------------------------------------------- */
 .nav-dropdown {
     position: relative;
     display: inline-block;
+}
+
+.nav-dropdown .dropdown-trigger {
+    user-select: none;
 }
 
 .nav-dropdown .dropdown-content {
@@ -154,75 +222,68 @@
     position: absolute;
     top: 100%;
     left: 0;
-    background: rgba(22, 28, 45, 0.95);
-    backdrop-filter: blur(12px);
-    border: 1px solid var(--card-border);
-    border-radius: 10px;
-    min-width: 200px;
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
-    z-index: 1001;
-    padding: 8px 0;
-    margin-top: 8px;
+    background: var(--bg-elevated);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    min-width: 220px;
+    box-shadow: var(--shadow-xl);
+    z-index: var(--z-dropdown);
+    padding: 6px 0;
+    margin-top: 10px;
+    animation: slideDown 0.2s ease-out;
+    overflow: hidden;
+}
+
+[data-theme="light"] .nav-dropdown .dropdown-content {
+    background: rgba(255, 255, 255, 0.98);
+    border-color: rgba(0, 0, 0, 0.1);
 }
 
 .nav-dropdown .dropdown-content a {
-    color: #9CA3AF;
+    color: var(--text-secondary);
     padding: 10px 18px;
     text-decoration: none;
     display: flex;
     align-items: center;
     gap: 12px;
-    font-size: 0.9rem;
-    transition: all 0.2s ease;
+    font-size: 0.88rem;
+    transition: all var(--transition-fast);
+    border-left: 3px solid transparent;
 }
 
 .nav-dropdown .dropdown-content a:hover {
-    color: #FFFFFF;
-    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-primary);
+    background: var(--gradient-primary-subtle);
+    border-left-color: var(--primary-500);
 }
 
-/* Se activa con JS al hacer click - se mantiene abierto */
+[data-theme="light"] .nav-dropdown .dropdown-content a:hover {
+    background: rgba(99, 102, 241, 0.06);
+}
+
 .nav-dropdown.open .dropdown-content {
     display: block;
 }
 
-/* ==========================================================================
-   QUANTITY SELECTOR EN TARJETAS DE PRODUCTO
-   ========================================================================== */
-
-.product-card .qty-selector {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 10px;
-}
-
-.product-card .qty-selector label {
-    font-size: 0.8rem;
+/* --------------------------------------------------------------------------
+   6. FOOTER
+   -------------------------------------------------------------------------- */
+.main-footer {
+    background: var(--bg-elevated);
+    border-top: 1px solid var(--border-color);
     color: var(--text-secondary);
-    font-weight: 600;
-}
-
-.product-card .qty-selector input {
-    width: 60px;
-    padding: 6px 10px;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid var(--card-border);
-    border-radius: 6px;
-    color: var(--text-primary);
-    font-size: 0.9rem;
     text-align: center;
-    outline: none;
+    padding: 20px;
+    font-size: 0.9rem;
+    margin-top: auto;
+    transition: background-color var(--transition-slow), color var(--transition-slow);
 }
 
-.product-card .qty-selector input:focus {
-    border-color: var(--primary-accent);
-}
-
-/* ==========================================================================
-   CARRITO - CONTROLES DE CANTIDAD
-   ========================================================================== */
-
+/* --------------------------------------------------------------------------
+   7. CART PAGE
+   -------------------------------------------------------------------------- */
 .carrito-page .carrito-header {
     display: flex;
     justify-content: space-between;
@@ -237,35 +298,39 @@
     display: flex;
     align-items: center;
     gap: 12px;
+    color: var(--text-primary);
 }
 
 .carrito-items {
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 16px;
 }
 
 .carrito-item {
     display: flex;
     align-items: center;
     gap: 20px;
-    background: var(--card-bg);
-    border: 1px solid var(--card-border);
-    border-radius: 14px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
     padding: 18px 22px;
-    transition: all 0.3s ease;
+    transition: all var(--transition-base);
+    animation: fadeInUp 0.4s ease-out;
 }
 
 .carrito-item:hover {
-    border-color: rgba(255, 153, 0, 0.3);
+    border-color: var(--border-color-hover);
+    box-shadow: var(--shadow-md);
+    transform: translateX(4px);
 }
 
 .carrito-item img {
     width: 80px;
     height: 80px;
     object-fit: contain;
-    border-radius: 8px;
-    background: rgba(255, 255, 255, 0.03);
+    border-radius: var(--radius-md);
+    background: var(--bg-input);
     padding: 8px;
 }
 
@@ -277,17 +342,18 @@
     font-size: 1rem;
     font-weight: 600;
     margin-bottom: 4px;
+    color: var(--text-primary);
 }
 
 .carrito-item .item-info .item-sku {
     font-size: 0.75rem;
-    color: var(--text-secondary);
+    color: var(--text-tertiary);
     margin-bottom: 4px;
 }
 
 .carrito-item .item-info .item-price {
     font-size: 0.9rem;
-    color: var(--price-color);
+    color: var(--text-price);
     font-weight: 600;
 }
 
@@ -298,23 +364,28 @@
 }
 
 .carrito-item .item-qty .qty-btn {
-    width: 32px;
-    height: 32px;
-    border-radius: 8px;
-    border: 1px solid var(--card-border);
-    background: rgba(255, 255, 255, 0.05);
+    width: 34px;
+    height: 34px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-color);
+    background: var(--bg-input);
     color: var(--text-primary);
     font-size: 1rem;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all var(--transition-fast);
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
 .carrito-item .item-qty .qty-btn:hover {
-    background: rgba(255, 255, 255, 0.1);
-    border-color: var(--primary-accent);
+    background: var(--bg-input-focus);
+    border-color: var(--border-focus);
+    color: var(--primary-500);
+}
+
+.carrito-item .item-qty .qty-btn:active {
+    transform: scale(0.92);
 }
 
 .carrito-item .item-qty .qty-value {
@@ -322,45 +393,48 @@
     font-weight: 700;
     min-width: 30px;
     text-align: center;
+    color: var(--text-primary);
 }
 
 .carrito-item .item-subtotal {
     font-size: 1.1rem;
     font-weight: 700;
-    color: var(--price-color);
+    color: var(--text-price);
     min-width: 100px;
     text-align: right;
 }
 
 .carrito-item .item-remove {
-    background: rgba(239, 68, 68, 0.1);
-    border: none;
-    color: #EF4444;
+    background: rgba(244, 63, 94, 0.08);
+    border: 1px solid rgba(244, 63, 94, 0.15);
+    color: var(--danger-500);
     width: 36px;
     height: 36px;
-    border-radius: 8px;
+    border-radius: var(--radius-sm);
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all var(--transition-fast);
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
 .carrito-item .item-remove:hover {
-    background: rgba(239, 68, 68, 0.25);
+    background: rgba(244, 63, 94, 0.18);
+    transform: scale(1.05);
 }
 
 .carrito-footer {
-    background: var(--card-bg);
-    border: 1px solid var(--card-border);
-    border-radius: 14px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
     padding: 24px;
-    margin-top: 20px;
+    margin-top: 24px;
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
     flex-wrap: wrap;
     gap: 20px;
+    animation: fadeInUp 0.5s ease-out;
 }
 
 .carrito-totals {
@@ -372,15 +446,16 @@
     justify-content: space-between;
     padding: 8px 0;
     font-size: 0.95rem;
+    color: var(--text-secondary);
 }
 
 .total-row.grand-total {
     font-size: 1.2rem;
     font-weight: 700;
-    border-top: 1px solid var(--card-border);
+    border-top: 1px solid var(--border-color);
     padding-top: 12px;
     margin-top: 8px;
-    color: var(--price-color);
+    color: var(--text-primary);
 }
 
 .carrito-actions {
@@ -389,35 +464,28 @@
     flex-wrap: wrap;
 }
 
-.btn-secondary {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid var(--card-border);
-    color: var(--text-primary);
-    padding: 12px 18px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: 600;
-    font-size: 0.95rem;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.btn-secondary:hover {
-    background: rgba(255, 255, 255, 0.08);
-    border-color: var(--text-secondary);
-}
-
 .empty-cart {
     text-align: center;
     padding: 60px 20px;
+    background: var(--bg-card);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-color);
 }
 
-/* ==========================================================================
-   GESTIÓN DE PRODUCTOS - TABLA
-   ========================================================================== */
+.empty-cart i {
+    font-size: 3rem;
+    color: var(--text-tertiary);
+    margin-bottom: 16px;
+}
 
+.empty-cart p {
+    color: var(--text-secondary);
+    margin-bottom: 20px;
+}
+
+/* --------------------------------------------------------------------------
+   8. PRODUCT MANAGEMENT TABLE
+   -------------------------------------------------------------------------- */
 .gestion-header {
     display: flex;
     justify-content: space-between;
@@ -432,13 +500,14 @@
     display: flex;
     align-items: center;
     gap: 12px;
+    color: var(--text-primary);
 }
 
 .gestion-table-wrapper {
     overflow-x: auto;
-    background: var(--card-bg);
-    border: 1px solid var(--card-border);
-    border-radius: 14px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
 }
 
 .gestion-table {
@@ -448,24 +517,30 @@
 }
 
 .gestion-table th {
-    background: rgba(255, 255, 255, 0.03);
+    background: var(--bg-input);
     color: var(--text-secondary);
     font-weight: 600;
-    font-size: 0.8rem;
+    font-size: 0.78rem;
     text-transform: uppercase;
+    letter-spacing: 0.5px;
     padding: 14px 16px;
     text-align: left;
-    border-bottom: 1px solid var(--card-border);
+    border-bottom: 1px solid var(--border-color);
 }
 
 .gestion-table td {
     padding: 14px 16px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    border-bottom: 1px solid var(--border-color-light);
     vertical-align: middle;
+    transition: background var(--transition-fast);
 }
 
 .gestion-table tr:hover td {
-    background: rgba(255, 255, 255, 0.03);
+    background: var(--gradient-primary-subtle);
+}
+
+[data-theme="light"] .gestion-table tr:hover td {
+    background: rgba(99, 102, 241, 0.03);
 }
 
 .gestion-table tr:last-child td {
@@ -473,19 +548,21 @@
 }
 
 .producto-thumb-sm {
-    width: 50px;
-    height: 50px;
+    width: 48px;
+    height: 48px;
     object-fit: cover;
-    border-radius: 8px;
+    border-radius: var(--radius-sm);
+    background: var(--bg-input);
+    padding: 4px;
 }
 
 .action-btn {
     width: 34px;
     height: 34px;
-    border-radius: 8px;
+    border-radius: var(--radius-sm);
     border: none;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all var(--transition-fast);
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -493,50 +570,28 @@
 }
 
 .action-btn.edit {
-    background: rgba(59, 130, 246, 0.1);
-    color: #60A5FA;
+    background: rgba(99, 102, 241, 0.1);
+    color: var(--primary-400);
 }
 
 .action-btn.edit:hover {
-    background: rgba(59, 130, 246, 0.25);
+    background: rgba(99, 102, 241, 0.2);
+    transform: scale(1.1);
 }
 
 .action-btn.delete {
-    background: rgba(239, 68, 68, 0.1);
-    color: #F87171;
+    background: rgba(244, 63, 94, 0.1);
+    color: var(--danger-400);
 }
 
 .action-btn.delete:hover {
-    background: rgba(239, 68, 68, 0.25);
+    background: rgba(244, 63, 94, 0.2);
+    transform: scale(1.1);
 }
 
-/* ==========================================================================
-   PRODUCTO - FORMULARIO
-   ========================================================================== */
-
-.producto-form {
-    background: var(--card-bg);
-    border: 1px solid var(--card-border);
-    border-radius: 14px;
-    padding: 28px;
-}
-
-.producto-form h3 {
-    font-size: 1.15rem;
-    margin-bottom: 20px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.producto-form .form-section {
-    margin-bottom: 25px;
-}
-
-/* ==========================================================================
-   PÁGINA DE INICIO - AJUSTES
-   ========================================================================== */
-
+/* --------------------------------------------------------------------------
+   9. CATALOG PAGE
+   -------------------------------------------------------------------------- */
 .catalogo-header {
     display: flex;
     justify-content: space-between;
@@ -551,6 +606,7 @@
     display: flex;
     align-items: center;
     gap: 12px;
+    color: var(--text-primary);
 }
 
 .catalogo-filters {
@@ -563,17 +619,24 @@
 .catalogo-filters select,
 .catalogo-filters input {
     padding: 10px 16px;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid var(--card-border);
-    border-radius: 8px;
+    background: var(--bg-input);
+    border: 1.5px solid var(--border-color);
+    border-radius: var(--radius-md);
     color: var(--text-primary);
     font-size: 0.9rem;
     outline: none;
+    transition: all var(--transition-base);
 }
 
 .catalogo-filters select:focus,
 .catalogo-filters input:focus {
-    border-color: var(--primary-accent);
+    border-color: var(--border-focus);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12);
+}
+
+.catalogo-filters select option {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
 }
 
 .no-products-msg {
@@ -583,42 +646,226 @@
     color: var(--text-secondary);
 }
 
-/* ==========================================================================
-   PAGINATION
-   ========================================================================== */
-
+/* --------------------------------------------------------------------------
+   10. PAGINATION
+   -------------------------------------------------------------------------- */
 .pagination-wrapper {
     display: flex;
     gap: 8px;
     justify-content: center;
-    margin-top: 25px;
+    margin-top: 28px;
 }
 
 .page-btn {
-    padding: 8px 16px;
-    border: 1px solid var(--card-border);
-    background: rgba(255, 255, 255, 0.03);
-    border-radius: 8px;
+    padding: 9px 16px;
+    border: 1px solid var(--border-color);
+    background: var(--bg-input);
+    border-radius: var(--radius-md);
     color: var(--text-secondary);
     cursor: pointer;
     font-size: 0.85rem;
     font-weight: 600;
-    transition: all 0.2s;
+    transition: all var(--transition-fast);
+    min-width: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .page-btn:hover:not(.disabled) {
-    background: rgba(255, 255, 255, 0.08);
+    background: var(--bg-input-focus);
     color: var(--text-primary);
-    border-color: var(--primary-accent);
+    border-color: var(--border-focus);
+    transform: translateY(-2px);
 }
 
 .page-btn.active {
-    background: var(--primary-accent);
-    border-color: var(--primary-accent);
+    background: var(--gradient-primary);
+    border-color: transparent;
     color: #FFFFFF;
+    box-shadow: var(--shadow-glow-primary);
 }
 
 .page-btn.disabled {
     opacity: 0.4;
     cursor: not-allowed;
 }
+
+/* --------------------------------------------------------------------------
+   11. QUANTITY SELECTOR (Product Cards)
+   -------------------------------------------------------------------------- */
+.product-card .qty-selector {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+    position: relative;
+    z-index: 1;
+}
+
+.product-card .qty-selector label {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    font-weight: 600;
+}
+
+.product-card .qty-selector input {
+    width: 60px;
+    padding: 6px 10px;
+    background: var(--bg-input);
+    border: 1.5px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    text-align: center;
+    outline: none;
+    transition: all var(--transition-fast);
+}
+
+.product-card .qty-selector input:focus {
+    border-color: var(--border-focus);
+    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.12);
+}
+
+/* --------------------------------------------------------------------------
+   12. PRODUCT FORM
+   -------------------------------------------------------------------------- */
+.producto-form {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 30px;
+}
+
+.producto-form h3 {
+    font-size: 1.15rem;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--text-primary);
+}
+
+.producto-form .form-section {
+    margin-bottom: 25px;
+}
+
+.producto-form .form-section h3 {
+    font-size: 1.1rem;
+    margin-bottom: 16px;
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 12px;
+}
+
+/* --------------------------------------------------------------------------
+   13. RESPONSIVE
+   -------------------------------------------------------------------------- */
+@media (max-width: 1024px) {
+    .main-header {
+        padding: 12px 24px;
+        gap: 16px;
+    }
+}
+
+@media (max-width: 768px) {
+    .main-header {
+        padding: 12px 16px;
+        gap: 12px;
+        justify-content: center;
+    }
+    
+    .main-header .logo h2 {
+        font-size: 1.4rem;
+    }
+    
+    .search-bar {
+        order: 3;
+        max-width: 100%;
+        min-width: 100%;
+    }
+    
+    .user-nav {
+        gap: 12px;
+    }
+    
+    .carrito-item {
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+    
+    .carrito-item .item-qty {
+        order: 3;
+    }
+    
+    .carrito-item .item-subtotal {
+        min-width: auto;
+    }
+    
+    .carrito-footer {
+        flex-direction: column;
+    }
+    
+    .carrito-actions {
+        width: 100%;
+    }
+    
+    .carrito-actions .btn-primary,
+    .carrito-actions .btn-secondary {
+        flex: 1;
+    }
+    
+    .gestion-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .catalogo-filters {
+        width: 100%;
+    }
+    
+    .catalogo-filters select,
+    .catalogo-filters input {
+        flex: 1;
+    }
+}
+
+@media (max-width: 480px) {
+    .main-header {
+        padding: 10px 12px;
+    }
+    
+    .main-header .logo h2 {
+        font-size: 1.2rem;
+    }
+    
+    .user-nav {
+        gap: 8px;
+    }
+    
+    .nav-link {
+        font-size: 0.82rem;
+        padding: 4px 6px;
+    }
+    
+    .cart-btn {
+        padding: 6px 14px;
+        font-size: 0.85rem;
+    }
+    
+    .carrito-item img {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .carrito-item .item-info h4 {
+        font-size: 0.9rem;
+    }
+    
+    .gestion-table th,
+    .gestion-table td {
+        padding: 10px 12px;
+        font-size: 0.82rem;
+    }
+}
+

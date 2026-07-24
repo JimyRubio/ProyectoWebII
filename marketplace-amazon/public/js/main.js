@@ -109,4 +109,86 @@ $(document).ready(function () {
     $('.nav-dropdown .dropdown-content').on('click', function (e) {
         e.stopPropagation();
     });
+
+    // 7. Theme Toggle (Dark/Light Mode)
+    const themeToggleBtn = document.getElementById('theme-toggle-btn');
+    
+    if (themeToggleBtn) {
+        // Load saved theme from localStorage
+        const savedTheme = localStorage.getItem('marketzone-theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        
+        // Set initial theme
+        if (savedTheme === 'light') {
+            document.documentElement.setAttribute('data-theme', 'light');
+            themeToggleBtn.querySelector('i').className = 'fa-solid fa-sun';
+        } else if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            themeToggleBtn.querySelector('i').className = 'fa-solid fa-moon';
+        } else {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            themeToggleBtn.querySelector('i').className = 'fa-solid fa-moon';
+        }
+        
+        // Toggle theme on click
+        themeToggleBtn.addEventListener('click', function() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const icon = this.querySelector('i');
+            
+            if (currentTheme === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'light');
+                icon.className = 'fa-solid fa-sun';
+                localStorage.setItem('marketzone-theme', 'light');
+            } else {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                icon.className = 'fa-solid fa-moon';
+                localStorage.setItem('marketzone-theme', 'dark');
+            }
+            
+            // Add rotation animation feedback
+            this.style.transform = 'rotate(360deg)';
+            setTimeout(() => {
+                this.style.transform = '';
+            }, 300);
+        });
+    }
+
+    // 8. Reveal animations on scroll (using Intersection Observer)
+    if ('IntersectionObserver' in window) {
+        const revealElements = document.querySelectorAll('.reveal');
+        
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    revealObserver.unobserve(entry.target);
+                }
+            });
+        }, {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        });
+        
+        revealElements.forEach(el => revealObserver.observe(el));
+    }
+
+    // 9. Ripple effect on buttons
+    document.querySelectorAll('.btn-primary, .btn-danger').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            const rect = this.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            const ripple = document.createElement('span');
+            ripple.className = 'ripple';
+            ripple.style.left = x + 'px';
+            ripple.style.top = y + 'px';
+            
+            this.appendChild(ripple);
+            
+            setTimeout(() => {
+                ripple.remove();
+            }, 600);
+        });
+    });
 });

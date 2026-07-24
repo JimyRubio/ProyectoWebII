@@ -1,8 +1,11 @@
 /* ==========================================================================
-   MARKETPLACE AMAZON - MÓDULO CSS DE PRODUCTOS (productos.css)
+   MARKETZONE - PRODUCTS MODULE
+   Catalog | Product Detail | Product Management
    ========================================================================== */
 
-/* Catálogo de Productos */
+/* --------------------------------------------------------------------------
+   1. CATALOG HEADER & FILTERS
+   -------------------------------------------------------------------------- */
 .catalogo-header {
     display: flex;
     justify-content: space-between;
@@ -10,6 +13,14 @@
     flex-wrap: wrap;
     gap: 15px;
     margin-bottom: 25px;
+}
+
+.catalogo-header h2 {
+    font-size: 1.6rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--text-primary);
 }
 
 .catalogo-filters {
@@ -21,26 +32,36 @@
 
 .catalogo-filters select,
 .catalogo-filters input {
-    background: rgba(255,255,255,0.05);
-    border: 1px solid var(--card-border);
-    border-radius: 8px;
+    background: var(--bg-input);
+    border: 1.5px solid var(--border-color);
+    border-radius: var(--radius-md);
     color: var(--text-primary);
     padding: 10px 14px;
     font-size: 0.9rem;
     outline: none;
+    transition: all var(--transition-base);
+}
+
+.catalogo-filters select:focus,
+.catalogo-filters input:focus {
+    border-color: var(--border-focus);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12);
 }
 
 .catalogo-filters select option {
-    background: #0B0F17;
-    color: #F3F4F6;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
 }
 
-/* Detalle de Producto */
+/* --------------------------------------------------------------------------
+   2. PRODUCT DETAIL PAGE
+   -------------------------------------------------------------------------- */
 .producto-detalle {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 40px;
     margin-bottom: 40px;
+    animation: fadeInUp 0.6s ease-out;
 }
 
 .producto-gallery {
@@ -51,12 +72,18 @@
 
 .producto-main-image {
     width: 100%;
-    height: 400px;
+    height: 420px;
     object-fit: contain;
-    border-radius: 16px;
-    background: var(--card-bg);
-    border: 1px solid var(--card-border);
+    border-radius: var(--radius-lg);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
     padding: 20px;
+    transition: all var(--transition-base);
+}
+
+.producto-main-image:hover {
+    border-color: var(--border-color-hover);
+    box-shadow: var(--shadow-md);
 }
 
 .producto-thumbs {
@@ -68,56 +95,64 @@
     width: 70px;
     height: 70px;
     object-fit: contain;
-    border-radius: 8px;
+    border-radius: var(--radius-sm);
     border: 2px solid transparent;
     cursor: pointer;
-    background: var(--card-bg);
+    background: var(--bg-card);
     padding: 5px;
-    transition: all 0.2s;
+    transition: all var(--transition-fast);
 }
 
-.producto-thumb:hover,
+.producto-thumb:hover {
+    border-color: var(--secondary-500);
+    transform: translateY(-2px);
+}
+
 .producto-thumb.active {
-    border-color: var(--secondary-accent);
+    border-color: var(--primary-500);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
 }
 
 .producto-info-detalle h1 {
     font-size: 1.8rem;
+    font-weight: 700;
     margin-bottom: 15px;
+    color: var(--text-primary);
 }
 
 .producto-info-detalle .producto-sku {
     font-size: 0.85rem;
-    color: var(--text-secondary);
+    color: var(--text-tertiary);
     margin-bottom: 10px;
 }
 
 .producto-info-detalle .producto-categoria {
     display: inline-block;
-    background: rgba(59,130,246,0.1);
-    color: #60A5FA;
-    padding: 4px 12px;
-    border-radius: 20px;
+    background: rgba(99, 102, 241, 0.1);
+    color: var(--primary-400);
+    padding: 4px 14px;
+    border-radius: var(--radius-full);
     font-size: 0.8rem;
+    font-weight: 600;
     margin-bottom: 20px;
 }
 
 .producto-precios {
     display: flex;
     align-items: center;
-    gap: 15px;
+    gap: 16px;
     margin-bottom: 20px;
 }
 
 .producto-precio-actual {
     font-size: 2.2rem;
     font-weight: 700;
-    color: var(--price-color);
+    color: var(--text-price);
 }
 
 .producto-precio-anterior {
     font-size: 1.2rem;
-    color: var(--text-secondary);
+    color: var(--text-price-old);
     text-decoration: line-through;
 }
 
@@ -129,20 +164,25 @@
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    padding: 6px 14px;
-    border-radius: 20px;
+    padding: 6px 16px;
+    border-radius: var(--radius-full);
     font-size: 0.85rem;
     font-weight: 600;
 }
 
 .stock-status.in-stock {
-    background: rgba(16,185,129,0.1);
+    background: rgba(16, 185, 129, 0.1);
     color: #34D399;
 }
 
+.stock-status.low-stock {
+    background: rgba(245, 158, 11, 0.1);
+    color: var(--secondary-400);
+}
+
 .stock-status.out-of-stock {
-    background: rgba(239,68,68,0.1);
-    color: #F87171;
+    background: rgba(244, 63, 94, 0.1);
+    color: var(--danger-400);
 }
 
 .producto-descripcion {
@@ -159,10 +199,12 @@
 
 .producto-actions .btn-primary {
     width: auto;
-    padding: 14px 28px;
+    padding: 14px 30px;
 }
 
-/* Gestión de Productos - Admin/Seller */
+/* --------------------------------------------------------------------------
+   3. PRODUCT MANAGEMENT (Admin/Seller)
+   -------------------------------------------------------------------------- */
 .gestion-header {
     display: flex;
     justify-content: space-between;
@@ -172,8 +214,19 @@
     margin-bottom: 25px;
 }
 
+.gestion-header h1 {
+    font-size: 1.6rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--text-primary);
+}
+
 .gestion-table-wrapper {
     overflow-x: auto;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
 }
 
 .gestion-table {
@@ -184,31 +237,85 @@
 }
 
 .gestion-table th {
-    background: rgba(255,255,255,0.03);
+    background: var(--bg-input);
     color: var(--text-secondary);
     font-weight: 600;
-    font-size: 0.8rem;
+    font-size: 0.78rem;
     text-transform: uppercase;
+    letter-spacing: 0.5px;
     padding: 14px 16px;
     text-align: left;
-    border-bottom: 1px solid var(--card-border);
+    border-bottom: 1px solid var(--border-color);
 }
 
 .gestion-table td {
     padding: 14px 16px;
-    border-bottom: 1px solid rgba(255,255,255,0.04);
+    border-bottom: 1px solid var(--border-color-light);
     vertical-align: middle;
+    transition: background var(--transition-fast);
 }
 
 .gestion-table tr:hover td {
-    background: rgba(255,255,255,0.03);
+    background: var(--gradient-primary-subtle);
 }
 
-/* Formulario de producto */
+[data-theme="light"] .gestion-table tr:hover td {
+    background: rgba(99, 102, 241, 0.03);
+}
+
+.gestion-table tr:last-child td {
+    border-bottom: none;
+}
+
+.producto-thumb-sm {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+    border-radius: var(--radius-sm);
+    background: var(--bg-input);
+    padding: 4px;
+}
+
+.action-btn {
+    padding: 8px 14px;
+    border-radius: var(--radius-sm);
+    border: none;
+    cursor: pointer;
+    font-size: 0.82rem;
+    font-weight: 600;
+    transition: all var(--transition-fast);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.action-btn.edit {
+    background: rgba(99, 102, 241, 0.1);
+    color: var(--primary-400);
+}
+
+.action-btn.edit:hover {
+    background: rgba(99, 102, 241, 0.2);
+    transform: translateY(-1px);
+}
+
+.action-btn.delete {
+    background: rgba(244, 63, 94, 0.1);
+    color: var(--danger-400);
+}
+
+.action-btn.delete:hover {
+    background: rgba(244, 63, 94, 0.2);
+    transform: translateY(-1px);
+}
+
+/* --------------------------------------------------------------------------
+   4. PRODUCT FORM
+   -------------------------------------------------------------------------- */
 .producto-form {
-    background: var(--card-bg);
-    border: 1px solid var(--card-border);
-    border-radius: 16px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
     padding: 30px;
     max-width: 800px;
 }
@@ -219,50 +326,15 @@
 
 .producto-form .form-section h3 {
     font-size: 1.1rem;
-    margin-bottom: 15px;
+    margin-bottom: 16px;
     color: var(--text-primary);
-    border-bottom: 1px solid var(--card-border);
+    border-bottom: 1px solid var(--border-color);
     padding-bottom: 10px;
 }
 
-/* Tabla de productos en gestión */
-.producto-thumb-sm {
-    width: 40px;
-    height: 40px;
-    object-fit: contain;
-    border-radius: 6px;
-    background: rgba(255,255,255,0.05);
-}
-
-.action-btn {
-    padding: 6px 12px;
-    border-radius: 6px;
-    border: none;
-    cursor: pointer;
-    font-size: 0.8rem;
-    font-weight: 600;
-    transition: all 0.2s;
-}
-
-.action-btn.edit {
-    background: rgba(59,130,246,0.1);
-    color: #60A5FA;
-}
-
-.action-btn.edit:hover {
-    background: rgba(59,130,246,0.2);
-}
-
-.action-btn.delete {
-    background: rgba(239,68,68,0.1);
-    color: #F87171;
-}
-
-.action-btn.delete:hover {
-    background: rgba(239,68,68,0.2);
-}
-
-/* Responsive */
+/* --------------------------------------------------------------------------
+   RESPONSIVE
+   -------------------------------------------------------------------------- */
 @media (max-width: 1024px) {
     .producto-detalle {
         grid-template-columns: 1fr;
@@ -270,7 +342,7 @@
     }
 
     .producto-main-image {
-        height: 300px;
+        height: 320px;
     }
 }
 
@@ -287,11 +359,19 @@
     .producto-precio-actual {
         font-size: 1.8rem;
     }
+    
+    .producto-info-detalle h1 {
+        font-size: 1.4rem;
+    }
 }
 
 @media (max-width: 480px) {
     .producto-main-image {
-        height: 250px;
+        height: 260px;
+    }
+    
+    .producto-detalle {
+        gap: 20px;
     }
 }
 

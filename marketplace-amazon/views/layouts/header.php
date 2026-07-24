@@ -44,6 +44,10 @@ $is_auth_page = $is_auth_page ?? false;
 
             <!-- Navegación del usuario -->
             <nav class="user-nav">
+                <!-- Theme Toggle Button -->
+                <button id="theme-toggle-btn" class="theme-toggle" title="Cambiar tema">
+                    <i class="fa-solid fa-moon"></i>
+                </button>
                 <!-- Menú para Admin -->
                 <div class="nav-dropdown" id="admin-menu" style="display:none;">
                     <a href="#" class="nav-link dropdown-trigger"><i class="fa-solid fa-shield-hooded"></i> Admin ▾</a>
