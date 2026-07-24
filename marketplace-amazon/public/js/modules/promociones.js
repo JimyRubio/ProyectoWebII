@@ -31,6 +31,33 @@ $(document).ready(function () {
             validarCupon();
         }
     });
+
+    // Botón "Nueva Promoción" - mostrar/ocultar formulario
+    $('#btn-nueva-promo').on('click', function () {
+        $('#form-nueva-promo').slideToggle(300);
+        $(this).toggleClass('active');
+    });
+
+    // Submit formulario nueva promoción
+    $('#form-create-promo').on('submit', function (e) {
+        e.preventDefault();
+        const data = $(this).serializeArray();
+
+        App.ajax({
+            url: App.baseUrl + 'api/promociones.php?action=store',
+            method: 'POST',
+            data: $.param(data),
+            success: function (response) {
+                if (response.success) {
+                    App.notify('Promoción creada exitosamente', 'success');
+                    $('#form-create-promo')[0].reset();
+                    $('#form-nueva-promo').slideUp();
+                    $('#btn-nueva-promo').removeClass('active');
+                    loadPromociones();
+                }
+            }
+        });
+    });
 });
 
 function loadPromociones() {
@@ -76,7 +103,10 @@ function renderPromociones(promociones) {
                     <span><i class="fa-regular fa-calendar-check"></i> ${promo.fecha_fin}</span>
                 </div>
                 ${promo.codigo ? `<div class="promo-code"><strong>Código:</strong> <span class="code-text">${promo.codigo}</span></div>` : ''}
-            </div>
+                <div style="margin-top:10px;border-top:1px solid var(--card-border);padding-top:10px;display:flex;gap:8px;">
+                    <button class="action-btn edit" onclick="alert('Editar promo ID: ${promo.id}')"><i class="fa-solid fa-pen"></i></button>
+                    <button class="action-btn delete" onclick="eliminarPromocion(${promo.id})"><i class="fa-solid fa-trash"></i></button>
+                </div>
         `;
     });
 
@@ -117,3 +147,17 @@ function validarCupon() {
     });
 }
 
+function eliminarPromocion(id) {
+    if (!confirm('¿Eliminar esta promoción?')) return;
+    App.ajax({
+        url: App.baseUrl + 'api/promociones.php?action=delete',
+        method: 'POST',
+        data: { id: id },
+        success: function (response) {
+            if (response.success) {
+                App.notify('Promoción eliminada', 'info');
+                loadPromociones();
+            }
+        }
+    });
+}

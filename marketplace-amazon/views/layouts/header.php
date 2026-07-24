@@ -36,11 +36,13 @@ $is_auth_page = $is_auth_page ?? false;
         </div>
 
         <?php if (!$is_auth_page): ?>
-            <!-- Elementos visibles en páginas de tienda -->
+            <!-- Barra de búsqueda -->
             <div class="search-bar">
                 <input type="text" id="global-search-input" placeholder="Buscar productos, marcas, SKU...">
                 <button id="global-search-btn"><i class="fa-solid fa-magnifying-glass"></i></button>
             </div>
+
+            <!-- Navegación del usuario -->
             <nav class="user-nav">
                 <!-- Menú para Admin -->
                 <div class="nav-dropdown" id="admin-menu" style="display:none;">
@@ -57,6 +59,7 @@ $is_auth_page = $is_auth_page ?? false;
                     <a href="#" class="nav-link dropdown-trigger"><i class="fa-solid fa-store"></i> Vendedor ▾</a>
                     <div class="dropdown-content">
                         <a href="<?php echo BASE_URL; ?>views/vendedores/dashboard.php"><i class="fa-solid fa-chart-simple"></i> Dashboard</a>
+                        <a href="<?php echo BASE_URL; ?>views/vendedores/pos.php"><i class="fa-solid fa-cash-register"></i> Punto de Venta</a>
                         <a href="<?php echo BASE_URL; ?>views/productos/gestion.php"><i class="fa-solid fa-box"></i> Mis Productos</a>
                         <a href="<?php echo BASE_URL; ?>views/pedidos/historial.php"><i class="fa-solid fa-receipt"></i> Pedidos</a>
                         <a href="<?php echo BASE_URL; ?>views/promociones/gestion.php"><i class="fa-solid fa-tags"></i> Promociones</a>
@@ -73,23 +76,24 @@ $is_auth_page = $is_auth_page ?? false;
                     </div>
                 </div>
 
-                <!-- Botón carrito siempre visible -->
+                <!-- Botón carrito -->
                 <a href="<?php echo BASE_URL; ?>views/carrito/index.php" id="open-cart-btn" class="cart-btn">
                     <i class="fa-solid fa-cart-shopping"></i> Carrito
                     <span class="badge" id="global-cart-badge">0</span>
                 </a>
 
-                <!-- Invitado / Login -->
+                <!-- Botón Iniciar Sesión (visible solo cuando no hay sesión) -->
                 <a href="<?php echo BASE_URL; ?>views/auth/login.php" id="nav-user-account" class="nav-link">
                     <i class="fa-solid fa-right-to-bracket"></i> Iniciar Sesión
                 </a>
 
-                <!-- Cerrar Sesión -->
+                <!-- Botón Cerrar Sesión (visible solo cuando hay sesión) -->
                 <a href="#" id="btn-logout" class="nav-link" style="display:none;color:#EF4444;">
                     <i class="fa-solid fa-sign-out-alt"></i> Salir
                 </a>
             </nav>
         <?php else: ?>
+            <!-- Páginas de autenticación -->
             <nav class="user-nav">
                 <a href="<?php echo BASE_URL; ?>" class="nav-link"><i class="fa-solid fa-house"></i> Volver a la Tienda</a>
             </nav>

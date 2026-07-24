@@ -18,6 +18,62 @@ require_once __DIR__ . '/../layouts/header.php';
             <i class="fa-solid fa-ticket"></i> Validar Cupón
         </button>
     </div>
+
+<!-- Formulario nueva promoción -->
+<div id="form-nueva-promo" class="producto-form" style="display:none;margin-bottom:30px;">
+    <h3><i class="fa-solid fa-tag"></i> Crear Nueva Promoción</h3>
+    <form id="form-create-promo">
+        <div class="form-section">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Nombre *</label>
+                    <input type="text" name="nombre" class="form-control" placeholder="Ej: Oferta de Verano" required>
+                </div>
+                <div class="form-group">
+                    <label>Código (opcional)</label>
+                    <input type="text" name="codigo" class="form-control" placeholder="Ej: VERANO25">
+                </div>
+            <div class="form-group">
+                <label>Descripción</label>
+                <textarea name="descripcion" class="form-control" rows="2" placeholder="Describe la promoción..."></textarea>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Tipo *</label>
+                    <select name="tipo" class="form-control" required>
+                        <option value="porcentaje">% Porcentaje de Descuento</option>
+                        <option value="monto_fijo">💰 Monto Fijo</option>
+                        <option value="envio_gratis">🚚 Envío Gratis</option>
+                        <option value="combo">📦 Combo</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Valor *</label>
+                    <input type="number" step="0.01" name="valor" class="form-control" placeholder="Ej: 25 (para 25%)" required>
+                </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Fecha Inicio *</label>
+                    <input type="datetime-local" name="fecha_inicio" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>Fecha Fin *</label>
+                    <input type="datetime-local" name="fecha_fin" class="form-control" required>
+                </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Mínimo de Compra</label>
+                    <input type="number" step="0.01" name="minimo_compra" class="form-control" value="0">
+                </div>
+                <div class="form-group">
+                    <label>Usos por Cliente</label>
+                    <input type="number" name="usa_por_cliente" class="form-control" value="1">
+                </div>
+        </div>
+        <button type="submit" class="btn-primary">
+            <i class="fa-solid fa-save"></i> Guardar Promoción
+        </button>
+    </form>
 </div>
 
 <!-- Grid de Promociones Activas -->
@@ -40,7 +96,6 @@ require_once __DIR__ . '/../layouts/header.php';
             <i class="fa-solid fa-check"></i> Verificar Cupón
         </button>
     </div>
-</div>
 
 <style>
 .promo-toolbar {
@@ -176,4 +231,3 @@ require_once __DIR__ . '/../layouts/header.php';
 </style>
 
 <?php require_once __DIR__ . '/../layouts/footer.php'; ?>
-

@@ -15,7 +15,6 @@ require_once __DIR__ . '/../layouts/header.php';
         </h1>
         <p>Monitorea tus ventas, productos y desempeño como vendedor.</p>
     </div>
-</div>
 
 <div id="seller-dashboard-container">
     <!-- Carga dinámica vía AJAX (vendedores.js) -->
@@ -23,6 +22,13 @@ require_once __DIR__ . '/../layouts/header.php';
 
 <h2 class="section-title" style="margin-top:40px;">Enlaces Rápidos</h2>
 <div class="quick-links" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:15px;margin-top:15px;">
+    <a href="<?php echo BASE_URL; ?>views/vendedores/pos.php" class="kpi-card" style="text-decoration:none;padding:20px;display:flex;align-items:center;gap:15px;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.3);border-radius:14px;">
+        <i class="fa-solid fa-cash-register" style="font-size:2rem;color:var(--price-color)"></i>
+        <div>
+            <strong style="font-size:1.1rem;">🛒 Punto de Venta</strong>
+            <p style="color:var(--text-secondary);font-size:0.85rem;">Vende en persona y genera facturas imprimibles</p>
+        </div>
+    </a>
     <a href="<?php echo BASE_URL; ?>views/productos/gestion.php" class="kpi-card" style="text-decoration:none;padding:20px;display:flex;align-items:center;gap:15px;">
         <i class="fa-solid fa-box" style="font-size:2rem;color:var(--primary-accent)"></i>
         <div>
@@ -54,4 +60,3 @@ require_once __DIR__ . '/../layouts/header.php';
 </div>
 
 <?php require_once __DIR__ . '/../layouts/footer.php'; ?>
-

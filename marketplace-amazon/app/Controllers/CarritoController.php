@@ -57,16 +57,13 @@ class CarritoController {
             Response::error('ID de ítem no válido', 400);
         }
 
-        // Obtener precio unitario del item actual
-        $stmt = $this->model->db->prepare("SELECT precio_unitario FROM carrito_items WHERE id = :id");
-        $stmt->execute([':id' => $itemId]);
-        $item = $stmt->fetch();
-
-        if (!$item) {
+        // Obtener precio unitario del item actual usando el método del modelo
+        $precioUnitario = $this->model->getItemPrecioUnitario($itemId);
+        if ($precioUnitario === null) {
             Response::error('Ítem no encontrado en el carrito', 404);
         }
 
-        if ($this->model->updateItemQty($itemId, $cantidad, (float)$item['precio_unitario'])) {
+        if ($this->model->updateItemQty($itemId, $cantidad, $precioUnitario)) {
             $clienteId = $this->getClienteId();
             $updatedCart = $this->model->getCartByClienteId($clienteId);
             Response::success($updatedCart, 'Cantidad actualizada');

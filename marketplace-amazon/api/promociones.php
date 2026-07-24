@@ -5,6 +5,7 @@ require_once __DIR__ . '/../app/Controllers/PromocionController.php';
 $controller = new PromocionController();
 $method = $_SERVER['REQUEST_METHOD'];
 $action = $_GET['action'] ?? $_POST['action'] ?? 'index';
+$id = isset($_GET['id']) ? (int)$_GET['id'] : (isset($_POST['id']) ? (int)$_POST['id'] : null);
 
 // Validación CSRF para métodos POST
 if ($method === 'POST') {
@@ -16,7 +17,9 @@ if ($method === 'POST') {
 
 switch ($method) {
     case 'GET':
-        if ($action === 'validar') {
+        if ($action === 'all') {
+            $controller->all();
+        } elseif ($action === 'validar') {
             $controller->validarCupon();
         } else {
             $controller->index();
@@ -24,7 +27,15 @@ switch ($method) {
         break;
 
     case 'POST':
-        $controller->validarCupon();
+        if ($action === 'store') {
+            $controller->store();
+        } elseif ($action === 'update') {
+            $controller->update();
+        } elseif ($action === 'delete' && $id > 0) {
+            $controller->delete($id);
+        } else {
+            $controller->validarCupon();
+        }
         break;
 
     default:
