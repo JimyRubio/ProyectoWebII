@@ -11,18 +11,35 @@ class PedidoController {
         $this->carritoModel = new CarritoModel();
     }
 
+    /**
+     * Lista los pedidos del cliente en sesión
+     */
+    public function index(): void {
+        AuthHelper::requireAuth();
+        $user = AuthHelper::user();
+        $clienteId = $user['cliente_id'] ?? 1;
+
+        $pedidos = $this->model->getByCliente($clienteId);
+        Response::success($pedidos, 'Pedidos del cliente');
+    }
+
+    /**
+     * Crea un nuevo pedido a partir del carrito
+     */
     public function create(): void {
         AuthHelper::requireAuth();
         $user = AuthHelper::user();
-        $clienteId = $user['cliente_id'];
+        $clienteId = $user['cliente_id'] ?? 1;
 
         $cart = $this->carritoModel->getCartByClienteId($clienteId);
         if (empty($cart['items'])) {
             Response::error('El carrito está vacío', 400);
         }
 
+        $direccionId = (int)($_POST['direccion_id'] ?? 0) ?: null;
+
         try {
-            $pedidoId = $this->model->createOrder($clienteId, $cart['items'], $cart['subtotal']);
+            $pedidoId = $this->model->createOrder($clienteId, $cart['items'], $cart['subtotal'], 0.00, $direccionId);
             $this->model->procesarPedidoSP($pedidoId);
             $this->carritoModel->clearCart($cart['id']);
 
@@ -32,6 +49,9 @@ class PedidoController {
         }
     }
 
+    /**
+     * Muestra el detalle de un pedido
+     */
     public function show(int $id): void {
         AuthHelper::requireAuth();
         $pedido = $this->model->getById($id);
@@ -39,5 +59,14 @@ class PedidoController {
             Response::error('Pedido no encontrado', 404);
         }
         Response::success($pedido, 'Detalle del pedido');
+    }
+
+    /**
+     * Muestra el rastreo de envío de un pedido
+     */
+    public function rastreo(int $id): void {
+        AuthHelper::requireAuth();
+        $rastreo = $this->model->getRastreo($id);
+        Response::success($rastreo, 'Historial de rastreo del envío');
     }
 }

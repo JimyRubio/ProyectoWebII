@@ -65,7 +65,7 @@ class ClienteModel extends Model {
      * Obtiene el perfil completo del cliente por usuario_id
      */
     public function getProfile(int $usuarioId): ?array {
-        $sql = "SELECT u.id, u.email, u.nombre, u.apellido, u.telefono, u.direccion, 
+        $sql = "SELECT u.id, u.email, u.nombre, u.apellido, u.telefono, u.direccion, u.genero, u.fecha_nacimiento,
                        c.id as cliente_id, c.tipo_cliente, c.puntos_lealtad, c.total_compras, c.total_pedidos
                 FROM usuarios u
                 INNER JOIN clientes c ON c.usuario_id = u.id
@@ -75,5 +75,69 @@ class ClienteModel extends Model {
         $stmt->execute([':usuario_id' => $usuarioId]);
         $profile = $stmt->fetch();
         return $profile ?: null;
+    }
+
+    /**
+     * Actualiza la información personal del usuario
+     */
+    public function updateProfile(int $usuarioId, array $data): bool {
+        $sql = "UPDATE usuarios 
+                SET nombre = :nombre, apellido = :apellido, telefono = :telefono, direccion = :direccion
+                WHERE id = :usuario_id";
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute([
+            ':nombre' => $data['nombre'],
+            ':apellido' => $data['apellido'] ?? '',
+            ':telefono' => $data['telefono'] ?? '',
+            ':direccion' => $data['direccion'] ?? '',
+            ':usuario_id' => $usuarioId
+        ]);
+    }
+
+    /**
+     * Obtiene todas las direcciones de un cliente
+     */
+    public function getDirecciones(int $clienteId): array {
+        $sql = "SELECT * FROM direcciones WHERE cliente_id = :cliente_id ORDER BY predeterminada DESC, id DESC";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([':cliente_id' => $clienteId]);
+        return $stmt->fetchAll() ?: [];
+    }
+
+    /**
+     * Registra una nueva dirección para el cliente
+     */
+    public function addDireccion(int $clienteId, array $data): int {
+        if (!empty($data['predeterminada'])) {
+            $this->db->prepare("UPDATE direcciones SET predeterminada = 0 WHERE cliente_id = :cliente_id")
+                     ->execute([':cliente_id' => $clienteId]);
+        }
+
+        $sql = "INSERT INTO direcciones (cliente_id, tipo, calle, numero, colonia, ciudad, estado, pais, codigo_postal, referencia, predeterminada)
+                VALUES (:cliente_id, :tipo, :calle, :numero, :colonia, :ciudad, :estado, :pais, :codigo_postal, :referencia, :predeterminada)";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([
+            ':cliente_id' => $clienteId,
+            ':tipo' => $data['tipo'] ?? 'ambos',
+            ':calle' => $data['calle'],
+            ':numero' => $data['numero'] ?? '',
+            ':colonia' => $data['colonia'] ?? '',
+            ':ciudad' => $data['ciudad'],
+            ':estado' => $data['estado'],
+            ':pais' => $data['pais'] ?? 'México',
+            ':codigo_postal' => $data['codigo_postal'],
+            ':referencia' => $data['referencia'] ?? '',
+            ':predeterminada' => !empty($data['predeterminada']) ? 1 : 0
+        ]);
+        return (int)$this->db->lastInsertId();
+    }
+
+    /**
+     * Elimina una dirección
+     */
+    public function deleteDireccion(int $direccionId, int $clienteId): bool {
+        $sql = "DELETE FROM direcciones WHERE id = :id AND cliente_id = :cliente_id";
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute([':id' => $direccionId, ':cliente_id' => $clienteId]);
     }
 }

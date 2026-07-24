@@ -42,6 +42,11 @@ class PedidoModel extends Model {
                 ]);
             }
 
+            // Insertar historial inicial
+            $sqlHist = "INSERT INTO historial_estados_pedido (pedido_id, estado_nuevo, comentario)
+                        VALUES (:pedido_id, 'pendiente', 'Pedido registrado exitosamente')";
+            $this->db->prepare($sqlHist)->execute([':pedido_id' => $pedidoId]);
+
             $this->commit();
             return $pedidoId;
         } catch (Exception $e) {
@@ -59,13 +64,30 @@ class PedidoModel extends Model {
     }
 
     /**
+     * Obtiene los pedidos de un cliente
+     */
+    public function getByCliente(int $clienteId): array {
+        $sql = "SELECT p.*, COUNT(pi.id) as total_items
+                FROM pedidos p
+                LEFT JOIN pedido_items pi ON pi.pedido_id = p.id
+                WHERE p.cliente_id = :cliente_id
+                GROUP BY p.id
+                ORDER BY p.fecha_pedido DESC";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([':cliente_id' => $clienteId]);
+        return $stmt->fetchAll() ?: [];
+    }
+
+    /**
      * Obtiene el detalle completo del pedido
      */
     public function getById(int $id): ?array {
-        $sql = "SELECT p.*, CONCAT(u.nombre, ' ', u.apellido) as cliente_nombre, u.email as cliente_email
+        $sql = "SELECT p.*, CONCAT(u.nombre, ' ', u.apellido) as cliente_nombre, u.email as cliente_email,
+                       d.calle, d.numero, d.ciudad, d.estado as estado_dir, d.codigo_postal
                 FROM pedidos p
                 INNER JOIN clientes c ON p.cliente_id = c.id
                 INNER JOIN usuarios u ON c.usuario_id = u.id
+                LEFT JOIN direcciones d ON p.direccion_envio_id = d.id
                 WHERE p.id = :id";
         
         $stmt = $this->db->prepare($sql);
@@ -74,14 +96,30 @@ class PedidoModel extends Model {
 
         if (!$pedido) return null;
 
-        $sqlItems = "SELECT pi.*, pr.nombre as producto_nombre, pr.sku
+        $sqlItems = "SELECT pi.*, pr.nombre as producto_nombre, pr.sku, pr.imagen_url
                      FROM pedido_items pi
                      INNER JOIN productos pr ON pi.producto_id = pr.id
                      WHERE pi.pedido_id = :pedido_id";
         $stmtItems = $this->db->prepare($sqlItems);
         $stmtItems->execute([':pedido_id' => $id]);
-        $pedido['items'] = $stmtItems->fetchAll();
+        $pedido['items'] = $stmtItems->fetchAll() ?: [];
 
         return $pedido;
+    }
+
+    /**
+     * Obtiene el seguimiento/rastreo de un envio
+     */
+    public function getRastreo(int $pedidoId): array {
+        $sql = "SELECT h.*, e.tracking_number, t.nombre as transportista_nombre
+                FROM historial_estados_pedido h
+                LEFT JOIN pedidos p ON p.id = h.pedido_id
+                LEFT JOIN envios e ON e.pedido_id = p.id
+                LEFT JOIN transportistas t ON t.id = e.transportista_id
+                WHERE h.pedido_id = :pedido_id
+                ORDER BY h.created_at ASC";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([':pedido_id' => $pedidoId]);
+        return $stmt->fetchAll() ?: [];
     }
 }
