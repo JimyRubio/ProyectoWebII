@@ -1,5 +1,6 @@
 <?php
 $is_auth_page = true; // Oculta el buscador y carrito en esta página
+$module_js = "auth.js";
 require_once '../../config/config.php';
 require_once '../../views/layouts/header.php';
 ?>
