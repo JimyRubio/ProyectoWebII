@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo APP_NAME; ?></title>
+    <title><?php echo isset($page_title) ? $page_title : APP_NAME; ?></title>
     
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -17,6 +17,11 @@
     <!-- CSS Globales -->
     <link rel="stylesheet" href="../../public/css/main.css">
     <link rel="stylesheet" href="../../public/css/layout.css">
+
+    <?php if (isset($module_css) && !empty($module_css)): ?>
+        <!-- CSS Módulo Específico -->
+        <link rel="stylesheet" href="../../public/css/modules/<?php echo $module_css; ?>">
+    <?php endif; ?>
 </head>
 <body>
     <header class="main-header">
