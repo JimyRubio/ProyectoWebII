@@ -32,6 +32,13 @@ class AuthController {
         }
 
         $user = $this->model->findByEmail($email);
+        
+        // Check if user is blocked/banned
+        if ($user && !empty($user['bloqueado']) && $user['bloqueado'] == 1) {
+            $razon = !empty($user['razon_bloqueo']) ? $user['razon_bloqueo'] : 'Violación de términos del servicio';
+            Response::error('Tu cuenta ha sido bloqueada. Motivo: ' . $razon . '. Contacta al administrador para más información.', 403);
+        }
+        
         if (!$user || !Security::verifyPassword($password, $user['password_hash'])) {
             Response::error('Credenciales incorrectas o usuario inactivo', 401);
         }
@@ -100,6 +107,7 @@ class AuthController {
 
     /**
      * Procesa solicitud de restablecimiento de contraseña (Forgot Password)
+     * Usa la tabla tokens_autenticacion para almacenar el token
      */
     public function forgotPassword(): void {
         $email = Security::sanitizeString($_POST['email'] ?? '');
@@ -111,29 +119,30 @@ class AuthController {
         if (!$user) {
             // No revelar si el correo existe o no por seguridad
             Response::success(null, 'Si el correo está registrado, recibirás instrucciones para restablecer tu contraseña.');
+            return;
         }
 
         try {
             // Generar token único
             $token = bin2hex(random_bytes(32));
             $expiry = date('Y-m-d H:i:s', strtotime('+1 hour'));
+            $usuarioId = (int)$user['id'];
 
-            // Guardar token en BD
-            $stmt = $this->model->db->prepare("UPDATE usuarios SET reset_token = :token, reset_token_expiry = :expiry WHERE email = :email");
-            $stmt->execute([
+            // Marcar tokens anteriores como usados
+            $stmtMark = $this->model->db->prepare("UPDATE tokens_autenticacion SET usado = 1 WHERE usuario_id = :uid AND tipo = 'reset_password' AND usado = 0");
+            $stmtMark->execute([':uid' => $usuarioId]);
+
+            // Insertar nuevo token en la tabla tokens_autenticacion
+            $stmtInsert = $this->model->db->prepare("INSERT INTO tokens_autenticacion (usuario_id, token, tipo, expira_en, usado) VALUES (:uid, :token, 'reset_password', :expira, 0)");
+            $stmtInsert->execute([
+                ':uid' => $usuarioId,
                 ':token' => $token,
-                ':expiry' => $expiry,
-                ':email' => $email
+                ':expira' => $expiry
             ]);
-
-            // En un entorno real, aquí se enviaría un correo electrónico con el enlace:
-            // $resetLink = BASE_URL . "views/auth/reset_password.php?token=" . $token;
-            // Por ahora simulamos el envío devolviendo el token en la respuesta
-            // (En producción se debería enviar por email)
 
             Response::success([
                 'token' => $token,
-                'reset_url' => BASE_URL . 'views/auth/forgot_password.php?token=' . $token
+                'reset_url' => BASE_URL . 'views/auth/reset_password.php?token=' . $token
             ], 'Instrucciones enviadas. Revisa tu correo electrónico.');
         } catch (Exception $e) {
             Response::error('Error al procesar la solicitud: ' . $e->getMessage(), 500);
@@ -142,6 +151,7 @@ class AuthController {
 
     /**
      * Procesa el restablecimiento de contraseña con token
+     * Busca el token en la tabla tokens_autenticacion
      */
     public function resetPassword(): void {
         $token = Security::sanitizeString($_POST['token'] ?? '');
@@ -161,21 +171,29 @@ class AuthController {
         }
 
         try {
-            // Buscar usuario por token válido y no expirado
-            $stmt = $this->model->db->prepare("SELECT id FROM usuarios WHERE reset_token = :token AND reset_token_expiry > NOW() AND activo = 1");
+            // Buscar usuario por token válido y no expirado usando la tabla tokens_autenticacion
+            $stmt = $this->model->db->prepare("SELECT ta.usuario_id as id FROM tokens_autenticacion ta 
+                                                WHERE ta.token = :token AND ta.tipo = 'reset_password' 
+                                                AND ta.expira_en > NOW() AND ta.usado = 0");
             $stmt->execute([':token' => $token]);
-            $user = $stmt->fetch();
+            $tokenRow = $stmt->fetch();
 
-            if (!$user) {
+            if (!$tokenRow) {
                 Response::error('Token inválido o expirado. Solicita un nuevo restablecimiento.', 400);
             }
 
-            // Actualizar contraseña y limpiar token
-            $stmtUpd = $this->model->db->prepare("UPDATE usuarios SET password_hash = :password_hash, reset_token = NULL, reset_token_expiry = NULL WHERE id = :id");
+            $usuarioId = (int)$tokenRow['id'];
+
+            // Actualizar contraseña
+            $stmtUpd = $this->model->db->prepare("UPDATE usuarios SET password_hash = :password_hash WHERE id = :id");
             $stmtUpd->execute([
                 ':password_hash' => Security::hashPassword($password),
-                ':id' => $user['id']
+                ':id' => $usuarioId
             ]);
+
+            // Marcar token como usado
+            $stmtTokenUsed = $this->model->db->prepare("UPDATE tokens_autenticacion SET usado = 1 WHERE token = :token");
+            $stmtTokenUsed->execute([':token' => $token]);
 
             Response::success(null, 'Contraseña restablecida exitosamente. Ya puedes iniciar sesión con tu nueva contraseña.');
         } catch (Exception $e) {

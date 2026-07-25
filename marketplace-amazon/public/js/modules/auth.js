@@ -74,7 +74,23 @@ $(document).ready(function () {
             success: function (response) {
                 if (response.success) {
                     $('#form-forgot-password').hide();
-                    $('#forgot-success-msg').show();
+                    var successHtml = '<i class="fa-solid fa-check-circle" style="font-size:2.5rem;color:var(--price-color);display:block;margin-bottom:10px;"></i>';
+                    successHtml += '<p style="color:var(--text-primary);font-weight:600;">Correo enviado exitosamente</p>';
+                    successHtml += '<p style="color:var(--text-secondary);font-size:0.9rem;margin-top:5px;">Revisa tu bandeja de entrada para restablecer tu contraseña.</p>';
+                    
+                    // Si el servidor devuelve un token (modo desarrollo), lo mostramos
+                    if (response.data && response.data.token) {
+                        successHtml += '<div style="margin-top:20px;padding:16px;background:rgba(99,102,241,0.1);border:1px solid rgba(99,102,241,0.3);border-radius:12px;">';
+                        successHtml += '<p style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:8px;">🔑 Token de recuperación (copia este token y pégalo en la página de restablecer):</p>';
+                        successHtml += '<div style="display:flex;gap:10px;align-items:center;">';
+                        successHtml += '<input type="text" id="token-display" value="' + response.data.token + '" readonly style="flex:1;padding:10px;background:var(--bg-primary);border:1px solid var(--border-color);border-radius:8px;color:var(--text-primary);font-family:monospace;font-size:0.9rem;text-align:center;">';
+                        successHtml += '<button onclick="navigator.clipboard.writeText(document.getElementById(\'token-display\').value).then(function(){App.notify(\'Token copiado al portapapeles\',\'success\')})" class="btn-primary" style="width:auto;padding:10px 16px;"><i class="fa-solid fa-copy"></i></button>';
+                        successHtml += '</div>';
+                        successHtml += '<a href="reset_password.php?token=' + response.data.token + '" class="btn-primary" style="display:inline-block;margin-top:12px;text-decoration:none;padding:10px 20px;"><i class="fa-solid fa-arrow-right"></i> Ir a Restablecer Contraseña</a>';
+                        successHtml += '</div>';
+                    }
+                    
+                    $('#forgot-success-msg').html(successHtml).show();
                 }
             }
         });

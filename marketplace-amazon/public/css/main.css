@@ -514,6 +514,49 @@ body,
 }
 
 /* --------------------------------------------------------------------------
+   5.1 PAGINATION STYLES
+   -------------------------------------------------------------------------- */
+.pagination-wrapper {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    margin-top: 20px;
+    flex-wrap: wrap;
+}
+
+.page-btn {
+    padding: 8px 16px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    font-family: var(--font-sans);
+}
+
+.page-btn:hover:not(.disabled):not(.active) {
+    background: var(--bg-card-hover);
+    border-color: var(--border-color-hover);
+    transform: translateY(-1px);
+}
+
+.page-btn.active {
+    background: var(--gradient-primary);
+    border-color: transparent;
+    color: #FFFFFF;
+    box-shadow: var(--shadow-glow-primary);
+}
+
+.page-btn.disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+/* --------------------------------------------------------------------------
    6. WELCOME / HERO SECTION
    -------------------------------------------------------------------------- */
 .welcome-section {

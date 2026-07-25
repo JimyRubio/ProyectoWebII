@@ -11,14 +11,14 @@ $(document).ready(function () {
         loadHistorialPedidos();
     }
 
-    // Formulario de actualización de perfil
-    $('#form-update-profile').on('submit', function (e) {
+    // Formulario de actualización de perfil (usar event delegation porque el form se carga dinámicamente)
+    $(document).on('submit', '#form-update-profile', function (e) {
         e.preventDefault();
         updateProfile();
     });
 
-    // Formulario de nueva dirección
-    $('#form-add-direccion').on('submit', function (e) {
+    // Formulario de nueva dirección (usar event delegation)
+    $(document).on('submit', '#form-add-direccion', function (e) {
         e.preventDefault();
         addDireccion();
     });

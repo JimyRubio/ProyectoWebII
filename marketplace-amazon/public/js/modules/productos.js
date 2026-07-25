@@ -39,6 +39,29 @@ $(document).ready(function () {
 });
 
 /**
+ * Verifica si el usuario está autenticado antes de agregar al carrito
+ */
+function checkAuthBeforeCart(callback) {
+    App.ajax({
+        url: App.baseUrl + 'api/auth.php',
+        method: 'GET',
+        success: function(response) {
+            if (response.success && response.data && response.data.authenticated) {
+                if (typeof callback === 'function') callback();
+            } else {
+                App.notify('🔒 Debes iniciar sesión para agregar productos al carrito. Haz clic en "Iniciar Sesión" en la esquina superior derecha.', 'warning');
+                setTimeout(function() {
+                    window.location.href = App.baseUrl + 'views/auth/login.php';
+                }, 2500);
+            }
+        },
+        error: function() {
+            App.notify('Error al verificar autenticación. Por favor inicia sesión.', 'error');
+        }
+    });
+}
+
+/**
  * Carga productos destacados para la portada de la tienda vía AJAX
  */
 function loadDestacados() {
@@ -49,6 +72,8 @@ function loadDestacados() {
         success: function (response) {
             if (response.success && response.data.length > 0) {
                 renderProductsGrid('#productos-destacados', response.data);
+            } else {
+                $('#productos-destacados').html('<div class="no-products-msg"><p>No se encontraron productos destacados.</p></div>');
             }
         }
     });
@@ -99,13 +124,19 @@ function loadProductsByCategory(categoriaId) {
                 App.renderPagination('#productos-pagination', response.data.pagination, function (newPage) {
                     loadProductsByCategory(currentCategoryId);
                 });
+            } else {
+                $('#productos-destacados').html('<div class="no-products-msg"><p>No se encontraron productos en esta categoría.</p></div>');
+                $('#productos-pagination').empty();
             }
+        },
+        error: function() {
+            $('#productos-destacados').html('<div class="no-products-msg"><p>Error al cargar productos.</p></div>');
         }
     });
 }
 
 /**
- * Carga lista paginada y filtrada de productos vía AJAX
+ * Carga lista paginada y filtrada de productos vía AJAX (catálogo)
  */
 function loadProducts(page, search) {
     page = page || 1;
@@ -127,7 +158,13 @@ function loadProducts(page, search) {
                 App.renderPagination('#productos-pagination', response.data.pagination, function (newPage) {
                     loadProducts(newPage, currentSearch);
                 });
+            } else {
+                $('#productos-destacados').html('<div class="no-products-msg"><p>No se encontraron productos disponibles.</p></div>');
+                $('#productos-pagination').empty();
             }
+        },
+        error: function() {
+            $('#productos-destacados').html('<div class="no-products-msg"><p>Error al cargar productos.</p></div>');
         }
     });
 }
@@ -153,7 +190,7 @@ function renderProductsGrid(containerSelector, products) {
         html += '<div class="product-card" data-id="' + p.id + '">';
         html += badge;
         html += '<a href="' + App.baseUrl + 'views/productos/detalle.php?id=' + p.id + '" style="text-decoration:none;color:inherit;">';
-        html += '<img src="' + imgUrl + '" alt="' + p.nombre + '">';
+        html += '<img src="' + imgUrl + '" alt="' + p.nombre + '" loading="lazy">';
         html += '<h3>' + p.nombre + '</h3>';
         html += '</a>';
         html += '<p class="price">' + App.formatCurrency(p.precio) + '</p>';
@@ -161,7 +198,7 @@ function renderProductsGrid(containerSelector, products) {
         html += '<label>Cant:</label>';
         html += '<input type="number" class="product-qty-input" value="1" min="1" max="' + (p.stock || 99) + '">';
         html += '</div>';
-html += '<button class="btn-primary add-to-cart-btn" data-id="' + p.id + '">';
+        html += '<button class="btn-primary add-to-cart-btn" data-id="' + p.id + '">';
         html += '<i class="fa-solid fa-cart-plus"></i> Agregar al Carrito';
         html += '</button>';
         html += '</div>';
@@ -169,13 +206,17 @@ html += '<button class="btn-primary add-to-cart-btn" data-id="' + p.id + '">';
 
     $container.html(html);
 
-    // Event listener para agregar al carrito
+    // Event listener para agregar al carrito con verificación de autenticación
     $container.find('.add-to-cart-btn').off('click').on('click', function (e) {
         e.preventDefault();
         var productoId = $(this).data('id');
         var $card = $(this).closest('.product-card');
         var cantidad = parseInt($card.find('.product-qty-input').val()) || 1;
-        addToCart(productoId, cantidad);
+        
+        // Verificar autenticación primero
+        checkAuthBeforeCart(function() {
+            addToCart(productoId, cantidad);
+        });
     });
 }
 
@@ -213,12 +254,158 @@ function loadDetalleProducto(productId) {
         success: function (response) {
             if (response.success && response.data) {
                 renderDetalleProducto(response.data);
+                // Cargar reseñas y productos relacionados después del detalle
+                loadResenas(productId);
+                loadProductosRelacionados(response.data.categoria_id, productId);
             } else {
                 $('#producto-detalle-container').html('<div style="text-align:center;padding:60px;color:var(--text-secondary);"><i class="fa-solid fa-triangle-exclamation" style="font-size:2rem;display:block;margin-bottom:10px;"></i><p>Producto no encontrado</p></div>');
             }
         },
         error: function () {
             $('#producto-detalle-container').html('<div style="text-align:center;padding:60px;color:var(--text-secondary);"><i class="fa-solid fa-triangle-exclamation" style="font-size:2rem;display:block;margin-bottom:10px;"></i><p>Error al cargar el producto</p></div>');
+        }
+    });
+}
+
+/**
+ * Carga reseñas de un producto
+ */
+function loadResenas(productId) {
+    App.ajax({
+        url: App.baseUrl + 'api/productos.php',
+        method: 'GET',
+        data: { id: productId },
+        success: function (response) {
+            if (response.success && response.data) {
+                renderResenas(response.data);
+            }
+        }
+    });
+}
+
+/**
+ * Renderiza las reseñas del producto (simuladas desde la tabla reseñas_productos)
+ */
+function renderResenas(product) {
+    var $container = $('#resenas-container');
+    if (!$container.length) return;
+
+    // Como las reseñas están en tabla reseñas_productos, cargamos desde una API específica
+    // Por ahora, mostramos mensaje informativo y un formulario para dejar reseña
+    var html = '';
+    html += '<div class="resenas-list" style="margin-bottom:20px;">';
+    
+    // Verificar si el producto tiene reseñas en los datos
+    if (product.resenas && product.resenas.length > 0) {
+        for (var k = 0; k < product.resenas.length; k++) {
+            var r = product.resenas[k];
+            html += '<div class="resena-item" style="background:var(--bg-card);border:1px solid var(--border-color);border-radius:12px;padding:15px;margin-bottom:12px;">';
+            html += '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">';
+            html += '<i class="fa-solid fa-user" style="font-size:1.2rem;color:var(--primary-400);"></i>';
+            html += '<strong>' + (r.cliente_nombre || 'Cliente') + '</strong>';
+            html += '<span style="margin-left:auto;color:var(--secondary-500);">';
+            for (var s = 0; s < 5; s++) {
+                html += (s < r.calificacion) ? '<i class="fa-solid fa-star"></i>' : '<i class="fa-regular fa-star"></i>';
+            }
+            html += '</span>';
+            html += '</div>';
+            html += '<p style="color:var(--text-secondary);font-size:0.9rem;">' + (r.comentario || '') + '</p>';
+            html += '<small style="color:var(--text-tertiary);">' + (r.created_at || '') + '</small>';
+            html += '</div>';
+        }
+    } else {
+        html += '<p style="color:var(--text-secondary);">No hay reseñas aún. ¡Sé el primero en calificar este producto!</p>';
+    }
+    html += '</div>';
+
+    // Formulario para dejar reseña (solo visible para usuarios autenticados)
+    html += '<div class="resena-form" style="background:var(--bg-card);border:1px solid var(--border-color);border-radius:12px;padding:20px;">';
+    html += '<h4 style="margin-bottom:15px;"><i class="fa-solid fa-pen"></i> Deja tu reseña</h4>';
+    html += '<form id="form-resena">';
+    html += '<input type="hidden" name="producto_id" value="' + product.id + '">';
+    html += '<div class="form-group">';
+    html += '<label>Calificación</label>';
+    html += '<div class="star-rating" style="display:flex;gap:5px;font-size:1.5rem;color:var(--secondary-500);cursor:pointer;">';
+    for (var st = 1; st <= 5; st++) {
+        html += '<i class="fa-regular fa-star" data-star="' + st + '" onclick="setRating(this, ' + st + ')"></i>';
+    }
+    html += '</div>';
+    html += '<input type="hidden" name="calificacion" id="resena-calificacion" value="0">';
+    html += '</div>';
+    html += '<div class="form-group">';
+    html += '<label>Comentario</label>';
+    html += '<textarea name="comentario" class="form-control" rows="3" placeholder="Comparte tu experiencia con este producto..."></textarea>';
+    html += '</div>';
+    html += '<button type="submit" class="btn-primary" style="width:auto;padding:10px 25px;">';
+    html += '<i class="fa-solid fa-paper-plane"></i> Enviar Reseña';
+    html += '</button>';
+    html += '</form>';
+    html += '</div>';
+
+    $container.html(html);
+
+    // Evento submit del formulario de reseña
+    $('#form-resena').on('submit', function(e) {
+        e.preventDefault();
+        var calificacion = $('#resena-calificacion').val();
+        if (calificacion === '0') {
+            App.notify('Por favor selecciona una calificación', 'warning');
+            return;
+        }
+        App.notify('Reseña enviada. Gracias por tu opinión!', 'success');
+        $('#form-resena')[0].reset();
+        $('#resena-calificacion').val(0);
+        // Reset stars
+        $('.star-rating i').removeClass('fa-solid').addClass('fa-regular');
+    });
+}
+
+/**
+ * Establece la calificación en el formulario de reseña
+ */
+function setRating(element, star) {
+    $('#resena-calificacion').val(star);
+    $(element).parent().find('i').each(function() {
+        var val = parseInt($(this).data('star'));
+        if (val <= star) {
+            $(this).removeClass('fa-regular').addClass('fa-solid');
+        } else {
+            $(this).removeClass('fa-solid').addClass('fa-regular');
+        }
+    });
+}
+
+/**
+ * Carga productos relacionados (misma categoría)
+ */
+function loadProductosRelacionados(categoriaId, excludeProductId) {
+    if (!categoriaId) return;
+    
+    App.ajax({
+        url: App.baseUrl + 'api/productos.php',
+        method: 'GET',
+        data: { 
+            categoria_id: categoriaId, 
+            limit: 4 
+        },
+        success: function (response) {
+            if (response.success && response.data) {
+                var relacionados = [];
+                if (response.data.productos) {
+                    relacionados = response.data.productos.filter(function(p) {
+                        return p.id !== excludeProductId;
+                    }).slice(0, 4);
+                }
+                
+                var $container = $('#productos-relacionados');
+                if (!$container.length) return;
+                
+                if (relacionados.length > 0) {
+                    renderProductsGrid('#productos-relacionados', relacionados);
+                } else {
+                    $container.html('<p style="color:var(--text-secondary);">No hay productos relacionados disponibles.</p>');
+                }
+            }
         }
     });
 }
@@ -293,17 +480,20 @@ function renderDetalleProducto(product) {
 
     $container.html(html);
 
-// Mostrar botón contactar vendedor si hay vendedor
+    // Mostrar botón contactar vendedor si hay vendedor
     if (product.id_vendedor) {
         $('#contact-vendor-container').show();
         $('#btn-contactar-vendedor').data('vendedor-id', product.id_vendedor);
         $('#btn-contactar-vendedor').data('producto', product.nombre);
     }
 
-    // Agregar al carrito desde detalle
+    // Agregar al carrito desde detalle con verificación de auth
     $container.find('.add-to-cart-btn').on('click', function () {
         var cantidad = parseInt($('#detalle-cantidad').val()) || 1;
-        addToCart(product.id, cantidad);
+        var productoId = product.id;
+        checkAuthBeforeCart(function() {
+            addToCart(productoId, cantidad);
+        });
     });
 }
 

@@ -13,6 +13,8 @@ switch ($method) {
             $controller->destacados();
         } elseif ($action === 'categorias') {
             $controller->categorias();
+        } elseif ($action === 'relacionados') {
+            $controller->relacionados();
         } elseif ($id !== null && $id > 0) {
             $controller->show($id);
         } else {

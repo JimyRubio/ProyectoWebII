@@ -137,6 +137,23 @@ class ProductoController {
     }
 
     /**
+     * Retorna productos relacionados (misma categoría, excluyendo el actual)
+     */
+    public function relacionados(): void {
+        $categoriaId = isset($_GET['categoria_id']) ? (int)$_GET['categoria_id'] : 0;
+        $excludeId = isset($_GET['exclude_id']) ? (int)$_GET['exclude_id'] : 0;
+        $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 4;
+
+        if ($categoriaId <= 0) {
+            Response::success([], 'No se especificó categoría');
+            return;
+        }
+
+        $productos = $this->model->getRelacionados($categoriaId, $excludeId, $limit);
+        Response::success($productos, 'Productos relacionados obtenidos');
+    }
+
+    /**
      * Elimina un producto
      */
     public function delete(int $id): void {

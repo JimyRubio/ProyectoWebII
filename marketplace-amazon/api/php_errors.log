@@ -5,3 +5,47 @@
 [24-Jul-2026 21:35:44 America/Mexico_City] Error addItem: SQLSTATE[23000]: Integrity constraint violation: 1452 Cannot add or update a child row: a foreign key constraint fails (`marketplace_db`.`carrito_items`, CONSTRAINT `carrito_items_ibfk_1` FOREIGN KEY (`carrito_id`) REFERENCES `carritos` (`id`) ON DELETE CASCADE)
 [24-Jul-2026 21:35:44 America/Mexico_City] Error addItem: SQLSTATE[23000]: Integrity constraint violation: 1452 Cannot add or update a child row: a foreign key constraint fails (`marketplace_db`.`carrito_items`, CONSTRAINT `carrito_items_ibfk_1` FOREIGN KEY (`carrito_id`) REFERENCES `carritos` (`id`) ON DELETE CASCADE)
 [24-Jul-2026 21:35:55 America/Mexico_City] Error addItem: SQLSTATE[23000]: Integrity constraint violation: 1452 Cannot add or update a child row: a foreign key constraint fails (`marketplace_db`.`carrito_items`, CONSTRAINT `carrito_items_ibfk_1` FOREIGN KEY (`carrito_id`) REFERENCES `carritos` (`id`) ON DELETE CASCADE)
+[24-Jul-2026 22:02:13 America/Mexico_City] PHP Deprecated:  Function finfo_close() is deprecated since 8.5, as finfo objects are freed automatically in C:\Users\JimyR\Documents\GitHub\ProyectoWebII\marketplace-amazon\api\upload.php on line 50
+[24-Jul-2026 22:14:20 America/Mexico_City] PHP Fatal error:  Uncaught PDOException: SQLSTATE[HY093]: Invalid parameter number in C:\Users\JimyR\Documents\GitHub\ProyectoWebII\marketplace-amazon\app\Models\ProductoModel.php:43
+Stack trace:
+#0 C:\Users\JimyR\Documents\GitHub\ProyectoWebII\marketplace-amazon\app\Models\ProductoModel.php(43): PDOStatement->execute()
+#1 C:\Users\JimyR\Documents\GitHub\ProyectoWebII\marketplace-amazon\app\Controllers\ProductoController.php(23): ProductoModel->getAll(12, 0, 'camiseta', 0, NULL)
+#2 C:\Users\JimyR\Documents\GitHub\ProyectoWebII\marketplace-amazon\api\productos.php(19): ProductoController->index()
+#3 {main}
+  thrown in C:\Users\JimyR\Documents\GitHub\ProyectoWebII\marketplace-amazon\app\Models\ProductoModel.php on line 43
+[24-Jul-2026 22:45:32 America/Mexico_City] Pago procesado: Pedido #3, Tarjeta terminada en 3123, Monto: 2249.97
+[24-Jul-2026 22:45:47 America/Mexico_City] PHP Fatal error:  Uncaught PDOException: SQLSTATE[HY093]: Invalid parameter number in C:\Users\JimyR\Documents\GitHub\ProyectoWebII\marketplace-amazon\app\Models\ProductoModel.php:43
+Stack trace:
+#0 C:\Users\JimyR\Documents\GitHub\ProyectoWebII\marketplace-amazon\app\Models\ProductoModel.php(43): PDOStatement->execute()
+#1 C:\Users\JimyR\Documents\GitHub\ProyectoWebII\marketplace-amazon\app\Controllers\ProductoController.php(23): ProductoModel->getAll(12, 0, 'camiseta', 0, NULL)
+#2 C:\Users\JimyR\Documents\GitHub\ProyectoWebII\marketplace-amazon\api\productos.php(21): ProductoController->index()
+#3 {main}
+  thrown in C:\Users\JimyR\Documents\GitHub\ProyectoWebII\marketplace-amazon\app\Models\ProductoModel.php on line 43
+[24-Jul-2026 22:45:56 America/Mexico_City] PHP Fatal error:  Uncaught PDOException: SQLSTATE[HY093]: Invalid parameter number in C:\Users\JimyR\Documents\GitHub\ProyectoWebII\marketplace-amazon\app\Models\ProductoModel.php:43
+Stack trace:
+#0 C:\Users\JimyR\Documents\GitHub\ProyectoWebII\marketplace-amazon\app\Models\ProductoModel.php(43): PDOStatement->execute()
+#1 C:\Users\JimyR\Documents\GitHub\ProyectoWebII\marketplace-amazon\app\Controllers\ProductoController.php(23): ProductoModel->getAll(12, 0, 'camiseta', 4, NULL)
+#2 C:\Users\JimyR\Documents\GitHub\ProyectoWebII\marketplace-amazon\api\productos.php(21): ProductoController->index()
+#3 {main}
+  thrown in C:\Users\JimyR\Documents\GitHub\ProyectoWebII\marketplace-amazon\app\Models\ProductoModel.php on line 43
+[24-Jul-2026 22:46:09 America/Mexico_City] PHP Fatal error:  Uncaught PDOException: SQLSTATE[HY093]: Invalid parameter number in C:\Users\JimyR\Documents\GitHub\ProyectoWebII\marketplace-amazon\app\Models\ProductoModel.php:43
+Stack trace:
+#0 C:\Users\JimyR\Documents\GitHub\ProyectoWebII\marketplace-amazon\app\Models\ProductoModel.php(43): PDOStatement->execute()
+#1 C:\Users\JimyR\Documents\GitHub\ProyectoWebII\marketplace-amazon\app\Controllers\ProductoController.php(23): ProductoModel->getAll(12, 0, 'camiseta', 2, NULL)
+#2 C:\Users\JimyR\Documents\GitHub\ProyectoWebII\marketplace-amazon\api\productos.php(21): ProductoController->index()
+#3 {main}
+  thrown in C:\Users\JimyR\Documents\GitHub\ProyectoWebII\marketplace-amazon\app\Models\ProductoModel.php on line 43
+[24-Jul-2026 22:46:19 America/Mexico_City] PHP Fatal error:  Uncaught PDOException: SQLSTATE[HY093]: Invalid parameter number in C:\Users\JimyR\Documents\GitHub\ProyectoWebII\marketplace-amazon\app\Models\ProductoModel.php:43
+Stack trace:
+#0 C:\Users\JimyR\Documents\GitHub\ProyectoWebII\marketplace-amazon\app\Models\ProductoModel.php(43): PDOStatement->execute()
+#1 C:\Users\JimyR\Documents\GitHub\ProyectoWebII\marketplace-amazon\app\Controllers\ProductoController.php(23): ProductoModel->getAll(12, 0, 'camiseta', 0, NULL)
+#2 C:\Users\JimyR\Documents\GitHub\ProyectoWebII\marketplace-amazon\api\productos.php(21): ProductoController->index()
+#3 {main}
+  thrown in C:\Users\JimyR\Documents\GitHub\ProyectoWebII\marketplace-amazon\app\Models\ProductoModel.php on line 43
+[24-Jul-2026 22:47:06 America/Mexico_City] PHP Fatal error:  Uncaught PDOException: SQLSTATE[HY093]: Invalid parameter number in C:\Users\JimyR\Documents\GitHub\ProyectoWebII\marketplace-amazon\app\Models\ProductoModel.php:43
+Stack trace:
+#0 C:\Users\JimyR\Documents\GitHub\ProyectoWebII\marketplace-amazon\app\Models\ProductoModel.php(43): PDOStatement->execute()
+#1 C:\Users\JimyR\Documents\GitHub\ProyectoWebII\marketplace-amazon\app\Controllers\ProductoController.php(23): ProductoModel->getAll(12, 0, 'camiseta', 1, NULL)
+#2 C:\Users\JimyR\Documents\GitHub\ProyectoWebII\marketplace-amazon\api\productos.php(21): ProductoController->index()
+#3 {main}
+  thrown in C:\Users\JimyR\Documents\GitHub\ProyectoWebII\marketplace-amazon\app\Models\ProductoModel.php on line 43

@@ -229,4 +229,25 @@ class ProductoModel extends Model {
         $stmt = $this->db->query("SELECT id, nombre, slug FROM categorias WHERE activo = 1 ORDER BY nombre ASC");
         return $stmt->fetchAll();
     }
+
+    /**
+     * Obtiene productos relacionados por categoría, excluyendo un ID específico
+     */
+    public function getRelacionados(int $categoriaId, int $excludeId = 0, int $limit = 4): array {
+        $sql = "SELECT p.*, c.nombre as categoria_nombre, t.nombre_tienda,
+                       (SELECT url FROM imagenes_productos WHERE producto_id = p.id ORDER BY principal DESC, orden ASC LIMIT 1) as imagen_principal
+                FROM productos p
+                INNER JOIN categorias c ON p.categoria_id = c.id
+                INNER JOIN tiendas t ON p.tienda_id = t.id
+                WHERE p.categoria_id = :categoria_id AND p.estado = 'activo' AND p.id != :exclude_id
+                ORDER BY p.total_vendidos DESC, p.id DESC
+                LIMIT :limit";
+        
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindValue(':categoria_id', $categoriaId, PDO::PARAM_INT);
+        $stmt->bindValue(':exclude_id', $excludeId, PDO::PARAM_INT);
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
 }

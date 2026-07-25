@@ -20,7 +20,13 @@ if (empty($token)) {
         </div>
 
         <form id="form-reset-password">
-            <input type="hidden" name="token" value="<?php echo $token; ?>">
+            <div class="form-group">
+                <label for="token_input">Token de Recuperación</label>
+                <div class="input-container">
+                    <i class="fa-solid fa-key input-icon"></i>
+                    <input type="text" id="token_input" name="token" class="form-control" value="<?php echo $token; ?>" placeholder="Pega aquí el token recibido" style="font-family:monospace;font-size:0.85rem;" required>
+                </div>
+            </div>
 
             <div class="form-group">
                 <label for="password">Nueva Contraseña</label>
