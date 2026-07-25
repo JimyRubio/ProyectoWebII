@@ -12,27 +12,39 @@ require_once __DIR__ . '/../layouts/header.php';
     </button>
 </div>
 
-<div style="display:grid;grid-template-columns:1fr 400px;gap:25px;">
-    <!-- Columna izquierda: Búsqueda y productos -->
-    <div>
-        <div style="display:flex;gap:10px;margin-bottom:20px;">
+<div class="pos-layout-vertical">
+    <!-- Sección superior: Búsqueda y productos -->
+    <div class="pos-products-section">
+        <div class="pos-search-bar" style="display:flex;gap:10px;margin-bottom:20px;">
             <input type="text" id="pos-search" placeholder="Buscar producto por nombre o SKU..." style="flex:1;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid var(--card-border);border-radius:8px;color:var(--text-primary);font-size:0.95rem;outline:none;">
             <select id="pos-categoria" style="padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid var(--card-border);border-radius:8px;color:var(--text-primary);font-size:0.9rem;outline:none;">
                 <option value="">Todas las categorías</option>
             </select>
         </div>
-        <div id="pos-productos-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;">
+        <div id="pos-productos-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin-bottom:30px;">
             <!-- Productos cargados vía AJAX -->
         </div>
+    </div>
 
-    <!-- Columna derecha: Carrito / Ticket -->
-    <div style="background:var(--card-bg);border:1px solid var(--card-border);border-radius:14px;padding:20px;position:sticky;top:100px;align-self:start;">
+    <!-- Sección inferior: Ticket de venta -->
+    <div class="pos-ticket-section" style="background:var(--card-bg);border:1px solid var(--card-border);border-radius:14px;padding:20px;margin-bottom:20px;">
         <h3 style="margin-bottom:15px;"><i class="fa-solid fa-receipt"></i> Ticket de Venta</h3>
-        <div id="pos-cart-items" style="max-height:400px;overflow-y:auto;margin-bottom:15px;"></div>
+        
+        <!-- Cupón de descuento -->
+        <div class="pos-coupon-section" style="display:flex;gap:8px;margin-bottom:15px;padding:10px;background:rgba(255,255,255,0.03);border-radius:8px;border:1px dashed var(--card-border);">
+            <input type="text" id="pos-cupon-input" placeholder="¿Tienes un cupón? Ingresa el código..." style="flex:1;padding:10px 12px;background:rgba(255,255,255,0.05);border:1px solid var(--card-border);border-radius:6px;color:var(--text-primary);font-size:0.9rem;outline:none;">
+            <button class="btn-primary" id="btn-validar-cupon-pos" style="padding:10px 16px;width:auto;white-space:nowrap;font-size:0.85rem;">
+                <i class="fa-solid fa-check"></i> Aplicar
+            </button>
+        </div>
+        <div id="pos-cupon-result" style="display:none;margin-bottom:10px;"></div>
+
+        <div id="pos-cart-items" style="max-height:300px;overflow-y:auto;margin-bottom:15px;"></div>
         <div style="border-top:2px dashed var(--card-border);padding-top:15px;">
             <div class="total-row"><span>Subtotal</span><span id="pos-subtotal">L. 0.00</span></div>
             <div class="total-row"><span>Descuento</span><span id="pos-descuento">L. 0.00</span></div>
             <div class="total-row grand-total"><span>Total</span><span id="pos-total">L. 0.00</span></div>
+        </div>
         <button class="btn-primary" id="btn-pos-pagar" style="margin-top:15px;width:100%;padding:14px;">
             <i class="fa-solid fa-check-circle"></i> Cobrar (L. 0.00)
         </button>
@@ -41,44 +53,62 @@ require_once __DIR__ . '/../layouts/header.php';
         </button>
     </div>
 
-<!-- Datos para factura -->
-<div id="pos-factura-data" style="display:none;">
-    <div class="producto-form" style="margin-top:30px;">
-        <h3><i class="fa-solid fa-file-invoice"></i> Datos para Factura</h3>
-        <form id="form-factura">
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Nombre / Razón Social</label>
-                    <input type="text" name="razon_social" class="form-control" placeholder="Nombre del cliente" required>
+    <!-- Datos para factura -->
+    <div id="pos-factura-data" style="display:none;">
+        <div class="producto-form" style="margin-top:30px;">
+            <h3><i class="fa-solid fa-file-invoice"></i> Datos para Factura</h3>
+            <form id="form-factura">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Nombre / Razón Social</label>
+                        <input type="text" name="razon_social" class="form-control" placeholder="Nombre del cliente" required>
+                    </div>
+                    <div class="form-group">
+                        <label>RUC / Identidad</label>
+                        <input type="text" name="ruc" class="form-control" placeholder="0801-2000-12345">
+                    </div>
                 </div>
                 <div class="form-group">
-                    <label>RUC / Identidad</label>
-                    <input type="text" name="ruc" class="form-control" placeholder="0801-2000-12345">
+                    <label>Dirección</label>
+                    <textarea name="direccion" class="form-control" rows="2" placeholder="Dirección del cliente"></textarea>
                 </div>
-            <div class="form-group">
-                <label>Dirección</label>
-                <textarea name="direccion" class="form-control" rows="2" placeholder="Dirección del cliente"></textarea>
-            </div>
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Método de Pago</label>
-                    <select name="metodo_pago" class="form-control">
-                        <option value="EFECTIVO">Efectivo</option>
-                        <option value="TARJETA">Tarjeta</option>
-                        <option value="TRANSFERENCIA">Transferencia</option>
-                    </select>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Método de Pago</label>
+                        <select name="metodo_pago" class="form-control">
+                            <option value="EFECTIVO">Efectivo</option>
+                            <option value="TARJETA">Tarjeta</option>
+                            <option value="TRANSFERENCIA">Transferencia</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Monto Recibido</label>
+                        <input type="number" step="0.01" name="monto_recibido" class="form-control" placeholder="0.00">
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label>Monto Recibido</label>
-                    <input type="number" step="0.01" name="monto_recibido" class="form-control" placeholder="0.00">
-                </div>
-            <button type="submit" class="btn-primary">
-                <i class="fa-solid fa-file-invoice"></i> Generar Factura e Imprimir
-            </button>
-        </form>
+                <button type="submit" class="btn-primary">
+                    <i class="fa-solid fa-file-invoice"></i> Generar Factura e Imprimir
+                </button>
+            </form>
+        </div>
     </div>
+</div>
 
 <style>
+.pos-layout-vertical {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+.pos-products-section {
+    order: 1;
+}
+.pos-ticket-section {
+    order: 2;
+}
+#pos-factura-data {
+    order: 3;
+}
 #pos-cart-items .pos-cart-item {
     display:flex;
     align-items:center;
@@ -155,11 +185,10 @@ require_once __DIR__ . '/../layouts/header.php';
     font-size:0.95rem;
 }
 @media print {
-    .main-header,.main-footer,.btn-primary,.btn-secondary,#pos-search,#pos-categoria,#btn-pos-pagar,#btn-pos-limpiar,#pos-factura-data,#btn-nuevo-producto{display:none!important;}
+    .main-header,.main-footer,.btn-primary,.btn-secondary,#pos-search,#pos-categoria,#btn-pos-pagar,#btn-pos-limpiar,#pos-factura-data,#btn-nuevo-producto,.pos-coupon-section{display:none!important;}
     body{background:#fff!important;color:#000!important;}
     .container{max-width:100%!important;margin:0!important;padding:20px!important;}
     #pos-cart-items{max-height:none!important;overflow:visible!important;}
-    [style*="grid-template-columns:1fr 400px"]{grid-template-columns:1fr!important;}
     .pos-producto-card{display:none!important;}
 }
 </style>
@@ -167,6 +196,7 @@ require_once __DIR__ . '/../layouts/header.php';
 <script>
 let posItems = [];
 let posProductos = [];
+let posCuponAplicado = null;
 
 $(document).ready(function() {
     cargarCategorias();
@@ -183,6 +213,9 @@ $(document).ready(function() {
     $('#btn-pos-limpiar').on('click', function() {
         if (confirm('¿Limpiar ticket actual?')) {
             posItems = [];
+            posCuponAplicado = null;
+            $('#pos-cupon-input').val('');
+            $('#pos-cupon-result').hide();
             renderPOSSidebar();
         }
     });
@@ -200,23 +233,36 @@ $(document).ready(function() {
         $('#pos-factura-data').slideDown();
         $('html, body').animate({ scrollTop: $(document).height() }, 500);
     });
+
+    // Validar cupón en POS
+    $('#btn-validar-cupon-pos').on('click', function() {
+        const codigo = $('#pos-cupon-input').val().trim();
+        if (!codigo) {
+            App.notify('Ingresa un código de cupón', 'warning');
+            return;
+        }
+        validarCuponPOS(codigo);
+    });
+
+    $('#pos-cupon-input').on('keypress', function(e) {
+        if (e.which === 13) {
+            $('#btn-validar-cupon-pos').click();
+        }
+    });
 });
 
 function cargarCategorias() {
-    $.getJSON(App.baseUrl + 'api/productos.php?action=destacados&limit=1', function(r) {
-        // Obtener categorías desde los productos destacados o endpoint
-        $.getJSON(App.baseUrl + 'api/productos.php?limit=100', function(resp) {
-            if (resp.success && resp.data && resp.data.productos) {
-                const cats = new Set();
-                resp.data.productos.forEach(p => {
-                    if (p.categoria_nombre) cats.add(p.categoria_nombre);
-                });
+    App.ajax({
+        url: App.baseUrl + 'api/productos.php?action=categorias',
+        method: 'GET',
+        success: function(response) {
+            if (response.success && response.data) {
                 const $sel = $('#pos-categoria');
-                cats.forEach(c => {
-                    $sel.append(`<option value="${c}">${c}</option>`);
+                response.data.forEach(c => {
+                    $sel.append(`<option value="${c.nombre}">${c.nombre}</option>`);
                 });
             }
-        });
+        }
     });
 }
 
@@ -257,7 +303,7 @@ function renderProductosPOS(productos) {
 
     let html = '';
     productos.forEach(p => {
-        const img = p.imagen_principal || 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=150&q=80';
+        const img = p.imagen_principal || App.baseUrl + 'public/uploads/productos/placeholder.svg';
         html += `
             <div class="pos-producto-card" onclick="agregarAPOS(${p.id}, '${p.nombre.replace(/'/g, "\\'")}', ${p.precio}, '${img}')">
                 <img src="${img}" alt="${p.nombre}" loading="lazy">
@@ -321,13 +367,29 @@ function renderPOSSidebar() {
                 </div>
                 <div class="pos-item-price">${App.formatCurrency(item.subtotal)}</div>
                 <div class="pos-item-remove" onclick="eliminarItemPOS(${idx})"><i class="fa-solid fa-xmark"></i></div>
+            </div>
         `;
     });
 
     $container.html(html);
-    const total = subtotal;
+    
+    // Calcular descuento por cupón
+    let descuento = 0;
+    if (posCuponAplicado) {
+        if (posCuponAplicado.tipo_descuento === 'porcentaje') {
+            descuento = subtotal * (posCuponAplicado.valor / 100);
+            if (posCuponAplicado.maximo_descuento && descuento > parseFloat(posCuponAplicado.maximo_descuento)) {
+                descuento = parseFloat(posCuponAplicado.maximo_descuento);
+            }
+        } else if (posCuponAplicado.tipo_descuento === 'monto_fijo') {
+            descuento = parseFloat(posCuponAplicado.valor);
+        }
+    }
+    
+    const total = Math.max(0, subtotal - descuento);
+    
     $('#pos-subtotal').text(App.formatCurrency(subtotal));
-    $('#pos-descuento').text('L. 0.00');
+    $('#pos-descuento').text(descuento > 0 ? '-' + App.formatCurrency(descuento) : 'L. 0.00');
     $('#pos-total').text(App.formatCurrency(total));
     $btn.html(`<i class="fa-solid fa-check-circle"></i> Cobrar (${App.formatCurrency(total)})`);
 }
@@ -349,6 +411,38 @@ function eliminarItemPOS(idx) {
     renderPOSSidebar();
 }
 
+function validarCuponPOS(codigo) {
+    App.ajax({
+        url: App.baseUrl + 'api/promociones.php',
+        method: 'POST',
+        data: { action: 'validar', codigo: codigo },
+        success: function(response) {
+            const $result = $('#pos-cupon-result');
+            if (response.success && response.data) {
+                posCuponAplicado = response.data;
+                $result.html(`<div style="padding:8px 12px;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.3);border-radius:6px;color:#34D399;font-size:0.85rem;">
+                    <i class="fa-solid fa-check-circle"></i> Cupón aplicado: ${posCuponAplicado.tipo_descuento === 'porcentaje' ? posCuponAplicado.valor + '%' : App.formatCurrency(posCuponAplicado.valor)} de descuento
+                </div>`).show();
+                App.notify('Cupón aplicado exitosamente', 'success');
+                renderPOSSidebar();
+            } else {
+                posCuponAplicado = null;
+                $result.html(`<div style="padding:8px 12px;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);border-radius:6px;color:#F87171;font-size:0.85rem;">
+                    <i class="fa-solid fa-times-circle"></i> ${response.message || 'El cupón no es válido o ha expirado'}
+                </div>`).show();
+                renderPOSSidebar();
+            }
+        },
+        error: function() {
+            posCuponAplicado = null;
+            $('#pos-cupon-result').html(`<div style="padding:8px 12px;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);border-radius:6px;color:#F87171;font-size:0.85rem;">
+                <i class="fa-solid fa-times-circle"></i> Error al validar el cupón
+            </div>`).show();
+            renderPOSSidebar();
+        }
+    });
+}
+
 function generarFactura() {
     const data = $('#form-factura').serializeArray();
     const items = posItems.map(i => ({
@@ -358,7 +452,21 @@ function generarFactura() {
         precio_unitario: i.precio_unitario,
         subtotal: i.subtotal
     }));
-    const total = posItems.reduce((a, i) => a + i.subtotal, 0);
+    const subtotal = posItems.reduce((a, i) => a + i.subtotal, 0);
+    
+    let descuento = 0;
+    if (posCuponAplicado) {
+        if (posCuponAplicado.tipo_descuento === 'porcentaje') {
+            descuento = subtotal * (posCuponAplicado.valor / 100);
+            if (posCuponAplicado.maximo_descuento && descuento > parseFloat(posCuponAplicado.maximo_descuento)) {
+                descuento = parseFloat(posCuponAplicado.maximo_descuento);
+            }
+        } else if (posCuponAplicado.tipo_descuento === 'monto_fijo') {
+            descuento = parseFloat(posCuponAplicado.valor);
+        }
+    }
+    
+    const total = Math.max(0, subtotal - descuento);
     const cambio = Math.max(0, (parseFloat($('input[name="monto_recibido"]').val()) || total) - total);
 
     // Generar factura directamente e imprimir
@@ -370,6 +478,7 @@ function generarFactura() {
     const recibido = parseFloat($('input[name="monto_recibido"]').val()) || total;
 
     const printWindow = window.open('', '_blank', 'width=400,height=600');
+    const appName = window.APP_NAME || 'MarketZone HN';
     printWindow.document.write(`
         <html><head><title>Factura ${facturaNum}</title>
         <style>
@@ -390,14 +499,16 @@ function generarFactura() {
     </style></head>
     <body>
         <div class="header">
-            <h1>${APP_NAME}</h1>
+            <h1>${appName}</h1>
             <h2>PUNTO DE VENTA</h2>
             <div class="badge">FACTURA ${facturaNum}</div>
             <div>Fecha: ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}</div>
+        </div>
         <div class="info">
             <div><strong>Cliente:</strong> ${cliente}</div>
             <div><strong>RUC:</strong> ${ruc}</div>
             <div><strong>Dirección:</strong> ${direccion}</div>
+        </div>
         <table>
             <tr><th>Cant</th><th>Descripción</th><th class="right">Precio</th><th class="right">Total</th></tr>
             ${items.map(i => `
@@ -410,11 +521,13 @@ function generarFactura() {
             `).join('')}
         </table>
         <div class="totals">
-            <div class="total-row"><span>Subtotal</span><span>${App.formatCurrency(total)}</span></div>
+            <div class="total-row"><span>Subtotal</span><span>${App.formatCurrency(subtotal)}</span></div>
+            <div class="total-row"><span>Descuento</span><span>-${App.formatCurrency(descuento)}</span></div>
             <div class="total-row"><span>Método Pago</span><span>${metodo}</span></div>
             <div class="total-row"><span>Recibido</span><span>${App.formatCurrency(recibido)}</span></div>
             <div class="total-row"><span>Cambio</span><span>${App.formatCurrency(cambio)}</span></div>
             <div class="total-row grand-total"><span>TOTAL</span><span>${App.formatCurrency(total)}</span></div>
+        </div>
         <div class="footer">
             <p>¡Gracias por su compra!</p>
             <p>MarketZone - Todos los derechos reservados</p>
@@ -426,8 +539,11 @@ function generarFactura() {
         printWindow.print();
         // Limpiar ticket después de imprimir
         posItems = [];
+        posCuponAplicado = null;
         renderPOSSidebar();
         $('#form-factura')[0].reset();
+        $('#pos-cupon-input').val('');
+        $('#pos-cupon-result').hide();
         $('#pos-factura-data').slideUp();
         App.notify('Factura generada: ' + facturaNum, 'success');
     }, 500);
@@ -435,3 +551,4 @@ function generarFactura() {
 </script>
 
 <?php require_once __DIR__ . '/../layouts/footer.php'; ?>
+

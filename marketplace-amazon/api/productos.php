@@ -15,6 +15,10 @@ switch ($method) {
             $controller->categorias();
         } elseif ($action === 'relacionados') {
             $controller->relacionados();
+        } elseif ($action === 'resenas') {
+            $controller->resenas();
+        } elseif ($action === 'all') {
+            $controller->index();
         } elseif ($id !== null && $id > 0) {
             $controller->show($id);
         } else {
@@ -25,10 +29,14 @@ switch ($method) {
     case 'POST':
         if ($action === 'store') {
             $controller->store();
+        } elseif ($action === 'update') {
+            $controller->update();
         } elseif ($action === 'update_stock') {
             $controller->updateStock();
         } elseif ($action === 'delete' && $id > 0) {
             $controller->delete($id);
+        } elseif ($action === 'store_resena') {
+            $controller->storeResena();
         } else {
             Response::error('Acción POST no válida', 400);
         }
@@ -38,3 +46,4 @@ switch ($method) {
         Response::error('Método HTTP no soportado', 405);
         break;
 }
+

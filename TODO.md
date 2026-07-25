@@ -1,55 +1,51 @@
-# TODO - Fixes ProyectoWebII Marketplace
+# Plan de Implementación - Mejoras MarketZone
 
-## Completed Fixes
+## ✅ Step 1: Quitar imágenes predeterminadas de productos
+- [x] Remove hardcoded Unsplash fallback URLs from `productos.js`
+- [x] Remove from `catalogo.php` (renderCatalogoProducts)
+- [x] Remove from `gestion.php` (renderGestionProductos)
+- [x] Remove from `pos.php` (renderProductosPOS)
+- [x] Remove from `carrito.js` (renderCarrito, showCartModal)
+- [x] Remove from `detalle.js` (renderDetalleProducto)
+- [x] Created placeholder SVG at `public/uploads/productos/placeholder.svg`
 
-### 1. Total compras de clientes sale 0.0
-- ✅ Fixed ClienteModel.php getProfile() - now uses correct query with subquery from pedidos table and GREATEST() fallback
+## ✅ Step 2: Solo administrador puede editar productos
+- [x] Add `update` action in `api/productos.php`
+- [x] Add `update()` + edit permission check (admin only) in `ProductoController`
+- [x] Add edit button/modal UI in `gestion.php`
 
-### 2. Método de búsqueda no funciona
-- ✅ Created catalogo.php (was empty 0 bytes) with full search, filters, pagination
-- ✅ Search redirect from main.js now works correctly
+## ✅ Step 3: Paginación - botón siguiente y números funcionales
+- [x] Fix `loadProductsByCategory()` to use proper limit + page parameter
+- [x] `renderPagination()` in utils.js already had next/prev buttons working
 
-### 3. Dashboard de admin - botones no funcionan
-- ✅ Fixed analytics.js - added working CSV export function with hidden form download
-- ✅ Added filter tab click handlers to load chart data by timeframe
+## ✅ Step 4: POS - productos en fila vertical
+- [x] Changed POS layout from grid (side-by-side) to single column stack (flex-direction: column)
 
-### 4. Imágenes no se cargan en la página
-- ✅ Fixed upload.php - image URL paths corrected for proper loading
+## ✅ Step 5: POS - campo para aplicar cupón
+- [x] Added coupon input + validate button in POS ticket sidebar
+- [x] Validates via `api/promociones.php?action=validar`
+- [x] Applies discount (percentage or fixed amount) to total
 
-### 5. Productos inactivos aparecen en página principal
-- ✅ Added `WHERE p.estado = 'activo'` to getAll(), countFiltered(), getDestacados() in ProductoModel.php
+## ✅ Step 6: Mejorar gestión de ofertas y cupones
+- [x] Fixed broken HTML structure in `promociones/gestion.php` (missing closing tags)
+- [x] Added coupon validation modal
+- [x] Improved form layout and styling
 
-### 6. Seleccionar categoría del producto
-- ✅ Added category dropdown (select) in gestion.php form with AJAX load from API
+## ✅ Step 7: MarketZone muestre todos los productos
+- [x] Changed `loadDestacados()` → `loadIndexProducts()` to load all products with pagination
+- [x] Shows 12 products per page with pagination controls
+- [x] Category filter buttons still work on index
 
-### 7. Sistema de reseñas de productos
-- ✅ Added reseñas section in detalle.php
-- ✅ Added loadResenas() and renderResenas() in productos.js with star rating
-- ✅ Added form to submit reviews with dynamic star selection
+## ✅ Step 8: Reseñas funcionales
+- [x] Added `getResenas()` in `ProductoModel` (queries reseñas_productos table)
+- [x] Added `createResena()` in `ProductoModel`
+- [x] Added `resenas()` and `storeResena()` methods in `ProductoController`
+- [x] Added `action=resenas` and `action=store_resena` routes in `api/productos.php`
+- [x] Fixed `loadResenas()` JS to call correct endpoint
+- [x] Form submit now sends data to API and reloads dynamically
 
-### 8. Productos relacionados
-- ✅ Added getRelacionados() method in ProductoModel.php
-- ✅ Added relacionados() action in ProductoController.php
-- ✅ Added relacionados route in api/productos.php
-- ✅ Added loadProductosRelacionados() in productos.js
-
-### 9. Mensaje de iniciar sesión para carrito
-- ✅ Added checkAuthBeforeCart() function that checks auth before allowing cart add
-- ✅ Shows informative message and redirects to login page
-
-### 10. Paginación (siguiente página/números)
-- ✅ Added pagination CSS styles (page-btn, .active, .disabled) in main.css
-- ✅ Fixed renderPagination() in utils.js with proper styling classes
-- ✅ Added error handling fallbacks in loadProducts() and loadProductsByCategory()
-
-### 11. Editar información de cliente
-- ✅ Fixed event delegation in clientes.js - changed from direct binding to $(document).on() for dynamically loaded forms
-
-### 12. Mensaje específico de baneo
-- ✅ Added bloqueado check in AuthController.php login() - shows specific ban reason instead of generic error
-
-### 13. Recuperar contraseña con token
-- ✅ Updated auth.js forgot_password handler to display token visually with copy button and direct link to reset page
-- ✅ Made token input visible (not hidden) in reset_password.php so user can paste token
-- ✅ Added token input field with monospace styling for easy pasting
+## ✅ Step 9: Búsqueda - corregir error
+- [x] Fixed duplicate `loadProducts()` vs `loadCatalogoProducts()` conflict
+- [x] Removed `loadProducts()` call from catalog page
+- [x] Search parameter properly passed to API via `loadCatalogoProducts()`
 

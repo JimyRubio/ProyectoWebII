@@ -231,6 +231,36 @@ class ProductoModel extends Model {
     }
 
     /**
+     * Obtiene las reseñas de un producto
+     */
+    public function getResenas(int $productoId): array {
+        $sql = "SELECT r.*, CONCAT(u.nombre, ' ', u.apellido) as cliente_nombre
+                FROM reseñas_productos r
+                INNER JOIN clientes c ON r.cliente_id = c.id
+                INNER JOIN usuarios u ON c.usuario_id = u.id
+                WHERE r.producto_id = :producto_id AND r.aprobado = 1
+                ORDER BY r.created_at DESC";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([':producto_id' => $productoId]);
+        return $stmt->fetchAll();
+    }
+
+    /**
+     * Crea una reseña de producto
+     */
+    public function createResena(array $data): bool {
+        $sql = "INSERT INTO reseñas_productos (producto_id, cliente_id, calificacion, comentario, aprobado, created_at)
+                VALUES (:producto_id, :cliente_id, :calificacion, :comentario, 1, NOW())";
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute([
+            ':producto_id' => $data['producto_id'],
+            ':cliente_id' => $data['cliente_id'],
+            ':calificacion' => $data['calificacion'],
+            ':comentario' => $data['comentario'] ?? ''
+        ]);
+    }
+
+    /**
      * Obtiene productos relacionados por categoría, excluyendo un ID específico
      */
     public function getRelacionados(int $categoriaId, int $excludeId = 0, int $limit = 4): array {

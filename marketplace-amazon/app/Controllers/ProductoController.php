@@ -154,6 +154,104 @@ class ProductoController {
     }
 
     /**
+     * Actualiza un producto existente (solo administrador)
+     */
+    public function update(): void {
+        AuthHelper::requireAuth();
+        // Solo administrador puede editar productos
+        if (!AuthHelper::hasRole('administrador') && !AuthHelper::hasRole('admin')) {
+            Response::error('No tienes permisos para editar productos', 403);
+        }
+
+        $token = $_POST['csrf_token'] ?? $_SERVER['HTTP_X_CSRF_TOKEN'] ?? null;
+        if (!Security::verifyCsrfToken($token)) {
+            Response::error('Token CSRF no válido o expirado', 403);
+        }
+
+        $id = (int)($_POST['id'] ?? 0);
+        if ($id <= 0) {
+            Response::error('ID de producto no válido', 400);
+        }
+
+        $data = [
+            'categoria_id' => (int)($_POST['categoria_id'] ?? 1),
+            'nombre' => Security::sanitizeString($_POST['nombre'] ?? ''),
+            'descripcion_corta' => Security::sanitizeString($_POST['descripcion_corta'] ?? ''),
+            'descripcion_larga' => Security::sanitizeString($_POST['descripcion_larga'] ?? ''),
+            'precio' => (float)($_POST['precio'] ?? 0),
+            'precio_oferta' => !empty($_POST['precio_oferta']) ? (float)$_POST['precio_oferta'] : null,
+            'stock' => (int)($_POST['stock'] ?? 0),
+            'estado' => Security::sanitizeString($_POST['estado'] ?? 'activo'),
+            'destacado' => (int)($_POST['destacado'] ?? 0),
+            'oferta' => (int)($_POST['oferta'] ?? 0)
+        ];
+
+        if (empty($data['nombre']) || $data['precio'] <= 0) {
+            Response::error('El nombre y un precio válido son requeridos', 400);
+        }
+
+        try {
+            if ($this->model->update($id, $data)) {
+                Response::success(null, 'Producto actualizado exitosamente');
+            } else {
+                Response::error('Error al actualizar el producto', 500);
+            }
+        } catch (Exception $e) {
+            Response::error('Error al actualizar el producto: ' . $e->getMessage(), 500);
+        }
+    }
+
+    /**
+     * Obtiene las reseñas de un producto
+     */
+    public function resenas(): void {
+        $productoId = isset($_GET['producto_id']) ? (int)$_GET['producto_id'] : 0;
+        if ($productoId <= 0) {
+            Response::error('ID de producto requerido', 400);
+        }
+        $resenas = $this->model->getResenas($productoId);
+        Response::success($resenas, 'Reseñas obtenidas');
+    }
+
+    /**
+     * Guarda una reseña de producto
+     */
+    public function storeResena(): void {
+        AuthHelper::requireAuth();
+
+        $token = $_POST['csrf_token'] ?? $_SERVER['HTTP_X_CSRF_TOKEN'] ?? null;
+        if (!Security::verifyCsrfToken($token)) {
+            Response::error('Token CSRF no válido o expirado', 403);
+        }
+
+        $productoId = (int)($_POST['producto_id'] ?? 0);
+        $calificacion = (int)($_POST['calificacion'] ?? 0);
+        $comentario = Security::sanitizeString($_POST['comentario'] ?? '');
+        $user = AuthHelper::user();
+
+        if ($productoId <= 0 || $calificacion < 1 || $calificacion > 5) {
+            Response::error('Datos de reseña inválidos', 400);
+        }
+
+        if (!$user['cliente_id']) {
+            Response::error('Solo los clientes pueden dejar reseñas', 403);
+        }
+
+        try {
+            $data = [
+                'producto_id' => $productoId,
+                'cliente_id' => $user['cliente_id'],
+                'calificacion' => $calificacion,
+                'comentario' => $comentario
+            ];
+            $result = $this->model->createResena($data);
+            Response::success($result, 'Reseña enviada exitosamente');
+        } catch (Exception $e) {
+            Response::error('Error al guardar la reseña: ' . $e->getMessage(), 500);
+        }
+    }
+
+    /**
      * Elimina un producto
      */
     public function delete(int $id): void {

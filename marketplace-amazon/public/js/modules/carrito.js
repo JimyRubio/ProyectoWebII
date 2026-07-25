@@ -68,7 +68,7 @@ function renderCarrito(cart) {
     cart.items.forEach(item => {
         html += `
             <div class="carrito-item" data-id="${item.id}">
-                <img src="${item.imagen_url || 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=100&q=80'}" alt="${item.producto_nombre}">
+                <img src="${item.imagen_url || App.baseUrl + 'public/uploads/productos/placeholder.svg'}" alt="${item.producto_nombre}">
                 <div class="item-info">
                     <h4>${item.producto_nombre}</h4>
                     <p class="item-sku">SKU: ${item.sku}</p>
@@ -130,7 +130,7 @@ function showCartModal(cart) {
         cart.items.forEach(item => {
             itemsHtml += `
                 <div class="cart-modal-item">
-                    <img src="${item.imagen_url || 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=50&q=80'}" width="40" height="40" style="border-radius:6px;object-fit:cover;">
+                    <img src="${item.imagen_url || App.baseUrl + 'public/uploads/productos/placeholder.svg'}" width="40" height="40" style="border-radius:6px;object-fit:cover;">
                     <div class="cart-modal-info">
                         <strong>${item.producto_nombre}</strong>
                         <span>x${item.cantidad} - ${App.formatCurrency(item.subtotal)}</span>

@@ -9,14 +9,14 @@ let currentCategoryId = 0;
 $(document).ready(function () {
     // Si estamos en la página de inicio (index.php)
     if ($('#productos-destacados').length) {
-        loadDestacados();
+        loadIndexProducts(1);
         loadCategoriasIndex();
     }
 
-    // Si estamos en el catálogo
-    if ($('#catalogo-productos-grid').length) {
-        loadProducts(1);
-    }
+// Si estamos en el catálogo - NO llamar loadProducts, el catálogo tiene su propia función loadCatalogoProducts
+    // if ($('#catalogo-productos-grid').length) {
+    //     loadProducts(1);
+    // }
 
     // Si estamos en detalle de producto
     if ($('#producto-detalle-container').length) {
@@ -113,11 +113,45 @@ function renderCategoriasButtons(categorias) {
     });
 }
 
+/**
+ * Carga todos los productos paginados para la página de inicio (MarketZone)
+ */
+function loadIndexProducts(page) {
+    page = page || 1;
+    currentPage = page;
+    currentSearch = '';
+    currentCategoryId = 0;
+
+    App.ajax({
+        url: App.baseUrl + 'api/productos.php',
+        method: 'GET',
+        data: {
+            page: page,
+            limit: 12,
+            search: ''
+        },
+        success: function (response) {
+            if (response.success && response.data) {
+                renderProductsGrid('#productos-destacados', response.data.productos);
+                App.renderPagination('#productos-pagination', response.data.pagination, function (newPage) {
+                    loadIndexProducts(newPage);
+                });
+            } else {
+                $('#productos-destacados').html('<div class="no-products-msg"><p>No se encontraron productos disponibles.</p></div>');
+                $('#productos-pagination').empty();
+            }
+        },
+        error: function() {
+            $('#productos-destacados').html('<div class="no-products-msg"><p>Error al cargar productos.</p></div>');
+        }
+    });
+}
+
 function loadProductsByCategory(categoriaId) {
     App.ajax({
         url: App.baseUrl + 'api/productos.php',
         method: 'GET',
-        data: { categoria_id: categoriaId, limit: 6 },
+        data: { categoria_id: categoriaId, limit: 12 },
         success: function (response) {
             if (response.success && response.data) {
                 renderProductsGrid('#productos-destacados', response.data.productos);
@@ -184,7 +218,7 @@ function renderProductsGrid(containerSelector, products) {
     var html = '';
     for (var i = 0; i < products.length; i++) {
         var p = products[i];
-        var imgUrl = p.imagen_principal || 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&q=80';
+        var imgUrl = p.imagen_principal || App.baseUrl + 'public/uploads/productos/placeholder.svg';
         var badge = p.oferta ? '<span class="product-badge">Oferta</span>' : (p.nuevo ? '<span class="product-badge">Nuevo</span>' : '');
 
         html += '<div class="product-card" data-id="' + p.id + '">';
@@ -274,31 +308,33 @@ function loadResenas(productId) {
     App.ajax({
         url: App.baseUrl + 'api/productos.php',
         method: 'GET',
-        data: { id: productId },
+        data: { action: 'resenas', producto_id: productId },
         success: function (response) {
             if (response.success && response.data) {
-                renderResenas(response.data);
+                renderResenas(response.data, productId);
+            } else {
+                renderResenas([], productId);
             }
+        },
+        error: function() {
+            renderResenas([], productId);
         }
     });
 }
 
 /**
- * Renderiza las reseñas del producto (simuladas desde la tabla reseñas_productos)
+ * Renderiza las reseñas del producto
  */
-function renderResenas(product) {
+function renderResenas(resenas, productId) {
     var $container = $('#resenas-container');
     if (!$container.length) return;
 
-    // Como las reseñas están en tabla reseñas_productos, cargamos desde una API específica
-    // Por ahora, mostramos mensaje informativo y un formulario para dejar reseña
     var html = '';
     html += '<div class="resenas-list" style="margin-bottom:20px;">';
     
-    // Verificar si el producto tiene reseñas en los datos
-    if (product.resenas && product.resenas.length > 0) {
-        for (var k = 0; k < product.resenas.length; k++) {
-            var r = product.resenas[k];
+    if (resenas && resenas.length > 0) {
+        for (var k = 0; k < resenas.length; k++) {
+            var r = resenas[k];
             html += '<div class="resena-item" style="background:var(--bg-card);border:1px solid var(--border-color);border-radius:12px;padding:15px;margin-bottom:12px;">';
             html += '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">';
             html += '<i class="fa-solid fa-user" style="font-size:1.2rem;color:var(--primary-400);"></i>';
@@ -322,7 +358,8 @@ function renderResenas(product) {
     html += '<div class="resena-form" style="background:var(--bg-card);border:1px solid var(--border-color);border-radius:12px;padding:20px;">';
     html += '<h4 style="margin-bottom:15px;"><i class="fa-solid fa-pen"></i> Deja tu reseña</h4>';
     html += '<form id="form-resena">';
-    html += '<input type="hidden" name="producto_id" value="' + product.id + '">';
+    html += '<input type="hidden" name="producto_id" value="' + productId + '">';
+    html += '<input type="hidden" name="action" value="store_resena">';
     html += '<div class="form-group">';
     html += '<label>Calificación</label>';
     html += '<div class="star-rating" style="display:flex;gap:5px;font-size:1.5rem;color:var(--secondary-500);cursor:pointer;">';
@@ -352,11 +389,26 @@ function renderResenas(product) {
             App.notify('Por favor selecciona una calificación', 'warning');
             return;
         }
-        App.notify('Reseña enviada. Gracias por tu opinión!', 'success');
-        $('#form-resena')[0].reset();
-        $('#resena-calificacion').val(0);
-        // Reset stars
-        $('.star-rating i').removeClass('fa-solid').addClass('fa-regular');
+        
+        var formData = $(this).serialize();
+        
+        App.ajax({
+            url: App.baseUrl + 'api/productos.php',
+            method: 'POST',
+            data: formData,
+            success: function(response) {
+                if (response.success) {
+                    App.notify('Reseña enviada. Gracias por tu opinión!', 'success');
+                    $('#form-resena')[0].reset();
+                    $('#resena-calificacion').val(0);
+                    $('.star-rating i').removeClass('fa-solid').addClass('fa-regular');
+                    // Recargar reseñas
+                    loadResenas(productId);
+                } else {
+                    App.notify(response.message || 'Error al enviar la reseña', 'error');
+                }
+            }
+        });
     });
 }
 
@@ -416,7 +468,7 @@ function renderDetalleProducto(product) {
 
     var imgPrincipal = (product.imagenes && product.imagenes.length > 0) 
         ? product.imagenes[0].url 
-        : (product.imagen_principal || 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&q=80');
+        : (product.imagen_principal || App.baseUrl + 'public/uploads/productos/placeholder.svg');
 
     // Imágenes adicionales como thumbnails
     var imagenesHtml = '';

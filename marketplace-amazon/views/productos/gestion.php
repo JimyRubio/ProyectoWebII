@@ -193,7 +193,7 @@ function renderGestionProductos(productos) {
     productos.forEach(p => {
         html += `
             <tr>
-                <td><img src="${p.imagen_principal || 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=50&q=80'}" class="producto-thumb-sm"></td>
+                <td><img src="${p.imagen_principal || App.baseUrl + 'public/uploads/productos/placeholder.svg'}" class="producto-thumb-sm"></td>
                 <td><strong>${p.nombre}</strong><br><span style="font-size:0.8rem;color:var(--text-secondary)">${p.categoria_nombre}</span></td>
                 <td>${p.sku}</td>
                 <td>${App.formatCurrency(p.precio)}</td>

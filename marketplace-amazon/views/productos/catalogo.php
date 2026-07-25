@@ -132,7 +132,7 @@ function renderCatalogoProducts(productos) {
 
     let html = '';
     productos.forEach(function(p) {
-        var imgUrl = p.imagen_principal || 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&q=80';
+        var imgUrl = p.imagen_principal || App.baseUrl + 'public/uploads/productos/placeholder.svg';
         var badge = p.oferta ? '<span class="product-badge">Oferta</span>' : (p.nuevo ? '<span class="product-badge">Nuevo</span>' : '');
 
         html += '<div class="product-card" data-id="' + p.id + '">';
