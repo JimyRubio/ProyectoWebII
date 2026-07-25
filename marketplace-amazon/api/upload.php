@@ -76,7 +76,8 @@ $rutaDestino = $uploadDir . $nombreUnico;
 
 // Mover el archivo
 if (move_uploaded_file($archivo['tmp_name'], $rutaDestino)) {
-    $url = BASE_URL . 'public/uploads/productos/' . $nombreUnico;
+    // Usar ruta relativa desde la raíz del servidor para que funcione con cualquier dominio/puerto
+    $url = '/public/uploads/productos/' . $nombreUnico;
     Response::success([
         'url' => $url,
         'nombre' => $nombreUnico

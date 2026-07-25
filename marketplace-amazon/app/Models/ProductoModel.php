@@ -11,7 +11,7 @@ class ProductoModel extends Model {
                 FROM productos p
                 INNER JOIN categorias c ON p.categoria_id = c.id
                 INNER JOIN tiendas t ON p.tienda_id = t.id
-                WHERE 1=1";
+                WHERE p.estado = 'activo'";
         
         $params = [];
 
@@ -49,7 +49,7 @@ class ProductoModel extends Model {
      * Cuenta el total de productos según los filtros aplicados
      */
     public function countFiltered(string $search = '', ?int $categoria_id = null, ?int $tienda_id = null): int {
-        $sql = "SELECT COUNT(*) as total FROM productos p WHERE 1=1";
+        $sql = "SELECT COUNT(*) as total FROM productos p WHERE p.estado = 'activo'";
         $params = [];
 
         if (!empty($search)) {

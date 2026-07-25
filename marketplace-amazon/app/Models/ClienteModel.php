@@ -67,8 +67,14 @@ class ClienteModel extends Model {
     public function getProfile(int $usuarioId): ?array {
         $sql = "SELECT u.id, u.email, u.nombre, u.apellido, u.telefono, u.direccion, u.genero, u.fecha_nacimiento,
                        c.id as cliente_id, c.tipo_cliente, c.puntos_lealtad,
-                       COALESCE((SELECT SUM(total) FROM pedidos WHERE cliente_id = c.id AND estado = 'entregado'), 0) as total_compras,
-                       COALESCE((SELECT COUNT(*) FROM pedidos WHERE cliente_id = c.id AND estado IN ('entregado', 'enviado', 'confirmado')), 0) as total_pedidos
+                       GREATEST(
+                           COALESCE((SELECT SUM(total) FROM pedidos WHERE cliente_id = c.id AND estado = 'entregado'), 0),
+                           COALESCE(c.total_compras, 0)
+                       ) as total_compras,
+                       GREATEST(
+                           COALESCE((SELECT COUNT(*) FROM pedidos WHERE cliente_id = c.id AND estado IN ('entregado', 'enviado', 'confirmado')), 0),
+                           COALESCE(c.total_pedidos, 0)
+                       ) as total_pedidos
                 FROM usuarios u
                 INNER JOIN clientes c ON c.usuario_id = u.id
                 WHERE u.id = :usuario_id";

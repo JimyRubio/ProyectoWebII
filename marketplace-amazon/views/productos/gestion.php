@@ -33,9 +33,18 @@ require_once __DIR__ . '/../layouts/header.php';
             </div>
             <div class="form-row">
                 <div class="form-group">
+                    <label>Categoría *</label>
+                    <select name="categoria_id" class="form-control" required>
+                        <option value="">Seleccionar categoría...</option>
+                        <!-- Carga dinámica vía AJAX -->
+                    </select>
+                </div>
+                <div class="form-group">
                     <label>Stock</label>
                     <input type="number" name="stock" class="form-control" value="10">
                 </div>
+            </div>
+            <div class="form-row">
                 <div class="form-group">
                     <label>SKU (autogenerado)</label>
                     <input type="text" name="sku" class="form-control" id="sku-field" placeholder="Se genera automáticamente" readonly style="background:var(--bg-secondary);opacity:0.8;cursor:not-allowed;">
@@ -110,11 +119,32 @@ require_once __DIR__ . '/../layouts/header.php';
 $(document).ready(function() {
     loadGestionProductos(1);
 
+    // Cargar categorías en el select
+    App.ajax({
+        url: App.baseUrl + 'api/productos.php?action=categorias',
+        method: 'GET',
+        success: function(response) {
+            if (response.success && response.data) {
+                const $select = $('select[name="categoria_id"]');
+                response.data.forEach(function(c) {
+                    $select.append('<option value="' + c.id + '">' + c.nombre + '</option>');
+                });
+            }
+        }
+    });
+
     $('#form-create-producto').on('submit', function(e) {
         e.preventDefault();
         const data = $(this).serializeArray();
         data.push({name: 'action', value: 'store'});
         
+        // Validar que se seleccionó una categoría
+        const catId = $(this).find('select[name="categoria_id"]').val();
+        if (!catId || catId === '') {
+            App.notify('Debes seleccionar una categoría', 'warning');
+            return;
+        }
+
         App.ajax({
             url: App.baseUrl + 'api/productos.php',
             method: 'POST',

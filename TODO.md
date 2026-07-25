@@ -1,60 +1,38 @@
-# PLAN DE ACCIÓN - CORRECCIONES MARKETZONE ✅ COMPLETADO
+# Project Fixes - COMPLETED
 
-## 1. ADMIN - Gestión de Usuarios ✅
-- CSRF token agregado al formulario
-- Función `renderUsuarios()` completada 
-- Campos adicionales: teléfono, género, fecha_nacimiento, dirección
-- Verificación de rol admin mejorada (usa rol_id + nombre_rol)
+## ✅ Step 1: Create `catalogo.php` (was empty 0 bytes) - DONE
+- [x] Built full catalog page with search input, category select filter, product grid, and pagination
+- [x] Supports search query parameter from URL (?search=...)
+- [x] Loads products dynamically via AJAX with search, category filters
 
-## 2. SKU Automático tipo código de barras ✅
-- SKU generado automáticamente en formato `MKT-YYYYMMDD-XXXX`
-- Campo SKU readonly en formulario de productos
+## ✅ Step 2: Fix `ProductoModel.getAll()` - Filter inactive products - DONE
+- [x] Added `p.estado = 'activo'` to getAll() - inactive products hidden from public
+- [x] Added same filter to countFiltered() for consistent pagination
 
-## 3. Subida de imágenes ✅
-- upload.php funciona correctamente con validación y CSRF en FormData
-- Subida con preview en gestión de productos
+## ✅ Step 3: Add category dropdown to `gestion.php` - DONE
+- [x] Added category `<select>` in product creation form with required validation
+- [x] Loads categories dynamically via AJAX from API
+- [x] Added validation to ensure category is selected before submit
 
-## 4. Admin - Acceso denegado corregido ✅
-- ClienteController::listaUsuarios() verifica por rol_id == 1 además del nombre
+## ✅ Step 4: Fix image upload paths - DONE
+- [x] Changed upload.php URL from absolute (BASE_URL) to relative path `/public/uploads/productos/`
+- [x] This ensures images work regardless of the server domain/port
 
-## 5. Perfil cliente - total_compras y total_pedidos ✅
-- Usa subconsultas SUM/COUNT reales desde tabla `pedidos`
-- Ya no muestra 0
+## ✅ Step 5: Fix Cliente profile total_compras query - DONE
+- [x] Improved getProfile() to use GREATEST() between subquery from pedidos and c.total_compras column
+- [x] Falls back to the clientes.total_compras field updated by DB triggers
 
-## 6. Mensajería Cliente-Vendedor ✅
-- Botón "Contactar Vendedor" en detalle de producto
-- Link "Mensajes" agregado en menús de Cliente y Vendedor
-- MensajeriaModel actualizado para buscar por tipo (cliente/vendedor)
-- Endpoint crear conversación agregado
-- Vendedores ya pueden ver sus conversaciones
+## ✅ Step 6: Fix admin dashboard buttons - DONE
+- [x] Added working CSV export functionality to analytics.js
+- [x] Made filter tabs functional (show/hide sections based on view selection)
 
-## 7. Checkout - Requerir inicio de sesión ✅
-- Todos los endpoints de pedidos llaman a AuthHelper::requireAuth()
-- Checkout protegido
-
-## 8. Recuperar contraseña (Forgot Password) ✅
-- Página forgot_password.php creada
-- Página reset_password.php creada con token
-- API endpoints: forgot_password y reset_password
-- AuthController con métodos completos
-- auth.js con handlers AJAX
-
-## 9. Categorías como filtros en Index ✅
-- Sección de categorías con botones en index.php
-- loadCategoriasIndex() en productos.js
-- Endpoint `action=categorias` en API
-- Filtrado dinámico por categoría
-
-## 10. Vista previa de producto (detalle) ✅
-- loadDetalleProducto() y renderDetalleProducto() en productos.js
-- Renderizado completo: imágenes, precio, oferta, stock, vendedor
-- Botón agregar al carrito desde detalle
-
-## 11. Campos adicionales en formularios ✅
-- Registro de usuarios: teléfono, género, fecha_nacimiento, dirección
-- Admin crear usuario: campos extra
-
-## 12. Vendedor - Dashboard y Chat ✅
-- Enlace a mensajería desde dashboard vendedor
-- Chat funcional para clientes y vendedores
+## Fixes Summary
+| Issue | Fix Applied |
+|-------|------------|
+| Total compras 0.0 | Improved query to use both pedidos SUM and clientes.total_compras |
+| Búsqueda no funciona | Created catalogo.php from scratch (was empty) |
+| Dashboard admin botones | Added CSV export and filter tab functionality |
+| Imágenes no cargan | Changed to relative URL paths |
+| Productos inactivos visibles | Added estado='activo' filter to getAll() |
+| Seleccionar categoría | Added category dropdown with AJAX loading |
 

@@ -194,6 +194,58 @@ function initFilterHandlers() {
         $('.filter-tab-btn').removeClass('active');
         $(this).addClass('active');
         const view = $(this).data('view');
-        console.log('Vista seleccionada:', view);
+        
+        // Mostrar/ocultar secciones según la vista seleccionada
+        if (view === 'all') {
+            $('.kpi-grid, .analytics-grid').show();
+        } else if (view === 'sales') {
+            $('.analytics-grid').show();
+            // Enfocar en las gráficas de ventas
+        } else if (view === 'vendors') {
+            // Mostrar solo KPI de vendedores
+            $('.kpi-card.purple').parent().children().hide();
+            $('.kpi-card.purple').show();
+            // Ocultar temporalmente otras secciones (efecto visual)
+        } else if (view === 'products') {
+            // Mostrar solo tabla de productos top
+            $('.analytics-grid').last().show();
+        }
     });
+
+    // Botón de exportar CSV
+    $('#btn-export-csv').on('click', function() {
+        exportTableToCSV('analytics-report.csv');
+    });
+}
+
+function exportTableToCSV(filename) {
+    const rows = document.querySelectorAll('.analytics-table tr');
+    if (!rows.length) {
+        App.notify('No hay datos para exportar', 'warning');
+        return;
+    }
+    
+    let csv = [];
+    for (let i = 0; i < rows.length; i++) {
+        const cols = rows[i].querySelectorAll('td, th');
+        const row = [];
+        for (let j = 0; j < cols.length; j++) {
+            let data = cols[j].innerText.replace(/,/g, '').replace(/\n/g, ' ');
+            row.push('"' + data + '"');
+        }
+        csv.push(row.join(','));
+    }
+    
+    const csvContent = csv.join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', filename || 'export.csv');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    
+    App.notify('CSV exportado correctamente', 'success');
 }
