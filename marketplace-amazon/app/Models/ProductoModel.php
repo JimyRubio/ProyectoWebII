@@ -217,8 +217,8 @@ class ProductoModel extends Model {
                 $existingImg = $stmtCheck->fetch();
 
                 if ($existingImg) {
-                    // Actualizar la imagen principal existente
-                    $sqlImg = "UPDATE imagenes_productos SET url = :url, updated_at = NOW() WHERE id = :id";
+                    // Actualizar la imagen principal existente (tabla no tiene updated_at)
+                    $sqlImg = "UPDATE imagenes_productos SET url = :url WHERE id = :id";
                     $stmtImg = $this->db->prepare($sqlImg);
                     $stmtImg->execute([
                         ':url' => $data['imagen_url'],

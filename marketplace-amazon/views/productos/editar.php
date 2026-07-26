@@ -218,10 +218,10 @@ $(document).ready(function() {
         $('#edit-descripcion_corta').val(p.descripcion_corta || '');
         $('#edit-descripcion_larga').val(p.descripcion_larga || '');
 
-        // Imagen actual
+        // Imagen actual (solo preview, NO enviar al submit a menos que se suba una nueva)
         var imgUrl = p.imagen_principal || App.baseUrl + 'public/uploads/productos/placeholder.svg';
         $('#edit-current-img').attr('src', imgUrl);
-        $('#edit-imagen_url_hidden').val(imgUrl);
+        $('#edit-imagen_url_hidden').val(''); // Vacío para no enviar imagen a menos que se cambie
     }
 
     // Subir imagen

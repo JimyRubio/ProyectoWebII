@@ -63,3 +63,7 @@
 - [x] Subida de imagen con preview en la página de edición
 - [x] Redirección a gestión después de guardar exitosamente
 
+### 🐛 Bugfixes Step 11 (Error 500 al guardar)
+- [x] **`app/Models/ProductoModel.php`**: La tabla `imagenes_productos` NO tiene columna `updated_at`. Se eliminó `updated_at = NOW()` del UPDATE de imagen principal que causaba SQL error.
+- [x] **`views/productos/editar.php`**: El campo oculto `imagen_url` se prellenaba con la URL de la imagen actual al cargar la página. Esto causaba que en cada guardado se intentara actualizar la imagen aunque el usuario no hubiera cambiado nada. Se cambió a que inicie vacío y solo se complete cuando el usuario sube una nueva imagen explícitamente.
+
