@@ -67,3 +67,7 @@
 - [x] **`app/Models/ProductoModel.php`**: La tabla `imagenes_productos` NO tiene columna `updated_at`. Se eliminó `updated_at = NOW()` del UPDATE de imagen principal que causaba SQL error.
 - [x] **`views/productos/editar.php`**: El campo oculto `imagen_url` se prellenaba con la URL de la imagen actual al cargar la página. Esto causaba que en cada guardado se intentara actualizar la imagen aunque el usuario no hubiera cambiado nada. Se cambió a que inicie vacío y solo se complete cuando el usuario sube una nueva imagen explícitamente.
 
+## ✅ Step 12: Búsqueda de productos - Fix SQLSTATE[HY093] Invalid parameter number
+- [x] **`app/Models/ProductoModel.php` - `getAll()`**: El placeholder `:search` se repetía 3 veces en la consulta SQL (`p.nombre LIKE :search OR p.sku LIKE :search OR p.descripcion_corta LIKE :search`). Con `PDO::ATTR_EMULATE_PREPARES = false` (prepared statements nativos de MySQL), los named placeholders NO pueden repetirse. Cada ocurrencia necesita un placeholder único. Se cambió a `:search_nombre`, `:search_sku`, `:search_desc`, cada uno con su respectivo `bindValue` en `$params`.
+- [x] **`app/Models/ProductoModel.php` - `countFiltered()`**: Misma corrección que en `getAll()`. El mismo placeholder `:search` repetido 3 veces causaba el mismo error `HY093` al ejecutar el COUNT. Se cambiaron a placeholders únicos igual que en `getAll()`.
+
