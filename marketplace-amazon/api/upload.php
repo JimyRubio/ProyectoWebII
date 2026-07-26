@@ -47,7 +47,7 @@ $extensionesPermitidas = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
 
 $finfo = finfo_open(FILEINFO_MIME_TYPE);
 $mimeType = finfo_file($finfo, $archivo['tmp_name']);
-finfo_close($finfo);
+// finfo_close() omitido porque los objetos finfo se liberan automáticamente desde PHP 8.5+
 
 if (!in_array($mimeType, $tiposPermitidos)) {
     Response::error('Tipo de archivo no permitido. Solo JPG, PNG, GIF y WebP', 400);

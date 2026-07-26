@@ -1,8 +1,14 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
-  <rect width="200" height="200" fill="#1a1a2e"/>
-  <path d="M65 70 L100 50 L135 70 L135 110 L100 130 L65 110 Z" fill="#2d2d5e" stroke="#4a4a8a" stroke-width="2"/>
-  <path d="M75 80 L100 65 L125 80 L125 105 L100 120 L75 105 Z" fill="#3d3d7e" stroke="#5a5a9a" stroke-width="1.5"/>
-  <circle cx="100" cy="90" r="8" fill="#6a6afa" opacity="0.6"/>
-  <text x="100" y="155" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#888">Sin Imagen</text>
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300" viewBox="0 0 300 300">
+  <rect width="300" height="300" fill="#f0f0f0" rx="12"/>
+  <g transform="translate(150,130)" fill="none" stroke="#cccccc" stroke-width="2">
+    <!-- Icono de imagen -->
+    <rect x="-40" y="-30" width="80" height="60" rx="8" stroke="#aaaaaa" fill="#e8e8e8"/>
+    <circle cx="-10" cy="-10" r="8" stroke="#aaaaaa" fill="none"/>
+    <polyline points="-30,20 -10,0 10,20 20,10 30,20" stroke="#aaaaaa" fill="none"/>
+  </g>
+  <text x="150" y="190" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#999999">
+    Sin imagen disponible
+  </text>
 </svg>
 

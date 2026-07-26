@@ -49,3 +49,8 @@
 - [x] Removed `loadProducts()` call from catalog page
 - [x] Search parameter properly passed to API via `loadCatalogoProducts()`
 
+## ✅ Step 10: Fix subida de imágenes - finfo_close() deprecated + placeholder SVG + error_reporting
+- [x] **`api/upload.php`**: Eliminada llamada a `finfo_close($finfo)` porque los objetos finfo se liberan automáticamente desde PHP 8.5+. La función está deprecated y emite un warning que rompe la respuesta JSON del endpoint.
+- [x] **`config/config.php`**: Cambiado `error_reporting(E_ALL)` a `error_reporting(E_ALL & ~E_DEPRECATED & ~E_USER_DEPRECATED)` para filtrar deprecaciones de PHP 8.5+ que se imprimen como texto plano y rompen las respuestas JSON de las APIs.
+- [x] **`public/uploads/productos/placeholder.svg`**: Creado archivo SVG placeholder válido para cuando un producto no tiene imagen. Antes referenciaba a un archivo inexistente causando imágenes rotas.
+

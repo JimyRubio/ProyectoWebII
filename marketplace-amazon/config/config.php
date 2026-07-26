@@ -30,7 +30,8 @@ define('UPLOADS_PATH', ROOT_PATH . 'public/uploads/');
 
 // Configuración de zona horaria y errores
 date_default_timezone_set('America/Mexico_City');
-error_reporting(E_ALL);
+// Filtrar deprecaciones (PHP 8.5+) que rompen respuestas JSON en las APIs
+error_reporting(E_ALL & ~E_DEPRECATED & ~E_USER_DEPRECATED);
 ini_set('display_errors', 1);
 
 // Cargar Helpers Globales
