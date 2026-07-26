@@ -154,14 +154,10 @@ class ProductoController {
     }
 
     /**
-     * Actualiza un producto existente (solo administrador)
+     * Actualiza un producto existente (administrador o vendedor dueño del producto)
      */
     public function update(): void {
         AuthHelper::requireAuth();
-        // Solo administrador puede editar productos
-        if (!AuthHelper::hasRole('administrador') && !AuthHelper::hasRole('admin')) {
-            Response::error('No tienes permisos para editar productos', 403);
-        }
 
         $token = $_POST['csrf_token'] ?? $_SERVER['HTTP_X_CSRF_TOKEN'] ?? null;
         if (!Security::verifyCsrfToken($token)) {
@@ -171,6 +167,32 @@ class ProductoController {
         $id = (int)($_POST['id'] ?? 0);
         if ($id <= 0) {
             Response::error('ID de producto no válido', 400);
+        }
+
+        // Verificar permisos: admin puede editar cualquier producto, vendedor solo los suyos
+        $product = $this->model->getById($id);
+        if (!$product) {
+            Response::error('Producto no encontrado', 404);
+        }
+
+        $user = AuthHelper::user();
+        $isAdmin = AuthHelper::hasRole('administrador') || AuthHelper::hasRole('admin');
+        
+        if (!$isAdmin) {
+            // Verificar que el vendedor autenticado es dueño de la tienda del producto
+            $vendedorId = $user['vendedor_id'] ?? null;
+            if (!$vendedorId) {
+                Response::error('No tienes permisos para editar productos', 403);
+            }
+            
+            // Obtener la tienda del vendedor
+            require_once ROOT_PATH . 'app/Models/TiendaModel.php';
+            $tiendaModel = new TiendaModel();
+            $tienda = $tiendaModel->getByVendedorId($vendedorId);
+            
+            if (!$tienda || $tienda['id'] !== $product['tienda_id_ref']) {
+                Response::error('No tienes permisos para editar este producto', 403);
+            }
         }
 
         $data = [
@@ -183,7 +205,8 @@ class ProductoController {
             'stock' => (int)($_POST['stock'] ?? 0),
             'estado' => Security::sanitizeString($_POST['estado'] ?? 'activo'),
             'destacado' => (int)($_POST['destacado'] ?? 0),
-            'oferta' => (int)($_POST['oferta'] ?? 0)
+            'oferta' => (int)($_POST['oferta'] ?? 0),
+            'imagen_url' => Security::sanitizeString($_POST['imagen_url'] ?? '')
         ];
 
         if (empty($data['nombre']) || $data['precio'] <= 0) {

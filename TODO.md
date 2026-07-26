@@ -54,3 +54,12 @@
 - [x] **`config/config.php`**: Cambiado `error_reporting(E_ALL)` a `error_reporting(E_ALL & ~E_DEPRECATED & ~E_USER_DEPRECATED)` para filtrar deprecaciones de PHP 8.5+ que se imprimen como texto plano y rompen las respuestas JSON de las APIs.
 - [x] **`public/uploads/productos/placeholder.svg`**: Creado archivo SVG placeholder válido para cuando un producto no tiene imagen. Antes referenciaba a un archivo inexistente causando imágenes rotas.
 
+## ✅ Step 11: Botón de editar producto (lápiz) funcional - Página dedicada
+- [x] **`views/productos/editar.php`**: Creada página dedicada para editar productos con formulario completo pre-cargado
+- [x] **`views/productos/gestion.php`**: Botón de editar (lápiz) ahora redirige a `editar.php?id=X` en lugar de ser un botón sin función
+- [x] **`app/Controllers/ProductoController.php`**: Mejorado `update()` para permitir que vendedores editen sus propios productos (no solo admin)
+- [x] **`app/Models/ProductoModel.php`**: Mejorado `update()` para actualizar imagen principal del producto en `imagenes_productos`
+- [x] Carga dinámica del producto vía AJAX con toda la información
+- [x] Subida de imagen con preview en la página de edición
+- [x] Redirección a gestión después de guardar exitosamente
+

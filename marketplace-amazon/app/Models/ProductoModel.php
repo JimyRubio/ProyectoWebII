@@ -97,7 +97,8 @@ class ProductoModel extends Model {
      */
     public function getById(int $id): ?array {
         $sql = "SELECT p.*, c.nombre as categoria_nombre, t.nombre_tienda, v.nombre_empresa as vendedor_nombre,
-                       v.id as id_vendedor, t.id as tienda_id_ref
+                       v.id as id_vendedor, t.id as tienda_id_ref,
+                       (SELECT url FROM imagenes_productos WHERE producto_id = p.id ORDER BY principal DESC, orden ASC LIMIT 1) as imagen_principal
                 FROM productos p
                 INNER JOIN categorias c ON p.categoria_id = c.id
                 INNER JOIN tiendas t ON p.tienda_id = t.id
@@ -169,37 +170,78 @@ class ProductoModel extends Model {
     }
 
     /**
-     * Actualiza un producto existente
+     * Actualiza un producto existente (incluye imagen principal si se proporciona)
      */
     public function update(int $id, array $data): bool {
-        $sql = "UPDATE productos SET
-                    categoria_id = :categoria_id,
-                    nombre = :nombre,
-                    descripcion_corta = :descripcion_corta,
-                    descripcion_larga = :descripcion_larga,
-                    precio = :precio,
-                    precio_oferta = :precio_oferta,
-                    stock = :stock,
-                    estado = :estado,
-                    destacado = :destacado,
-                    oferta = :oferta,
-                    updated_at = NOW()
-                WHERE id = :id";
-        
-        $stmt = $this->db->prepare($sql);
-        return $stmt->execute([
-            ':id' => $id,
-            ':categoria_id' => $data['categoria_id'],
-            ':nombre' => $data['nombre'],
-            ':descripcion_corta' => $data['descripcion_corta'] ?? '',
-            ':descripcion_larga' => $data['descripcion_larga'] ?? '',
-            ':precio' => $data['precio'],
-            ':precio_oferta' => $data['precio_oferta'] ?? null,
-            ':stock' => $data['stock'],
-            ':estado' => $data['estado'] ?? 'activo',
-            ':destacado' => $data['destacado'] ?? 0,
-            ':oferta' => $data['oferta'] ?? 0
-        ]);
+        $this->beginTransaction();
+        try {
+            $sql = "UPDATE productos SET
+                        categoria_id = :categoria_id,
+                        nombre = :nombre,
+                        descripcion_corta = :descripcion_corta,
+                        descripcion_larga = :descripcion_larga,
+                        precio = :precio,
+                        precio_oferta = :precio_oferta,
+                        stock = :stock,
+                        estado = :estado,
+                        destacado = :destacado,
+                        oferta = :oferta,
+                        updated_at = NOW()
+                    WHERE id = :id";
+            
+            $stmt = $this->db->prepare($sql);
+            $result = $stmt->execute([
+                ':id' => $id,
+                ':categoria_id' => $data['categoria_id'],
+                ':nombre' => $data['nombre'],
+                ':descripcion_corta' => $data['descripcion_corta'] ?? '',
+                ':descripcion_larga' => $data['descripcion_larga'] ?? '',
+                ':precio' => $data['precio'],
+                ':precio_oferta' => $data['precio_oferta'] ?? null,
+                ':stock' => $data['stock'],
+                ':estado' => $data['estado'] ?? 'activo',
+                ':destacado' => $data['destacado'] ?? 0,
+                ':oferta' => $data['oferta'] ?? 0
+            ]);
+
+            if (!$result) {
+                throw new Exception('Error al actualizar el producto');
+            }
+
+            // Actualizar imagen principal si se proporcionó una nueva URL
+            if (!empty($data['imagen_url'])) {
+                // Verificar si ya existe una imagen principal
+                $sqlCheck = "SELECT id FROM imagenes_productos WHERE producto_id = :producto_id AND principal = 1 LIMIT 1";
+                $stmtCheck = $this->db->prepare($sqlCheck);
+                $stmtCheck->execute([':producto_id' => $id]);
+                $existingImg = $stmtCheck->fetch();
+
+                if ($existingImg) {
+                    // Actualizar la imagen principal existente
+                    $sqlImg = "UPDATE imagenes_productos SET url = :url, updated_at = NOW() WHERE id = :id";
+                    $stmtImg = $this->db->prepare($sqlImg);
+                    $stmtImg->execute([
+                        ':url' => $data['imagen_url'],
+                        ':id' => $existingImg['id']
+                    ]);
+                } else {
+                    // Insertar nueva imagen principal
+                    $sqlImg = "INSERT INTO imagenes_productos (producto_id, url, alt, principal, orden) VALUES (:producto_id, :url, :alt, 1, 0)";
+                    $stmtImg = $this->db->prepare($sqlImg);
+                    $stmtImg->execute([
+                        ':producto_id' => $id,
+                        ':url' => $data['imagen_url'],
+                        ':alt' => $data['nombre'] ?? ''
+                    ]);
+                }
+            }
+
+            $this->commit();
+            return true;
+        } catch (Exception $e) {
+            $this->rollBack();
+            throw $e;
+        }
     }
 
     /**

@@ -200,7 +200,7 @@ function renderGestionProductos(productos) {
                 <td>${p.stock}</td>
                 <td><span class="badge-${estadoBadge[p.estado] || 'info'}">${p.estado}</span></td>
                 <td>
-                    <button class="action-btn edit"><i class="fa-solid fa-pen"></i></button>
+                    <a href="${App.baseUrl}views/productos/editar.php?id=${p.id}" class="action-btn edit"><i class="fa-solid fa-pen"></i></a>
                     <button class="action-btn delete" onclick="eliminarProducto(${p.id})"><i class="fa-solid fa-trash"></i></button>
                 </td>
             </tr>

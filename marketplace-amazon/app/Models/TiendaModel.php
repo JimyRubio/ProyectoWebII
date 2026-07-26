@@ -30,6 +30,17 @@ class TiendaModel extends Model {
     }
 
     /**
+     * Obtiene la tienda de un vendedor por su ID de vendedor
+     */
+    public function getByVendedorId(int $vendedorId): ?array {
+        $sql = "SELECT t.* FROM tiendas t WHERE t.vendedor_id = :vendedor_id AND t.activa = 1 LIMIT 1";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([':vendedor_id' => $vendedorId]);
+        $tienda = $stmt->fetch();
+        return $tienda ?: null;
+    }
+
+    /**
      * Obtiene productos pertenecientes a una tienda
      */
     public function getProductos(int $tiendaId): array {
