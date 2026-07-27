@@ -105,9 +105,10 @@ class AuthController {
         Response::success(null, 'Sesión cerrada correctamente');
     }
 
-    /**
+/**
      * Procesa solicitud de restablecimiento de contraseña (Forgot Password)
      * Usa la tabla tokens_autenticacion para almacenar el token
+     * Envía el correo de recuperación usando PHPMailer via Gmail SMTP
      */
     public function forgotPassword(): void {
         $email = Security::sanitizeString($_POST['email'] ?? '');
@@ -127,6 +128,7 @@ class AuthController {
             $token = bin2hex(random_bytes(32));
             $expiry = date('Y-m-d H:i:s', strtotime('+1 hour'));
             $usuarioId = (int)$user['id'];
+            $userName = trim(($user['nombre'] ?? '') . ' ' . ($user['apellido'] ?? ''));
 
             // Marcar tokens anteriores como usados
             $stmtMark = $this->model->db->prepare("UPDATE tokens_autenticacion SET usado = 1 WHERE usuario_id = :uid AND tipo = 'reset_password' AND usado = 0");
@@ -140,10 +142,27 @@ class AuthController {
                 ':expira' => $expiry
             ]);
 
-            Response::success([
-                'token' => $token,
-                'reset_url' => BASE_URL . 'views/auth/reset_password.php?token=' . $token
-            ], 'Instrucciones enviadas. Revisa tu correo electrónico.');
+            // Cargar MailHelper y enviar correo
+            require_once ROOT_PATH . 'app/Helpers/MailHelper.php';
+            $resetURL = BASE_URL . 'views/auth/reset_password.php?token=' . $token;
+            
+            $mailResult = MailHelper::sendPasswordResetEmail($email, $userName, $token, $resetURL);
+
+            if ($mailResult['success']) {
+                Response::success([
+                    'email_sent' => true,
+                    'message' => 'Correo enviado exitosamente a ' . $email
+                ], 'Instrucciones enviadas. Revisa tu correo electrónico.');
+            } else {
+                // Si falla el envio, devolvemos el token de todas formas para depuración
+                error_log('Error enviando correo de recuperación: ' . $mailResult['message']);
+                Response::success([
+                    'token' => $token,
+                    'reset_url' => $resetURL,
+                    'email_sent' => false,
+                    'email_error' => $mailResult['message']
+                ], 'No se pudo enviar el correo. Usa el token de recuperación manualmente.');
+            }
         } catch (Exception $e) {
             Response::error('Error al procesar la solicitud: ' . $e->getMessage(), 500);
         }

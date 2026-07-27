@@ -28,6 +28,16 @@ define('ROOT_PATH', dirname(__DIR__) . '/');
 define('VIEWS_PATH', ROOT_PATH . 'views/');
 define('UPLOADS_PATH', ROOT_PATH . 'public/uploads/');
 
+// Configuración de SMTP para correos (Gmail)
+define('SMTP_HOST', 'smtp.gmail.com');
+define('SMTP_PORT', 587);
+define('SMTP_AUTH', true);
+define('SMTP_USER', 'jimya.rubio@gmail.com');
+define('SMTP_PASS', 'kkih hvbi oraf azvg');
+define('SMTP_DEBUG', 0);
+define('SMTP_FROM_EMAIL', 'jimya.rubio@gmail.com');
+define('SMTP_FROM_NAME', APP_NAME . ' - Soporte');
+
 // Configuración de zona horaria y errores
 date_default_timezone_set('America/Mexico_City');
 // Filtrar deprecaciones (PHP 8.5+) que rompen respuestas JSON en las APIs
