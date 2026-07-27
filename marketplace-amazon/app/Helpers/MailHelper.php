@@ -26,52 +26,80 @@ class MailHelper {
      * @return array ['success' => bool, 'message' => string]
      */
     public static function sendEmail(string $toEmail, string $toName, string $subject, string $bodyHTML, string $altBody = ''): array {
-        try {
-            $mail = new PHPMailer(true);
-            
-            // Configuración del servidor SMTP (Gmail)
-            $mail->isSMTP();
-            $mail->Host       = SMTP_HOST;
-            $mail->SMTPAuth   = SMTP_AUTH;
-            $mail->Username   = SMTP_USER;
-            $mail->Password   = SMTP_PASS;
-            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-            $mail->Port       = SMTP_PORT;
-            
-            // Deshabilitar debug en producción
-            $mail->SMTPDebug  = SMTP_DEBUG;
-            
-            // Configuración del charset
-            $mail->CharSet = 'UTF-8';
-            
-            // Remitente
-            $mail->setFrom(SMTP_FROM_EMAIL, SMTP_FROM_NAME);
-            
-            // Destinatario
-            $mail->addAddress($toEmail, $toName);
-            
-            // Responder a
-            $mail->addReplyTo(SMTP_FROM_EMAIL, SMTP_FROM_NAME);
-            
-            // Contenido
-            $mail->isHTML(true);
-            $mail->Subject = $subject;
-            $mail->Body    = $bodyHTML;
-            $mail->AltBody = !empty($altBody) ? $altBody : strip_tags($bodyHTML);
-            
-            $mail->send();
-            return [
-                'success' => true,
-                'message' => 'Correo enviado exitosamente'
-            ];
-        } catch (Exception $e) {
-            $errorMsg = "Error al enviar correo: {$mail->ErrorInfo}";
-            error_log($errorMsg);
-            return [
-                'success' => false,
-                'message' => $errorMsg
-            ];
+        // Intentar primero con STARTTLS (puerto 587), si falla probar con SSL (puerto 465)
+        $configs = [
+            ['secure' => PHPMailer::ENCRYPTION_STARTTLS, 'port' => 587],
+            ['secure' => PHPMailer::ENCRYPTION_SMTPS,   'port' => 465],
+        ];
+
+        $lastError = '';
+
+        foreach ($configs as $config) {
+            try {
+                $mail = new PHPMailer(true);
+                
+                // Configuración del servidor SMTP (Gmail)
+                $mail->isSMTP();
+                $mail->Host       = SMTP_HOST;
+                $mail->SMTPAuth   = SMTP_AUTH;
+                $mail->Username   = SMTP_USER;
+                $mail->Password   = SMTP_PASS;
+                $mail->SMTPSecure = $config['secure'];
+                $mail->Port       = $config['port'];
+
+                // === IMPORTANTE: Deshabilitar verificación SSL para evitar errores de certificado ===
+                // En Windows/entornos locales los certificados CA suelen no estar configurados.
+                // Esto permite que el envío funcione sin importar el entorno.
+                $mail->SMTPOptions = [
+                    'ssl' => [
+                        'verify_peer'       => false,
+                        'verify_peer_name'  => false,
+                        'allow_self_signed' => true,
+                    ],
+                ];
+                // Deshabilitar TLS automático para evitar conflictos
+                $mail->SMTPAutoTLS = false;
+                
+                // Deshabilitar debug en producción
+                $mail->SMTPDebug  = SMTP_DEBUG;
+                
+                // Configuración del charset
+                $mail->CharSet = 'UTF-8';
+                
+                // Remitente
+                $mail->setFrom(SMTP_FROM_EMAIL, SMTP_FROM_NAME);
+                
+                // Destinatario
+                $mail->addAddress($toEmail, $toName);
+                
+                // Responder a
+                $mail->addReplyTo(SMTP_FROM_EMAIL, SMTP_FROM_NAME);
+                
+                // Contenido
+                $mail->isHTML(true);
+                $mail->Subject = $subject;
+                $mail->Body    = $bodyHTML;
+                $mail->AltBody = !empty($altBody) ? $altBody : strip_tags($bodyHTML);
+                
+                $mail->send();
+                return [
+                    'success' => true,
+                    'message' => 'Correo enviado exitosamente'
+                ];
+            } catch (Exception $e) {
+                $lastError = "Error con {$config['secure']}: {$mail->ErrorInfo}";
+                error_log($lastError);
+                continue; // Probar siguiente configuración
+            }
         }
+
+        // Si llegamos aquí, ambos métodos fallaron
+        $errorMsg = "Error al enviar correo: {$lastError}";
+        error_log($errorMsg);
+        return [
+            'success' => false,
+            'message' => $errorMsg
+        ];
     }
 
     /**
