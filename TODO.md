@@ -1,73 +1,22 @@
-# Plan de Implementación - Mejoras MarketZone
+# Plan de Implementación - Corrección SSL PHPMailer
 
-## ✅ Step 1: Quitar imágenes predeterminadas de productos
-- [x] Remove hardcoded Unsplash fallback URLs from `productos.js`
-- [x] Remove from `catalogo.php` (renderCatalogoProducts)
-- [x] Remove from `gestion.php` (renderGestionProductos)
-- [x] Remove from `pos.php` (renderProductosPOS)
-- [x] Remove from `carrito.js` (renderCarrito, showCartModal)
-- [x] Remove from `detalle.js` (renderDetalleProducto)
-- [x] Created placeholder SVG at `public/uploads/productos/placeholder.svg`
+## ✅ Step 1: Crear carpeta `certs/` con bundle de certificados CA
+- [ ] Crear directorio `marketplace-amazon/certs/`
+- [ ] Descargar/crear `cacert.pem` (bundle de certificados CA)
 
-## ✅ Step 2: Solo administrador puede editar productos
-- [x] Add `update` action in `api/productos.php`
-- [x] Add `update()` + edit permission check (admin only) in `ProductoController`
-- [x] Add edit button/modal UI in `gestion.php`
+## ✅ Step 2: Configurar `php.ini` para usar los certificados
+- [ ] Configurar `openssl.cafile` apuntando al `cacert.pem`
+- [ ] Configurar `curl.cainfo` apuntando al `cacert.pem`
 
-## ✅ Step 3: Paginación - botón siguiente y números funcionales
-- [x] Fix `loadProductsByCategory()` to use proper limit + page parameter
-- [x] `renderPagination()` in utils.js already had next/prev buttons working
+## ✅ Step 3: Mejorar `MailHelper.php`
+- [ ] Usar rutas absolutas basadas en `__DIR__` para incluir PHPMailer
+- [ ] Agregar opciones SSL adicionales (verify_depth, crypto_method)
+- [ ] Mejorar manejo de errores con logging detallado
+- [ ] Fallback robusto para restablecimiento de contraseña
 
-## ✅ Step 4: POS - productos en fila vertical
-- [x] Changed POS layout from grid (side-by-side) to single column stack (flex-direction: column)
+## ✅ Step 4: Crear `CertHelper.php` para auto-descarga de certificados
+- [ ] Script que descargue `cacert.pem` automáticamente si no existe
 
-## ✅ Step 5: POS - campo para aplicar cupón
-- [x] Added coupon input + validate button in POS ticket sidebar
-- [x] Validates via `api/promociones.php?action=validar`
-- [x] Applies discount (percentage or fixed amount) to total
-
-## ✅ Step 6: Mejorar gestión de ofertas y cupones
-- [x] Fixed broken HTML structure in `promociones/gestion.php` (missing closing tags)
-- [x] Added coupon validation modal
-- [x] Improved form layout and styling
-
-## ✅ Step 7: MarketZone muestre todos los productos
-- [x] Changed `loadDestacados()` → `loadIndexProducts()` to load all products with pagination
-- [x] Shows 12 products per page with pagination controls
-- [x] Category filter buttons still work on index
-
-## ✅ Step 8: Reseñas funcionales
-- [x] Added `getResenas()` in `ProductoModel` (queries reseñas_productos table)
-- [x] Added `createResena()` in `ProductoModel`
-- [x] Added `resenas()` and `storeResena()` methods in `ProductoController`
-- [x] Added `action=resenas` and `action=store_resena` routes in `api/productos.php`
-- [x] Fixed `loadResenas()` JS to call correct endpoint
-- [x] Form submit now sends data to API and reloads dynamically
-
-## ✅ Step 9: Búsqueda - corregir error
-- [x] Fixed duplicate `loadProducts()` vs `loadCatalogoProducts()` conflict
-- [x] Removed `loadProducts()` call from catalog page
-- [x] Search parameter properly passed to API via `loadCatalogoProducts()`
-
-## ✅ Step 10: Fix subida de imágenes - finfo_close() deprecated + placeholder SVG + error_reporting
-- [x] **`api/upload.php`**: Eliminada llamada a `finfo_close($finfo)` porque los objetos finfo se liberan automáticamente desde PHP 8.5+. La función está deprecated y emite un warning que rompe la respuesta JSON del endpoint.
-- [x] **`config/config.php`**: Cambiado `error_reporting(E_ALL)` a `error_reporting(E_ALL & ~E_DEPRECATED & ~E_USER_DEPRECATED)` para filtrar deprecaciones de PHP 8.5+ que se imprimen como texto plano y rompen las respuestas JSON de las APIs.
-- [x] **`public/uploads/productos/placeholder.svg`**: Creado archivo SVG placeholder válido para cuando un producto no tiene imagen. Antes referenciaba a un archivo inexistente causando imágenes rotas.
-
-## ✅ Step 11: Botón de editar producto (lápiz) funcional - Página dedicada
-- [x] **`views/productos/editar.php`**: Creada página dedicada para editar productos con formulario completo pre-cargado
-- [x] **`views/productos/gestion.php`**: Botón de editar (lápiz) ahora redirige a `editar.php?id=X` en lugar de ser un botón sin función
-- [x] **`app/Controllers/ProductoController.php`**: Mejorado `update()` para permitir que vendedores editen sus propios productos (no solo admin)
-- [x] **`app/Models/ProductoModel.php`**: Mejorado `update()` para actualizar imagen principal del producto en `imagenes_productos`
-- [x] Carga dinámica del producto vía AJAX con toda la información
-- [x] Subida de imagen con preview en la página de edición
-- [x] Redirección a gestión después de guardar exitosamente
-
-### 🐛 Bugfixes Step 11 (Error 500 al guardar)
-- [x] **`app/Models/ProductoModel.php`**: La tabla `imagenes_productos` NO tiene columna `updated_at`. Se eliminó `updated_at = NOW()` del UPDATE de imagen principal que causaba SQL error.
-- [x] **`views/productos/editar.php`**: El campo oculto `imagen_url` se prellenaba con la URL de la imagen actual al cargar la página. Esto causaba que en cada guardado se intentara actualizar la imagen aunque el usuario no hubiera cambiado nada. Se cambió a que inicie vacío y solo se complete cuando el usuario sube una nueva imagen explícitamente.
-
-## ✅ Step 12: Búsqueda de productos - Fix SQLSTATE[HY093] Invalid parameter number
-- [x] **`app/Models/ProductoModel.php` - `getAll()`**: El placeholder `:search` se repetía 3 veces en la consulta SQL (`p.nombre LIKE :search OR p.sku LIKE :search OR p.descripcion_corta LIKE :search`). Con `PDO::ATTR_EMULATE_PREPARES = false` (prepared statements nativos de MySQL), los named placeholders NO pueden repetirse. Cada ocurrencia necesita un placeholder único. Se cambió a `:search_nombre`, `:search_sku`, `:search_desc`, cada uno con su respectivo `bindValue` en `$params`.
-- [x] **`app/Models/ProductoModel.php` - `countFiltered()`**: Misma corrección que en `getAll()`. El mismo placeholder `:search` repetido 3 veces causaba el mismo error `HY093` al ejecutar el COUNT. Se cambiaron a placeholders únicos igual que en `getAll()`.
+## ✅ Step 5: Actualizar `start.bat`
+- [ ] Asegurar que funcione desde cualquier ubicación donde se clone el proyecto
 

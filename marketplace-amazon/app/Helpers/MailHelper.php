@@ -2,12 +2,20 @@
 /**
  * MailHelper - Clase para enviar correos electrónicos usando PHPMailer
  * Configurado para Gmail SMTP
+ * 
+ * Ahora usa CertHelper para gestionar los certificados SSL automáticamente.
+ * Si cacert.pem existe, se usa verificación SSL completa.
+ * Si no existe, se deshabilita la verificación y el sistema sigue funcionando.
  */
 
-// Cargar PHPMailer manualmente
-require_once ROOT_PATH . '../PHPMailer-master/src/PHPMailer.php';
-require_once ROOT_PATH . '../PHPMailer-master/src/SMTP.php';
-require_once ROOT_PATH . '../PHPMailer-master/src/Exception.php';
+// Cargar PHPMailer usando rutas absolutas basadas en __DIR__ para portabilidad
+$mailerBase = dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'PHPMailer-master' . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR;
+require_once $mailerBase . 'PHPMailer.php';
+require_once $mailerBase . 'SMTP.php';
+require_once $mailerBase . 'Exception.php';
+
+// Cargar CertHelper para configuración SSL
+require_once __DIR__ . DIRECTORY_SEPARATOR . 'CertHelper.php';
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
@@ -47,18 +55,9 @@ class MailHelper {
                 $mail->SMTPSecure = $config['secure'];
                 $mail->Port       = $config['port'];
 
-                // === IMPORTANTE: Deshabilitar verificación SSL para evitar errores de certificado ===
-                // En Windows/entornos locales los certificados CA suelen no estar configurados.
-                // Esto permite que el envío funcione sin importar el entorno.
-                $mail->SMTPOptions = [
-                    'ssl' => [
-                        'verify_peer'       => false,
-                        'verify_peer_name'  => false,
-                        'allow_self_signed' => true,
-                    ],
-                ];
-                // Deshabilitar TLS automático para evitar conflictos
-                $mail->SMTPAutoTLS = false;
+                // === CONFIGURACIÓN SSL INTELIGENTE ===
+                // Usa CertHelper para decidir si habilitar o deshabilitar verificación SSL
+                CertHelper::configureMailerSSL($mail);
                 
                 // Deshabilitar debug en producción
                 $mail->SMTPDebug  = SMTP_DEBUG;
