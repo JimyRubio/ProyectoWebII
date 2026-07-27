@@ -16,8 +16,10 @@ class ProductoModel extends Model {
         $params = [];
 
         if (!empty($search)) {
-            $sql .= " AND (p.nombre LIKE :search OR p.sku LIKE :search OR p.descripcion_corta LIKE :search)";
-            $params[':search'] = '%' . $search . '%';
+            $sql .= " AND (p.nombre LIKE :search_nombre OR p.sku LIKE :search_sku OR p.descripcion_corta LIKE :search_desc)";
+            $params[':search_nombre'] = '%' . $search . '%';
+            $params[':search_sku'] = '%' . $search . '%';
+            $params[':search_desc'] = '%' . $search . '%';
         }
 
         if ($categoria_id !== null && $categoria_id > 0) {
@@ -53,8 +55,10 @@ class ProductoModel extends Model {
         $params = [];
 
         if (!empty($search)) {
-            $sql .= " AND (p.nombre LIKE :search OR p.sku LIKE :search OR p.descripcion_corta LIKE :search)";
-            $params[':search'] = '%' . $search . '%';
+            $sql .= " AND (p.nombre LIKE :search_nombre OR p.sku LIKE :search_sku OR p.descripcion_corta LIKE :search_desc)";
+            $params[':search_nombre'] = '%' . $search . '%';
+            $params[':search_sku'] = '%' . $search . '%';
+            $params[':search_desc'] = '%' . $search . '%';
         }
 
         if ($categoria_id !== null && $categoria_id > 0) {
