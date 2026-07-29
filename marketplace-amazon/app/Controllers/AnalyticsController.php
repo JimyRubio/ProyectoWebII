@@ -15,7 +15,7 @@ class AnalyticsController {
         $period = Security::sanitizeString($_GET['period'] ?? '7days');
 
         $kpi = $this->model->getKPIMetrics($period);
-        $salesTrend = $this->model->getSalesTrendChartData();
+        $salesTrend = $this->model->getSalesTrendChartData($period);
         $categoryDist = $this->model->getCategoryDistribution();
         $topProducts = $this->model->getTopProducts();
         $activity = $this->model->getRecentActivity();

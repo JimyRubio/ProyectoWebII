@@ -1,22 +1,24 @@
-# Plan de Implementación - Corrección SSL PHPMailer
+# TODO - Fix Admin Dashboard and Profile Issues - COMPLETED
 
-## ✅ Step 1: Crear carpeta `certs/` con bundle de certificados CA
-- [ ] Crear directorio `marketplace-amazon/certs/`
-- [ ] Descargar/crear `cacert.pem` (bundle de certificados CA)
+## ✅ Completed Steps
 
-## ✅ Step 2: Configurar `php.ini` para usar los certificados
-- [ ] Configurar `openssl.cafile` apuntando al `cacert.pem`
-- [ ] Configurar `curl.cainfo` apuntando al `cacert.pem`
+### ✅ Step 1: Fix Dashboard KPI Card CSS Classes
+- **File**: `marketplace-amazon/views/analytics/dashboard.php`
+- **Changes**: Changed `blue` → `indigo` and `green` → `emerald`
+- **Result**: All 4 KPI cards now have proper top-border color styling
 
-## ✅ Step 3: Mejorar `MailHelper.php`
-- [ ] Usar rutas absolutas basadas en `__DIR__` para incluir PHPMailer
-- [ ] Agregar opciones SSL adicionales (verify_depth, crypto_method)
-- [ ] Mejorar manejo de errores con logging detallado
-- [ ] Fallback robusto para restablecimiento de contraseña
+### ✅ Step 2: Fix Filter Tab Logic in Analytics JS
+- **File**: `marketplace-amazon/public/js/modules/analytics.js`
+- **Changes**: Fixed show/hide logic for all filter views (all, sales, vendors, products)
+- **Result**: Filter tabs now properly hide and show relevant KPI cards and chart sections
 
-## ✅ Step 4: Crear `CertHelper.php` para auto-descarga de certificados
-- [ ] Script que descargue `cacert.pem` automáticamente si no existe
+### ✅ Step 3: Fix Admin Usuarios Module JS
+- **File**: `marketplace-amazon/views/admin/usuarios.php`
+- **Changes**: Changed `$module_js = "clientes.js"` to `$module_js = ""`
+- **Result**: Admin users page no longer loads unnecessary client profile JS
 
-## ✅ Step 5: Actualizar `start.bat`
-- [ ] Asegurar que funcione desde cualquier ubicación donde se clone el proyecto
+### ✅ Step 4: Fix ProductoModel SQL Parameter Binding
+- **File**: `marketplace-amazon/app/Models/ProductoModel.php`
+- **Changes**: Refactored `getAll()` to use consistent `execute($params)` approach instead of mixing `bindValue()` with `execute()`
+- **Result**: Fixed SQLSTATE[HY093] "Invalid parameter number" errors when `categoria_id` is 0
 

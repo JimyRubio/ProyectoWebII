@@ -1,7 +1,7 @@
 <?php
 $page_title = "Gesti&oacute;n de Usuarios - Admin";
 $module_css = "productos.css";
-$module_js = "clientes.js";
+$module_js = "";
 require_once __DIR__ . '/../layouts/header.php';
 ?>
 

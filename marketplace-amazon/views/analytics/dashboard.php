@@ -70,7 +70,7 @@ require_once __DIR__ . '/../layouts/header.php';
     </div>
 
     <!-- KPI 2: Pedidos Procesados -->
-    <div class="kpi-card blue">
+    <div class="kpi-card indigo">
         <div class="kpi-top-row">
             <span class="kpi-title">Pedidos Totales</span>
             <div class="kpi-icon-box">
@@ -108,7 +108,7 @@ require_once __DIR__ . '/../layouts/header.php';
     </div>
 
     <!-- KPI 4: Tasa de Conversión -->
-    <div class="kpi-card green">
+    <div class="kpi-card emerald">
         <div class="kpi-top-row">
             <span class="kpi-title">Tasa de Conversión</span>
             <div class="kpi-icon-box">

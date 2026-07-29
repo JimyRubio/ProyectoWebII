@@ -56,3 +56,19 @@ Stack trace:
 #2 C:\Users\JimyR\Documents\GitHub\ProyectoWebII\marketplace-amazon\api\productos.php(25): ProductoController->index()
 #3 {main}
   thrown in C:\Users\JimyR\Documents\GitHub\ProyectoWebII\marketplace-amazon\app\Models\ProductoModel.php on line 43
+[29-Jul-2026 09:25:49 America/Mexico_City] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42000]: Syntax error or access violation: 1055 Expression #1 of SELECT list is not in GROUP BY clause and contains nonaggregated column 'marketplace_db.p.fecha_pedido' which is not functionally dependent on columns in GROUP BY clause; this is incompatible with sql_mode=only_full_group_by in C:\Users\JimyR\Documents\GitHub\ProyectoWebII\marketplace-amazon\app\Models\AnalyticsModel.php:122
+Stack trace:
+#0 C:\Users\JimyR\Documents\GitHub\ProyectoWebII\marketplace-amazon\app\Models\AnalyticsModel.php(122): PDO->prepare('SELECT DATE_FOR...')
+#1 C:\Users\JimyR\Documents\GitHub\ProyectoWebII\marketplace-amazon\app\Models\AnalyticsModel.php(88): AnalyticsModel->getSalesTrendFromOrders('2026-07-29', 7)
+#2 C:\Users\JimyR\Documents\GitHub\ProyectoWebII\marketplace-amazon\app\Controllers\AnalyticsController.php(18): AnalyticsModel->getSalesTrendChartData('today')
+#3 C:\Users\JimyR\Documents\GitHub\ProyectoWebII\marketplace-amazon\api\analytics.php(11): AnalyticsController->dashboardData()
+#4 {main}
+  thrown in C:\Users\JimyR\Documents\GitHub\ProyectoWebII\marketplace-amazon\app\Models\AnalyticsModel.php on line 122
+[29-Jul-2026 09:25:55 America/Mexico_City] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42000]: Syntax error or access violation: 1055 Expression #1 of SELECT list is not in GROUP BY clause and contains nonaggregated column 'marketplace_db.p.fecha_pedido' which is not functionally dependent on columns in GROUP BY clause; this is incompatible with sql_mode=only_full_group_by in C:\Users\JimyR\Documents\GitHub\ProyectoWebII\marketplace-amazon\app\Models\AnalyticsModel.php:122
+Stack trace:
+#0 C:\Users\JimyR\Documents\GitHub\ProyectoWebII\marketplace-amazon\app\Models\AnalyticsModel.php(122): PDO->prepare('SELECT DATE_FOR...')
+#1 C:\Users\JimyR\Documents\GitHub\ProyectoWebII\marketplace-amazon\app\Models\AnalyticsModel.php(88): AnalyticsModel->getSalesTrendFromOrders('2026-07-29', 7)
+#2 C:\Users\JimyR\Documents\GitHub\ProyectoWebII\marketplace-amazon\app\Controllers\AnalyticsController.php(18): AnalyticsModel->getSalesTrendChartData('today')
+#3 C:\Users\JimyR\Documents\GitHub\ProyectoWebII\marketplace-amazon\api\analytics.php(11): AnalyticsController->dashboardData()
+#4 {main}
+  thrown in C:\Users\JimyR\Documents\GitHub\ProyectoWebII\marketplace-amazon\app\Models\AnalyticsModel.php on line 122

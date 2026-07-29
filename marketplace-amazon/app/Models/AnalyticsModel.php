@@ -47,25 +47,102 @@ class AnalyticsModel extends Model {
     }
 
     /**
-     * Obtiene datos para la gráfica de tendencia de ventas (últimos días)
+     * Obtiene datos para la gráfica de tendencia de ventas (según período)
      */
-    public function getSalesTrendChartData(): array {
+    public function getSalesTrendChartData(string $period = '7days'): array {
+        // Cálculo de fechas según período (misma lógica que getKPIMetrics)
+        $startDate = date('Y-m-d', strtotime('-7 days'));
+        if ($period === 'today') {
+            $startDate = date('Y-m-d');
+        } elseif ($period === '30days') {
+            $startDate = date('Y-m-d', strtotime('-30 days'));
+        } elseif ($period === 'this_month') {
+            $startDate = date('Y-m-01');
+        }
+
+        // Determinar el límite de días a mostrar según el período
+        $limit = 7;
+        if ($period === '30days') {
+            $limit = 30;
+        } elseif ($period === 'this_month') {
+            // Calcular cuantos días van del mes actual
+            $limit = (int)date('d');
+        }
+
         $sql = "SELECT DATE_FORMAT(fecha, '%d/%m') as dia, 
                        total_ventas, 
                        ROUND(total_ventas * 0.10, 2) as comisiones
                 FROM metricas_diarias 
+                WHERE fecha >= :start_date
                 ORDER BY fecha ASC 
-                LIMIT 7";
+                LIMIT :limit_num";
         
-        $stmt = $this->db->query($sql);
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindValue(':start_date', $startDate, PDO::PARAM_STR);
+        $stmt->bindValue(':limit_num', $limit, PDO::PARAM_INT);
+        $stmt->execute();
         $rows = $stmt->fetchAll();
 
-        // Fallback si no hay registros suficientes en metricas_diarias
+        // Fallback: si no hay registros en metricas_diarias, calcular desde pedidos reales
         if (empty($rows)) {
+            return $this->getSalesTrendFromOrders($startDate, $limit);
+        }
+
+        $labels = [];
+        $sales = [];
+        $commissions = [];
+
+        foreach ($rows as $r) {
+            $labels[] = $r['dia'];
+            $sales[] = (float)$r['total_ventas'];
+            $commissions[] = (float)$r['comisiones'];
+        }
+
+        return [
+            'labels' => $labels,
+            'sales' => $sales,
+            'commissions' => $commissions
+        ];
+    }
+
+    /**
+     * Fallback: Obtiene tendencia de ventas desde la tabla pedidos cuando metricas_diarias está vacía
+     */
+    private function getSalesTrendFromOrders(string $startDate, int $limit): array {
+        $sql = "SELECT DATE_FORMAT(p.fecha_pedido, '%d/%m') as dia, 
+                       COALESCE(SUM(p.total), 0) as total_ventas,
+                       COALESCE(ROUND(SUM(p.total) * 0.10, 2), 0) as comisiones
+                FROM pedidos p
+                WHERE p.fecha_pedido >= :start_date 
+                  AND p.estado != 'cancelado'
+                GROUP BY DATE(p.fecha_pedido)
+                ORDER BY DATE(p.fecha_pedido) ASC
+                LIMIT :limit_num";
+        
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindValue(':start_date', $startDate . ' 00:00:00', PDO::PARAM_STR);
+        $stmt->bindValue(':limit_num', $limit, PDO::PARAM_INT);
+        $stmt->execute();
+        $rows = $stmt->fetchAll();
+
+        if (empty($rows)) {
+            // Si aún no hay pedidos, generar datos de demostración para mostrar gráfica
+            $labels = [];
+            $sales = [];
+            $commissions = [];
+
+            // Generar últimos N días como labels
+            for ($i = $limit - 1; $i >= 0; $i--) {
+                $date = date('d/m', strtotime("-$i days"));
+                $labels[] = $date;
+                $sales[] = 0;
+                $commissions[] = 0;
+            }
+
             return [
-                'labels' => ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'],
-                'sales' => [12400, 18500, 14200, 22100, 28900, 34500, 31200],
-                'commissions' => [1240, 1850, 1420, 2210, 2890, 3450, 3120]
+                'labels' => $labels,
+                'sales' => $sales,
+                'commissions' => $commissions
             ];
         }
 

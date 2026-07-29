@@ -197,17 +197,25 @@ function initFilterHandlers() {
         
         // Mostrar/ocultar secciones según la vista seleccionada
         if (view === 'all') {
+            // Mostrar todo
             $('.kpi-grid, .analytics-grid').show();
+            $('.kpi-card').show();
         } else if (view === 'sales') {
+            // Mostrar KPI de ventas/pedidos + gráficas de ventas
+            $('.kpi-card').hide();
+            $('.kpi-card.amber, .kpi-card.indigo').show();
             $('.analytics-grid').show();
-            // Enfocar en las gráficas de ventas
         } else if (view === 'vendors') {
-            // Mostrar solo KPI de vendedores
-            $('.kpi-card.purple').parent().children().hide();
+            // Mostrar solo KPI de vendedores + feed de actividad
+            $('.kpi-card').hide();
             $('.kpi-card.purple').show();
-            // Ocultar temporalmente otras secciones (efecto visual)
+            $('.analytics-grid').hide();
+            $('.analytics-grid').first().hide();
+            $('.analytics-grid').last().show();
         } else if (view === 'products') {
-            // Mostrar solo tabla de productos top
+            // Mostrar solo la tabla de productos top
+            $('.kpi-card').hide();
+            $('.analytics-grid').hide();
             $('.analytics-grid').last().show();
         }
     });

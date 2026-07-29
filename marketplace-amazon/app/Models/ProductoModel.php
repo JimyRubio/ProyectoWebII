@@ -34,15 +34,11 @@ class ProductoModel extends Model {
 
         $sql .= " ORDER BY p.id DESC LIMIT :limit OFFSET :offset";
 
+        $params[':limit'] = $limit;
+        $params[':offset'] = $offset;
+
         $stmt = $this->db->prepare($sql);
-
-        foreach ($params as $key => $val) {
-            $stmt->bindValue($key, $val);
-        }
-
-        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
-        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
-        $stmt->execute();
+        $stmt->execute($params);
 
         return $stmt->fetchAll();
     }
