@@ -807,3 +807,256 @@
     }
 }
 
+/* ==========================================================================
+   9. PRINT / PDF EXPORT STYLES
+   ========================================================================== */
+@media print {
+    /* Ocultar elementos no esenciales del layout global */
+    .main-header,
+    .main-footer,
+    .sidebar,
+    #sidebar,
+    .user-nav,
+    .search-bar,
+    .nav-dropdown,
+    .theme-toggle,
+    #open-cart-btn,
+    #nav-user-account,
+    #btn-logout,
+    .cart-btn {
+        display: none !important;
+    }
+
+    /* Ocultar toolbar de filtros y botones de exportación */
+    .analytics-toolbar {
+        display: none !important;
+    }
+
+    /* Ocultar indicador "En Vivo" */
+    .live-indicator {
+        display: none !important;
+    }
+
+    /* Ocultar acciones de los charts (refresh, opciones) */
+    .chart-actions {
+        display: none !important;
+    }
+
+    /* Ocultar feed de actividad en tiempo real */
+    .activity-list,
+    .activity-item {
+        display: none !important;
+    }
+
+    /* Resetear estilos para impresión */
+    body {
+        background: #FFFFFF !important;
+        color: #000000 !important;
+        font-size: 11pt;
+        line-height: 1.4;
+        margin: 0;
+        padding: 0;
+    }
+
+    .container {
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        box-shadow: none !important;
+    }
+
+    /* Header del dashboard simplificado */
+    .analytics-header-wrapper {
+        border-bottom: 2px solid #000;
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+    }
+
+    .analytics-title-group h1 {
+        font-size: 20pt;
+        color: #000 !important;
+        -webkit-text-fill-color: #000 !important;
+    }
+
+    .analytics-title-group h1 i {
+        -webkit-text-fill-color: #333 !important;
+        filter: none !important;
+    }
+
+    .analytics-title-group p {
+        color: #555 !important;
+        font-size: 9pt;
+    }
+
+    /* KPI Cards - Estilo impresión */
+    .kpi-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+    .kpi-card {
+        background: #F8F9FA !important;
+        border: 1px solid #DEE2E6 !important;
+        border-radius: 6px;
+        padding: 12px 14px;
+        box-shadow: none !important;
+        transform: none !important;
+        page-break-inside: avoid;
+    }
+
+    .kpi-card::before {
+        display: none !important;
+    }
+
+    .kpi-card:hover {
+        transform: none !important;
+        background: #F8F9FA !important;
+        border-color: #DEE2E6 !important;
+        box-shadow: none !important;
+    }
+
+    .kpi-title {
+        color: #555 !important;
+        font-size: 7pt;
+    }
+
+    .kpi-value {
+        font-size: 16pt;
+        color: #000 !important;
+    }
+
+    .kpi-icon-box {
+        background: #E9ECEF !important;
+        border-color: #DEE2E6 !important;
+    }
+
+    .kpi-footer {
+        border-top-color: #DEE2E6;
+    }
+
+    .trend-badge.up {
+        background: #E8F5E9 !important;
+        color: #2E7D32 !important;
+    }
+
+    .kpi-comparison-text {
+        color: #777 !important;
+    }
+
+    /* Chart Cards */
+    .chart-card {
+        background: #FFFFFF !important;
+        border: 1px solid #DEE2E6 !important;
+        border-radius: 6px;
+        padding: 15px;
+        box-shadow: none !important;
+        page-break-inside: avoid;
+    }
+
+    .chart-card:hover {
+        border-color: #DEE2E6 !important;
+        box-shadow: none !important;
+    }
+
+    .chart-title-area h3 {
+        font-size: 12pt;
+        color: #000 !important;
+    }
+
+    .chart-title-area h3 i {
+        color: #333 !important;
+    }
+
+    .chart-subtitle {
+        color: #666 !important;
+        font-size: 8pt;
+    }
+
+    .chart-body {
+        min-height: 220px;
+    }
+
+    .chart-canvas-wrapper {
+        min-height: 220px;
+        max-height: 300px;
+    }
+
+    .chart-custom-legend {
+        border-top-color: #DEE2E6;
+    }
+
+    .legend-item {
+        color: #555 !important;
+        font-size: 8pt;
+    }
+
+    /* Tabla de Top Productos */
+    .analytics-table {
+        font-size: 9pt;
+    }
+
+    .analytics-table th {
+        background: #E9ECEF !important;
+        color: #333 !important;
+        border-bottom: 2px solid #DEE2E6;
+        font-size: 7pt;
+    }
+
+    .analytics-table td {
+        border-bottom: 1px solid #E9ECEF;
+        color: #333 !important;
+    }
+
+    .analytics-table tr:hover td {
+        background: transparent !important;
+    }
+
+    .table-entity-info .title {
+        color: #000 !important;
+    }
+
+    .table-entity-info .subtitle {
+        color: #666 !important;
+    }
+
+    .rank-badge.gold {
+        background: #F59E0B !important;
+        box-shadow: none !important;
+    }
+
+    .rank-badge.silver {
+        background: #9CA3AF !important;
+        box-shadow: none !important;
+    }
+
+    .rank-badge.bronze {
+        background: #B45309 !important;
+        box-shadow: none !important;
+    }
+
+    /* Grid layout for print */
+    .analytics-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+
+    /* Forzar fondo blanco en canvas */
+    canvas {
+        background: #FFFFFF !important;
+    }
+
+    /* Evitar saltos de página en medio de elementos */
+    .kpi-card,
+    .chart-card {
+        page-break-inside: avoid;
+    }
+
+    /* Asegurar que los colores se impriman */
+    * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+}
+

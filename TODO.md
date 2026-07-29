@@ -1,24 +1,12 @@
-# TODO - Fix Admin Dashboard and Profile Issues - COMPLETED
+# TODO - Replace "Ingresos y Comisiones" chart
 
-## ✅ Completed Steps
+## Goal: Replace the "Ingresos y Comisiones" line chart with "Órdenes Procesadas y Ticket Promedio" (Orders Processed & Average Order Value)
 
-### ✅ Step 1: Fix Dashboard KPI Card CSS Classes
-- **File**: `marketplace-amazon/views/analytics/dashboard.php`
-- **Changes**: Changed `blue` → `indigo` and `green` → `emerald`
-- **Result**: All 4 KPI cards now have proper top-border color styling
+- [x] ~~1. Edit `AnalyticsModel.php` - Update `getSalesTrendChartData()` and fallback to return `order_count` and `avg_order_value`~~
+- [x] ~~2. Edit `analytics.js` - Rewrite `renderSalesTrendsChart()` for mixed chart (bars + line)~~
+- [x] ~~3. Edit `dashboard.php` - Update chart title, subtitle, and legend~~
 
-### ✅ Step 2: Fix Filter Tab Logic in Analytics JS
-- **File**: `marketplace-amazon/public/js/modules/analytics.js`
-- **Changes**: Fixed show/hide logic for all filter views (all, sales, vendors, products)
-- **Result**: Filter tabs now properly hide and show relevant KPI cards and chart sections
+- [x] ~~4. Edit `analytics.css` - Added comprehensive `@media print` styles to hide non-essential elements (header, nav, toolbar, activity feed) and show only KPIs, charts, and top products table with clean black/white styling~~
 
-### ✅ Step 3: Fix Admin Usuarios Module JS
-- **File**: `marketplace-amazon/views/admin/usuarios.php`
-- **Changes**: Changed `$module_js = "clientes.js"` to `$module_js = ""`
-- **Result**: Admin users page no longer loads unnecessary client profile JS
-
-### ✅ Step 4: Fix ProductoModel SQL Parameter Binding
-- **File**: `marketplace-amazon/app/Models/ProductoModel.php`
-- **Changes**: Refactored `getAll()` to use consistent `execute($params)` approach instead of mixing `bindValue()` with `execute()`
-- **Result**: Fixed SQLSTATE[HY093] "Invalid parameter number" errors when `categoria_id` is 0
+## ✅ All tasks completed!
 

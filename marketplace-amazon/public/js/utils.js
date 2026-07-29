@@ -23,10 +23,21 @@ const App = {
                 'X-CSRF-TOKEN': App.getCsrfToken()
             },
             error: function (xhr, status, error) {
-                console.error('AJAX Error:', error, xhr.responseJSON);
-                const message = (xhr.responseJSON && xhr.responseJSON.message) 
-                    ? xhr.responseJSON.message 
-                    : 'Error al procesar la solicitud en el servidor.';
+                console.error('AJAX Error:', error, xhr.responseText);
+                let message = 'Error al procesar la solicitud en el servidor.';
+                try {
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        message = xhr.responseJSON.message;
+                    } else {
+                        // Try to parse responseText if responseJSON is not available
+                        const parsed = JSON.parse(xhr.responseText);
+                        if (parsed.message) message = parsed.message;
+                    }
+                } catch (e) {
+                    // If HTML was returned (PHP error), show generic message and log details
+                    console.error('Respuesta no-JSON recibida (posible error PHP):', xhr.responseText.substring(0, 300));
+                    message = 'Error interno del servidor. Ver consola para más detalles.';
+                }
                 App.notify(message, 'error');
             }
         };

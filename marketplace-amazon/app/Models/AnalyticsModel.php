@@ -47,7 +47,7 @@ class AnalyticsModel extends Model {
     }
 
     /**
-     * Obtiene datos para la gráfica de tendencia de ventas (según período)
+     * Obtiene datos para la gráfica de órdenes procesadas y ticket promedio (según período)
      */
     public function getSalesTrendChartData(string $period = '7days'): array {
         // Cálculo de fechas según período (misma lógica que getKPIMetrics)
@@ -70,8 +70,9 @@ class AnalyticsModel extends Model {
         }
 
         $sql = "SELECT DATE_FORMAT(fecha, '%d/%m') as dia, 
-                       total_ventas, 
-                       ROUND(total_ventas * 0.10, 2) as comisiones
+                       total_ventas,
+                       total_pedidos,
+                       CASE WHEN total_pedidos > 0 THEN ROUND(total_ventas / total_pedidos, 2) ELSE 0 END as ticket_promedio
                 FROM metricas_diarias 
                 WHERE fecha >= :start_date
                 ORDER BY fecha ASC 
@@ -89,33 +90,33 @@ class AnalyticsModel extends Model {
         }
 
         $labels = [];
-        $sales = [];
-        $commissions = [];
+        $orderCount = [];
+        $avgOrderValue = [];
 
         foreach ($rows as $r) {
             $labels[] = $r['dia'];
-            $sales[] = (float)$r['total_ventas'];
-            $commissions[] = (float)$r['comisiones'];
+            $orderCount[] = (int)($r['total_pedidos'] ?? 0);
+            $avgOrderValue[] = (float)($r['ticket_promedio'] ?? 0);
         }
 
         return [
             'labels' => $labels,
-            'sales' => $sales,
-            'commissions' => $commissions
+            'order_count' => $orderCount,
+            'avg_order_value' => $avgOrderValue
         ];
     }
 
     /**
-     * Fallback: Obtiene tendencia de ventas desde la tabla pedidos cuando metricas_diarias está vacía
+     * Fallback: Obtiene tendencia desde la tabla pedidos cuando metricas_diarias está vacía
      */
     private function getSalesTrendFromOrders(string $startDate, int $limit): array {
         $sql = "SELECT DATE_FORMAT(p.fecha_pedido, '%d/%m') as dia, 
-                       COALESCE(SUM(p.total), 0) as total_ventas,
-                       COALESCE(ROUND(SUM(p.total) * 0.10, 2), 0) as comisiones
+                       COALESCE(COUNT(p.id), 0) as total_pedidos,
+                       COALESCE(SUM(p.total), 0) as total_ventas
                 FROM pedidos p
                 WHERE p.fecha_pedido >= :start_date 
                   AND p.estado != 'cancelado'
-                GROUP BY DATE(p.fecha_pedido)
+                GROUP BY DATE_FORMAT(p.fecha_pedido, '%d/%m'), DATE(p.fecha_pedido)
                 ORDER BY DATE(p.fecha_pedido) ASC
                 LIMIT :limit_num";
         
@@ -128,38 +129,40 @@ class AnalyticsModel extends Model {
         if (empty($rows)) {
             // Si aún no hay pedidos, generar datos de demostración para mostrar gráfica
             $labels = [];
-            $sales = [];
-            $commissions = [];
+            $orderCount = [];
+            $avgOrderValue = [];
 
             // Generar últimos N días como labels
             for ($i = $limit - 1; $i >= 0; $i--) {
                 $date = date('d/m', strtotime("-$i days"));
                 $labels[] = $date;
-                $sales[] = 0;
-                $commissions[] = 0;
+                $orderCount[] = 0;
+                $avgOrderValue[] = 0;
             }
 
             return [
                 'labels' => $labels,
-                'sales' => $sales,
-                'commissions' => $commissions
+                'order_count' => $orderCount,
+                'avg_order_value' => $avgOrderValue
             ];
         }
 
         $labels = [];
-        $sales = [];
-        $commissions = [];
+        $orderCount = [];
+        $avgOrderValue = [];
 
         foreach ($rows as $r) {
             $labels[] = $r['dia'];
-            $sales[] = (float)$r['total_ventas'];
-            $commissions[] = (float)$r['comisiones'];
+            $count = (int)$r['total_pedidos'];
+            $total = (float)$r['total_ventas'];
+            $orderCount[] = $count;
+            $avgOrderValue[] = $count > 0 ? round($total / $count, 2) : 0;
         }
 
         return [
             'labels' => $labels,
-            'sales' => $sales,
-            'commissions' => $commissions
+            'order_count' => $orderCount,
+            'avg_order_value' => $avgOrderValue
         ];
     }
 

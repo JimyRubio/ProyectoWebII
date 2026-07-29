@@ -129,12 +129,12 @@ require_once __DIR__ . '/../layouts/header.php';
 
 <!-- Sección Principal de Gráficas (Ventas y Distribución) -->
 <div class="analytics-grid">
-    <!-- Gráfica de Tendencia de Ventas y Comisiones -->
+    <!-- Gráfica de Órdenes Procesadas y Ticket Promedio -->
     <div class="chart-card">
         <div class="chart-header">
             <div class="chart-title-area">
-                <h3><i class="fa-solid fa-chart-area"></i> Ingresos y Comisiones del Marketplace</h3>
-                <span class="chart-subtitle">Volumen de transacciones en los últimos días</span>
+                <h3><i class="fa-solid fa-chart-column"></i> Órdenes Procesadas y Ticket Promedio</h3>
+                <span class="chart-subtitle">Volumen de pedidos y valor promedio por orden en los últimos días</span>
             </div>
             <div class="chart-actions">
                 <button class="btn-icon-sm" title="Actualizar datos"><i class="fa-solid fa-rotate-right"></i></button>
@@ -147,8 +147,8 @@ require_once __DIR__ . '/../layouts/header.php';
             </div>
         </div>
         <div class="chart-custom-legend">
-            <div class="legend-item"><span class="legend-color-dot" style="background: #FF9900;"></span> Ventas Brutales ($)</div>
-            <div class="legend-item"><span class="legend-color-dot" style="background: #3B82F6;"></span> Comisiones Marketplace ($)</div>
+            <div class="legend-item"><span class="legend-color-dot" style="background: #3B82F6;"></span> Órdenes Procesadas</div>
+            <div class="legend-item"><span class="legend-color-dot" style="background: #10B981;"></span> Ticket Promedio ($)</div>
         </div>
     </div>
 

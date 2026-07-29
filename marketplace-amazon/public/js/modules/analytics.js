@@ -54,48 +54,95 @@ function renderSalesTrendsChart(chartData) {
         salesChart.destroy();
     }
 
-    const salesGradient = ctxSales.createLinearGradient(0, 0, 0, 300);
-    salesGradient.addColorStop(0, 'rgba(255, 153, 0, 0.4)');
-    salesGradient.addColorStop(1, 'rgba(255, 153, 0, 0.0)');
-
     salesChart = new Chart(ctxSales, {
-        type: 'line',
+        type: 'bar',
         data: {
             labels: chartData.labels,
             datasets: [
                 {
-                    label: 'Ventas Totales ($)',
-                    data: chartData.sales,
-                    borderColor: '#FF9900',
-                    backgroundColor: salesGradient,
+                    label: 'Órdenes Procesadas',
+                    data: chartData.order_count,
+                    backgroundColor: 'rgba(59, 130, 246, 0.8)',
+                    borderColor: '#3B82F6',
+                    borderWidth: 1,
+                    borderRadius: 4,
+                    barPercentage: 0.6,
+                    order: 2,
+                    yAxisID: 'y'
+                },
+                {
+                    label: 'Ticket Promedio ($)',
+                    type: 'line',
+                    data: chartData.avg_order_value,
+                    borderColor: '#10B981',
+                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
                     fill: true,
                     tension: 0.4,
                     borderWidth: 3,
-                    pointBackgroundColor: '#FF9900',
-                    pointRadius: 4
-                },
-                {
-                    label: 'Comisiones ($)',
-                    data: chartData.commissions,
-                    borderColor: '#3B82F6',
-                    borderDash: [5, 5],
-                    fill: false,
-                    tension: 0.4,
-                    borderWidth: 2,
-                    pointBackgroundColor: '#3B82F6',
-                    pointRadius: 3
+                    pointBackgroundColor: '#10B981',
+                    pointRadius: 5,
+                    pointHoverRadius: 7,
+                    order: 1,
+                    yAxisID: 'y1'
                 }
             ]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
+            interaction: {
+                mode: 'index',
+                intersect: false
+            },
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: '#1F2937',
+                    titleColor: '#F9FAFB',
+                    bodyColor: '#D1D5DB',
+                    borderColor: '#374151',
+                    borderWidth: 1,
+                    callbacks: {
+                        label: function(context) {
+                            if (context.dataset.label === 'Órdenes Procesadas') {
+                                return context.dataset.label + ': ' + context.parsed.y.toLocaleString();
+                            } else {
+                                return context.dataset.label + ': $' + context.parsed.y.toLocaleString();
+                            }
+                        }
+                    }
+                }
+            },
             scales: {
-                x: { grid: { color: 'rgba(255, 255, 255, 0.05)' } },
-                y: {
+                x: {
                     grid: { color: 'rgba(255, 255, 255, 0.05)' },
-                    ticks: { callback: function (val) { return '$' + val.toLocaleString(); } }
+                    ticks: { color: '#9CA3AF' }
+                },
+                y: {
+                    position: 'left',
+                    grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                    ticks: {
+                        color: '#3B82F6',
+                        callback: function(val) { return val.toLocaleString(); }
+                    },
+                    title: {
+                        display: true,
+                        text: 'Órdenes',
+                        color: '#3B82F6'
+                    }
+                },
+                y1: {
+                    position: 'right',
+                    grid: { drawOnChartArea: false },
+                    ticks: {
+                        color: '#10B981',
+                        callback: function(val) { return '$' + val.toLocaleString(); }
+                    },
+                    title: {
+                        display: true,
+                        text: 'Ticket Promedio',
+                        color: '#10B981'
+                    }
                 }
             }
         }
