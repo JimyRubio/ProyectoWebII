@@ -1,0 +1,2 @@
+[29-Jul-2026 18:22:32 America/Mexico_City] PHP Deprecated:  ini_set(): session.sid_length INI setting is deprecated in C:\Users\JimyR\Documents\GitHub\ProyectoWebII\marketplace-amazon\config\config.php on line 24
+[29-Jul-2026 18:22:32 America/Mexico_City] PHP Deprecated:  ini_set(): session.sid_bits_per_character INI setting is deprecated in C:\Users\JimyR\Documents\GitHub\ProyectoWebII\marketplace-amazon\config\config.php on line 25

@@ -22,11 +22,11 @@ class Database {
                 
                 self::$instance = new PDO($dsn, DB_USER, DB_PASS, $options);
             } catch (PDOException $e) {
-                // Registrar error en log
+                // Registrar error en log interno (no exponer al cliente)
                 error_log("Error de conexión a la Base de Datos: " . $e->getMessage());
                 die(json_encode([
                     'success' => false,
-                    'message' => 'Error crítico de conexión a la Base de Datos. ' . $e->getMessage()
+                    'message' => 'Error interno del servidor. Intente nuevamente más tarde.'
                 ]));
             }
         }

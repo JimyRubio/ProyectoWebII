@@ -136,39 +136,15 @@ function procesarPago() {
     const metodoPagoId = $('input[name="metodo_pago_id"]:checked').val();
     const direccionId = $('input[name="direccion_id"]:checked').val();
     
-    // Datos de la tarjeta
-    const cardNumber = $('#card_number').val().replace(/\s/g, '');
-    const cardName = $('#card_name').val().trim();
-    const cardExpiry = $('#card_expiry').val().trim();
-    const cardCvv = $('#card_cvv').val().trim();
-
-    // Validaciones
+    // =============================================
+    // PCI-DSS COMPLIANCE: NO enviar datos crudos de tarjeta al backend
+    // En producción, usar Stripe Elements / PayPal SDK para generar un token
+    // El frontend NUNCA debe enviar número, CVV o expiry al servidor
+    // =============================================
+    
+    // Validar que se seleccionó un método de pago
     if (!metodoPagoId) {
         App.notify('Selecciona un método de pago', 'error');
-        return;
-    }
-
-    if (!cardNumber || cardNumber.length < 13) {
-        App.notify('Ingresa un número de tarjeta válido', 'error');
-        $('#card_number').focus();
-        return;
-    }
-
-    if (!cardName) {
-        App.notify('Ingresa el nombre del titular', 'error');
-        $('#card_name').focus();
-        return;
-    }
-
-    if (!cardExpiry || !/^\d{2}\/\d{2}$/.test(cardExpiry)) {
-        App.notify('Ingresa una fecha de expiración válida (MM/YY)', 'error');
-        $('#card_expiry').focus();
-        return;
-    }
-
-    if (!cardCvv || !/^\d{3,4}$/.test(cardCvv)) {
-        App.notify('Ingresa un CVV válido (3 o 4 dígitos)', 'error');
-        $('#card_cvv').focus();
         return;
     }
 
@@ -176,17 +152,22 @@ function procesarPago() {
     const $btn = $('#btn-procesar-pago');
     $btn.prop('disabled', true).html('<i class="fa-solid fa-spinner fa-spin"></i> Procesando...');
 
+    // NOTA: Para métodos que requieren tarjeta (TC), integrar Stripe.js:
+    // 1. Crear token con Stripe.js: Stripe.card.createToken(cardElement)
+    // 2. Enviar SOLO el token: { payment_token: stripeToken }
+    // 3. El backend NUNCA ve el número de tarjeta
+    
+    // Para esta implementación sin pasarela, solo se envían métodos sin tarjeta
+    // (Transferencia Bancaria, Efectivo, PayPal)
     App.ajax({
         url: App.baseUrl + 'api/pagos.php',
         method: 'POST',
         data: {
             action: 'procesar',
             metodo_pago_id: metodoPagoId,
-            direccion_id: direccionId,
-            card_number: cardNumber,
-            card_name: cardName,
-            card_expiry: cardExpiry,
-            card_cvv: cardCvv
+            direccion_id: direccionId
+            // NO se envian card_number, card_name, card_expiry ni card_cvv
+            // Por seguridad PCI-DSS, estos datos solo van cifrados a la pasarela
         },
         success: function (response) {
             if (response.success) {

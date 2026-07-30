@@ -72,10 +72,12 @@ class ClienteController {
             Response::error('Acceso denegado. Solo administradores', 403);
         }
 
-        $stmt = $this->model->db->query("SELECT u.id, u.nombre, u.apellido, u.email, u.rol_id, r.nombre as rol_nombre, u.activo, u.created_at
+        // Prepared statement para prevenir SQLi
+        $stmt = $this->model->db->prepare("SELECT u.id, u.nombre, u.apellido, u.email, u.rol_id, r.nombre as rol_nombre, u.activo, u.created_at
                                           FROM usuarios u
                                           INNER JOIN roles r ON u.rol_id = r.id
                                           ORDER BY u.id ASC");
+        $stmt->execute();
         $usuarios = $stmt->fetchAll() ?: [];
         Response::success($usuarios, 'Lista de usuarios');
     }

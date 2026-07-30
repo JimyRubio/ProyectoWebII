@@ -72,3 +72,20 @@ Stack trace:
 #3 C:\Users\JimyR\Documents\GitHub\ProyectoWebII\marketplace-amazon\api\analytics.php(11): AnalyticsController->dashboardData()
 #4 {main}
   thrown in C:\Users\JimyR\Documents\GitHub\ProyectoWebII\marketplace-amazon\app\Models\AnalyticsModel.php on line 122
+[29-Jul-2026 18:22:16 America/Mexico_City] PHP Deprecated:  ini_set(): session.sid_length INI setting is deprecated in C:\Users\JimyR\Documents\GitHub\ProyectoWebII\marketplace-amazon\config\config.php on line 24
+[29-Jul-2026 18:22:16 America/Mexico_City] PHP Deprecated:  ini_set(): session.sid_bits_per_character INI setting is deprecated in C:\Users\JimyR\Documents\GitHub\ProyectoWebII\marketplace-amazon\config\config.php on line 25
+[29-Jul-2026 18:22:17 America/Mexico_City] PHP Deprecated:  ini_set(): session.sid_length INI setting is deprecated in C:\Users\JimyR\Documents\GitHub\ProyectoWebII\marketplace-amazon\config\config.php on line 24
+[29-Jul-2026 18:22:17 America/Mexico_City] PHP Deprecated:  ini_set(): session.sid_bits_per_character INI setting is deprecated in C:\Users\JimyR\Documents\GitHub\ProyectoWebII\marketplace-amazon\config\config.php on line 25
+[29-Jul-2026 18:22:17 America/Mexico_City] PHP Deprecated:  ini_set(): session.sid_length INI setting is deprecated in C:\Users\JimyR\Documents\GitHub\ProyectoWebII\marketplace-amazon\config\config.php on line 24
+[29-Jul-2026 18:22:17 America/Mexico_City] PHP Deprecated:  ini_set(): session.sid_bits_per_character INI setting is deprecated in C:\Users\JimyR\Documents\GitHub\ProyectoWebII\marketplace-amazon\config\config.php on line 25
+[29-Jul-2026 18:22:17 America/Mexico_City] PHP Deprecated:  ini_set(): session.sid_length INI setting is deprecated in C:\Users\JimyR\Documents\GitHub\ProyectoWebII\marketplace-amazon\config\config.php on line 24
+[29-Jul-2026 18:22:17 America/Mexico_City] PHP Deprecated:  ini_set(): session.sid_bits_per_character INI setting is deprecated in C:\Users\JimyR\Documents\GitHub\ProyectoWebII\marketplace-amazon\config\config.php on line 25
+[29-Jul-2026 18:22:32 America/Mexico_City] PHP Deprecated:  ini_set(): session.sid_length INI setting is deprecated in C:\Users\JimyR\Documents\GitHub\ProyectoWebII\marketplace-amazon\config\config.php on line 24
+[29-Jul-2026 18:22:32 America/Mexico_City] PHP Deprecated:  ini_set(): session.sid_bits_per_character INI setting is deprecated in C:\Users\JimyR\Documents\GitHub\ProyectoWebII\marketplace-amazon\config\config.php on line 25
+[29-Jul-2026 18:22:32 America/Mexico_City] PHP Deprecated:  ini_set(): session.sid_length INI setting is deprecated in C:\Users\JimyR\Documents\GitHub\ProyectoWebII\marketplace-amazon\config\config.php on line 24
+[29-Jul-2026 18:22:32 America/Mexico_City] PHP Deprecated:  ini_set(): session.sid_bits_per_character INI setting is deprecated in C:\Users\JimyR\Documents\GitHub\ProyectoWebII\marketplace-amazon\config\config.php on line 25
+[29-Jul-2026 18:29:01 America/Mexico_City] Login fallido: email=jimya.rubio@gmail.com, intentos=1, IP=::1
+[29-Jul-2026 18:29:02 America/Mexico_City] Login fallido: email=jimya.rubio@gmail.com, intentos=2, IP=::1
+[29-Jul-2026 18:29:03 America/Mexico_City] Login fallido: email=jimya.rubio@gmail.com, intentos=3, IP=::1
+[29-Jul-2026 18:29:04 America/Mexico_City] Login fallido: email=jimya.rubio@gmail.com, intentos=4, IP=::1
+[29-Jul-2026 18:29:04 America/Mexico_City] Login fallido: email=jimya.rubio@gmail.com, intentos=5, IP=::1

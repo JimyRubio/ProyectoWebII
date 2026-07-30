@@ -33,7 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 $nombre = Security::sanitizeString($_POST['nombre'] ?? '');
 $apellido = Security::sanitizeString($_POST['apellido'] ?? '');
-$email = Security::sanitizeString($_POST['email'] ?? '');
+$rawEmail = trim($_POST['email'] ?? '');
 $password = $_POST['password'] ?? '';
 $rolId = (int)($_POST['rol_id'] ?? 3);
 $telefono = Security::sanitizeString($_POST['telefono'] ?? '');
@@ -42,16 +42,19 @@ $fechaNacimiento = Security::sanitizeString($_POST['fecha_nacimiento'] ?? '');
 $direccion = Security::sanitizeString($_POST['direccion'] ?? '');
 
 // Validaciones
-if (empty($nombre) || empty($email) || empty($password)) {
+if (empty($nombre) || empty($rawEmail) || empty($password)) {
     Response::error('Nombre, email y contraseña son obligatorios', 400);
 }
 
-if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+$email = Security::validateEmail($rawEmail);
+if ($email === null) {
     Response::error('Email inválido', 400);
 }
 
-if (strlen($password) < 6) {
-    Response::error('La contraseña debe tener al menos 6 caracteres', 400);
+// Validar fortaleza de la contraseña
+$passValidation = Security::validatePasswordStrength($password);
+if (!$passValidation['valid']) {
+    Response::error($passValidation['message'], 400);
 }
 
 // Validar que el rol sea válido (1=Admin, 2=Vendedor, 3=Cliente)

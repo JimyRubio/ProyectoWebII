@@ -35,6 +35,12 @@ class CarritoController {
     }
 
     public function add(): void {
+        // Verificar CSRF
+        $token = $_POST['csrf_token'] ?? $_SERVER['HTTP_X_CSRF_TOKEN'] ?? null;
+        if (!Security::verifyCsrfToken($token)) {
+            Response::error('Token de seguridad no válido. Recarga la página.', 403);
+        }
+
         $productoId = (int)($_POST['producto_id'] ?? 0);
         $cantidad = max(1, (int)($_POST['cantidad'] ?? 1));
 
@@ -62,6 +68,12 @@ class CarritoController {
     }
 
     public function updateQty(): void {
+        // Verificar CSRF
+        $token = $_POST['csrf_token'] ?? $_SERVER['HTTP_X_CSRF_TOKEN'] ?? null;
+        if (!Security::verifyCsrfToken($token)) {
+            Response::error('Token de seguridad no válido. Recarga la página.', 403);
+        }
+
         $itemId = (int)($_POST['item_id'] ?? 0);
         $cantidad = max(1, (int)($_POST['cantidad'] ?? 1));
 
@@ -85,6 +97,12 @@ class CarritoController {
     }
 
     public function remove(): void {
+        // Verificar CSRF
+        $token = $_POST['csrf_token'] ?? $_SERVER['HTTP_X_CSRF_TOKEN'] ?? null;
+        if (!Security::verifyCsrfToken($token)) {
+            Response::error('Token de seguridad no válido. Recarga la página.', 403);
+        }
+
         $itemId = (int)($_POST['item_id'] ?? $_GET['item_id'] ?? 0);
         if ($itemId <= 0) {
             Response::error('ID de ítem no válido', 400);
@@ -100,6 +118,12 @@ class CarritoController {
     }
 
     public function clear(): void {
+        // Verificar CSRF
+        $token = $_POST['csrf_token'] ?? $_SERVER['HTTP_X_CSRF_TOKEN'] ?? null;
+        if (!Security::verifyCsrfToken($token)) {
+            Response::error('Token de seguridad no válido. Recarga la página.', 403);
+        }
+
         $clienteId = $this->getClienteId();
         $cart = $this->model->getCartByClienteId($clienteId);
         if ($this->model->clearCart($cart['id'])) {
