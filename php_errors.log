@@ -1,0 +1,5 @@
+[29-Jul-2026 19:16:22 America/Mexico_City] PHP Fatal error:  Uncaught Error: Undefined constant "OPENSSL_CONF" in Command line code:1
+Stack trace:
+#0 {main}
+  thrown in Command line code on line 1
+[29-Jul-2026 19:31:24 America/Mexico_City] PHP Parse error:  syntax error, unexpected token "\", expecting end of file in Command line code on line 1
