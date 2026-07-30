@@ -92,3 +92,11 @@ Stack trace:
 [29-Jul-2026 18:44:06 America/Mexico_City] Login fallido: email=jimya.rubio@gmail.com, intentos=1, IP=::1
 [29-Jul-2026 19:36:05 America/Mexico_City] Pago procesado: Pedido #5, Método ID=1, Monto=7999.99
 [29-Jul-2026 19:50:17 America/Mexico_City] Pago procesado: Pedido #6, Método ID=1, Monto=15999.98
+[29-Jul-2026 19:52:11 America/Mexico_City] Error de conexión a la Base de Datos: SQLSTATE[HY000] [1045] Access denied for user 'root'@'localhost' (using password: YES)
+[29-Jul-2026 19:52:11 America/Mexico_City] Error de conexión a la Base de Datos: SQLSTATE[HY000] [1045] Access denied for user 'root'@'localhost' (using password: YES)
+[29-Jul-2026 19:52:11 America/Mexico_City] Error de conexión a la Base de Datos: SQLSTATE[HY000] [1045] Access denied for user 'root'@'localhost' (using password: YES)
+[29-Jul-2026 19:52:11 America/Mexico_City] Error de conexión a la Base de Datos: SQLSTATE[HY000] [1045] Access denied for user 'root'@'localhost' (using password: YES)
+[29-Jul-2026 19:52:12 America/Mexico_City] Error de conexión a la Base de Datos: SQLSTATE[HY000] [1045] Access denied for user 'root'@'localhost' (using password: YES)
+[29-Jul-2026 19:52:12 America/Mexico_City] Error de conexión a la Base de Datos: SQLSTATE[HY000] [1045] Access denied for user 'root'@'localhost' (using password: YES)
+[29-Jul-2026 19:52:12 America/Mexico_City] Error de conexión a la Base de Datos: SQLSTATE[HY000] [1045] Access denied for user 'root'@'localhost' (using password: YES)
+[29-Jul-2026 19:52:12 America/Mexico_City] Error de conexión a la Base de Datos: SQLSTATE[HY000] [1045] Access denied for user 'root'@'localhost' (using password: YES)
