@@ -229,6 +229,7 @@ class Security {
 
     /**
      * Obtiene la IP real del cliente considerando proxies
+     * En entorno local acepta loopback (127.0.0.1, ::1)
      */
     public static function getClientIP(): string {
         $headers = [
@@ -248,8 +249,8 @@ class Security {
                 if (strpos($ip, ',') !== false) {
                     $ip = trim(explode(',', $ip)[0]);
                 }
-                // Validar que sea una IP válida
-                if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) {
+                // Validar que sea una IP válida (permite privadas/loopback para desarrollo local)
+                if (filter_var($ip, FILTER_VALIDATE_IP)) {
                     return $ip;
                 }
             }

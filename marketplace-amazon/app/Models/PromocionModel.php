@@ -23,11 +23,16 @@ class PromocionModel extends Model {
      * Crea una nueva promoción
      */
     public function create(array $data): int {
+        // Generar código automático si no se proporciona (porque DB tiene UNIQUE NOT NULL)
+        if (empty($data['codigo'])) {
+            $data['codigo'] = 'PROMO-' . strtoupper(substr(uniqid(), -8));
+        }
+
         $sql = "INSERT INTO promociones (codigo, nombre, descripcion, tipo, valor, minimo_compra, maximo_descuento, usa_veces, usa_por_cliente, fecha_inicio, fecha_fin, activo, created_at)
                 VALUES (:codigo, :nombre, :descripcion, :tipo, :valor, :minimo_compra, :maximo_descuento, :usa_veces, :usa_por_cliente, :fecha_inicio, :fecha_fin, 1, NOW())";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([
-            ':codigo' => $data['codigo'] ?? null,
+            ':codigo' => $data['codigo'],
             ':nombre' => $data['nombre'],
             ':descripcion' => $data['descripcion'] ?? '',
             ':tipo' => $data['tipo'],

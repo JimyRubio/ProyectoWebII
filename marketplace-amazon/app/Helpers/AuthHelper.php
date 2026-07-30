@@ -56,6 +56,7 @@ class AuthHelper {
 
     /**
      * Verifica que la IP y User-Agent coincidan con los registrados al inicio de sesión
+     * En localhost/desarrollo permite que la IP varíe entre ::1 y 127.0.0.1
      */
     private static function verifySessionConsistency(): bool {
         $currentIP = Security::getClientIP();
@@ -66,7 +67,17 @@ class AuthHelper {
             return false;
         }
 
-        return $_SESSION['ip_address'] === $currentIP && $_SESSION['user_agent'] === $currentUA;
+        // En desarrollo local, ser tolerantes con cambios de IP (::1 vs 127.0.0.1)
+        $sessionIP = $_SESSION['ip_address'];
+        $localhostIPs = ['127.0.0.1', '::1', 'localhost', '0.0.0.0'];
+        $isLocalEnv = in_array($currentIP, $localhostIPs) || in_array($sessionIP, $localhostIPs);
+        
+        if ($isLocalEnv) {
+            // En localhost solo validamos User-Agent, ignoramos IP
+            return $_SESSION['user_agent'] === $currentUA;
+        }
+
+        return $sessionIP === $currentIP && $_SESSION['user_agent'] === $currentUA;
     }
 
     /**
