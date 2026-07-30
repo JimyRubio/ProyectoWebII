@@ -23,15 +23,19 @@ require_once __DIR__ . '/../layouts/header.php';
             </div>
 
             <!-- Método de pago -->
-            <div class="checkout-section">
+            <div class="checkout-section" id="metodo-pago-section">
                 <h3><i class="fa-regular fa-credit-card"></i> Método de Pago</h3>
                 <div id="metodos-pago-container">
                     <!-- Carga dinámica vía AJAX -->
                 </div>
+                <!-- Botón Siguiente: avanza al formulario del método seleccionado -->
+                <button class="btn-primary" id="btn-siguiente" onclick="irAlFormulario()" style="width:100%;padding:14px;font-size:1rem;margin-top:15px;display:none;">
+                    <i class="fa-solid fa-arrow-right"></i> Siguiente
+                </button>
             </div>
 
             <!-- Datos de la Tarjeta de Crédito/Débito -->
-            <div class="checkout-section" id="card-form-section">
+            <div class="checkout-section payment-form-section" id="card-form-section" style="display:none;">
                 <h3><i class="fa-regular fa-credit-card"></i> Datos de la Tarjeta</h3>
                 <div class="card-form">
                     <div class="form-group">
@@ -67,9 +71,39 @@ require_once __DIR__ . '/../layouts/header.php';
                 </div>
             </div>
 
-            <button class="btn-primary" id="btn-procesar-pago" onclick="procesarPago()" style="width:100%;padding:16px;font-size:1.1rem;margin-top:20px;">
-                <i class="fa-solid fa-check-circle"></i> Confirmar y Pagar
-            </button>
+            <!-- Datos de PayPal -->
+            <div class="checkout-section payment-form-section" id="paypal-form-section" style="display:none;">
+                <h3><i class="fa-brands fa-paypal"></i> Datos de PayPal</h3>
+                <div class="card-form">
+                    <div class="form-group">
+                        <label>Correo Electrónico de PayPal</label>
+                        <div class="input-container">
+                            <i class="fa-regular fa-envelope input-icon"></i>
+                            <input type="email" id="paypal_email" class="form-control" placeholder="tucorreo@paypal.com" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Contraseña de PayPal</label>
+                        <div class="input-container">
+                            <i class="fa-solid fa-lock input-icon"></i>
+                            <input type="password" id="paypal_password" class="form-control" placeholder="••••••••" required>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="btn-pagar-container" style="display:none;">
+                <button class="btn-primary" id="btn-procesar-pago" onclick="procesarPago()" style="width:100%;padding:16px;font-size:1.1rem;margin-top:20px;">
+                    <i class="fa-solid fa-check-circle"></i> Confirmar y Pagar
+                </button>
+            </div>
+
+            <!-- Botón Volver (regresa a selección de método) -->
+            <div id="btn-volver-container" style="display:none;">
+                <button class="btn-secondary" id="btn-volver" onclick="volverAMetodos()" style="width:100%;padding:12px;font-size:1rem;margin-top:10px;">
+                    <i class="fa-solid fa-arrow-left"></i> Volver a métodos de pago
+                </button>
+            </div>
         </div>
 
         <!-- Columna derecha: Resumen -->

@@ -89,3 +89,6 @@ Stack trace:
 [29-Jul-2026 18:29:03 America/Mexico_City] Login fallido: email=jimya.rubio@gmail.com, intentos=3, IP=::1
 [29-Jul-2026 18:29:04 America/Mexico_City] Login fallido: email=jimya.rubio@gmail.com, intentos=4, IP=::1
 [29-Jul-2026 18:29:04 America/Mexico_City] Login fallido: email=jimya.rubio@gmail.com, intentos=5, IP=::1
+[29-Jul-2026 18:44:06 America/Mexico_City] Login fallido: email=jimya.rubio@gmail.com, intentos=1, IP=::1
+[29-Jul-2026 19:36:05 America/Mexico_City] Pago procesado: Pedido #5, Método ID=1, Monto=7999.99
+[29-Jul-2026 19:50:17 America/Mexico_City] Pago procesado: Pedido #6, Método ID=1, Monto=15999.98

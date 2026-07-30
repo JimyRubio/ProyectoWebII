@@ -49,21 +49,24 @@ class PagoController {
         $metodoPagoId = (int)($_POST['metodo_pago_id'] ?? 1);
         $direccionId = (int)($_POST['direccion_id'] ?? 0) ?: null;
 
-        // =============================================
-        // CUMPLIMIENTO PCI-DSS: NO procesar datos crudos de tarjeta en el backend
-        // En una implementación real, usar un token de pasarela de pago (Stripe, PayPal, etc.)
-        // El frontend envía un token de pago generado por la pasarela, NO los datos de la tarjeta
-        // =============================================
-        $paymentToken = Security::sanitizeString($_POST['payment_token'] ?? '');
-        
-        // Si no hay token de pasarela, validar que solo se use el ID del método de pago
-        // (para implementación actual, solo registramos el método y no datos de tarjeta)
-        if (empty($paymentToken)) {
-            // Solo permitir métodos que no requieren tarjeta (transferencia, efectivo)
-            $metodosSinTarjeta = [3, 4]; // Transferencia Bancaria, Efectivo
-            if (!in_array($metodoPagoId, $metodosSinTarjeta)) {
-                Response::error('Para pagos con tarjeta, el frontend debe enviar un payment_token generado por la pasarela de pago. No se aceptan datos crudos de tarjeta por seguridad (PCI-DSS).', 400);
-            }
+        // Capturar datos del formulario de pago según el método seleccionado
+        // Para Tarjeta de Crédito/Débito (método 1)
+        $cardNumber = Security::sanitizeString($_POST['card_number'] ?? '');
+        $cardName = Security::sanitizeString($_POST['card_name'] ?? '');
+        $cardExpiry = Security::sanitizeString($_POST['card_expiry'] ?? '');
+        $cardCvv = Security::sanitizeString($_POST['card_cvv'] ?? '');
+
+        // Para PayPal (método 2)
+        $paypalEmail = Security::sanitizeString($_POST['paypal_email'] ?? '');
+        $paypalPassword = Security::sanitizeString($_POST['paypal_password'] ?? '');
+
+        // Validar que los datos requeridos por cada método estén presentes
+        if ($metodoPagoId === 1 && (empty($cardNumber) || empty($cardName) || empty($cardExpiry) || empty($cardCvv))) {
+            Response::error('Completa todos los datos de la tarjeta de crédito/débito.', 400);
+        }
+
+        if ($metodoPagoId === 2 && (empty($paypalEmail) || empty($paypalPassword))) {
+            Response::error('Completa todos los datos de PayPal.', 400);
         }
 
         // Obtener carrito
@@ -81,17 +84,13 @@ class PagoController {
             $pedidoModel = new PedidoModel();
             $pedidoId = $pedidoModel->createOrder($clienteId, $cart['items'], $cart['subtotal'], 0.00, $direccionId);
 
-            // 2. Registrar pago (NUNCA almacenar número de tarjeta, CVV o fecha exp)
+            // 2. Registrar pago
             $pagoData = [
                 'pedido_id' => $pedidoId,
                 'metodo_pago_id' => $metodoPagoId,
                 'monto' => $cart['total'],
                 'estado' => 'completado'
             ];
-            // Solo almacenar token de pago si existe (nunca datos crudos de tarjeta)
-            if (!empty($paymentToken)) {
-                $pagoData['token_pago'] = $paymentToken;
-            }
             $pagoId = $this->model->registrarPago($pagoData);
 
             // 3. Procesar pedido (actualizar stock)

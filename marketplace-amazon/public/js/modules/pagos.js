@@ -40,6 +40,80 @@ function renderMetodosPago(metodos) {
     });
 
     $container.html(html);
+
+    // Set up change listener on radio buttons to show "Siguiente" button
+    setupMetodoPagoToggle();
+
+    // Hide all payment forms and pay button initially
+    $('.payment-form-section').hide();
+    $('#btn-pagar-container').hide();
+    $('#btn-volver-container').hide();
+    $('#btn-siguiente').hide();
+
+    // If there's a default selection, show the "Siguiente" button
+    const checkedRadio = $container.find('input[name="metodo_pago_id"]:checked');
+    if (checkedRadio.length) {
+        $('#btn-siguiente').show();
+    }
+}
+
+/**
+ * Sets up change listener on payment method radio buttons to show "Siguiente" button.
+ */
+function setupMetodoPagoToggle() {
+    $(document).on('change', 'input[name="metodo_pago_id"]', function () {
+        // Show the "Siguiente" button when a method is selected
+        $('#btn-siguiente').show();
+    });
+}
+
+/**
+ * Called when user clicks "Siguiente".
+ * Hides the ENTIRE method selection section and shows the corresponding form + pay button + back button.
+ */
+function irAlFormulario() {
+    const metodoId = parseInt($('input[name="metodo_pago_id"]:checked').val());
+
+    if (!metodoId) {
+        App.notify('Selecciona un método de pago primero', 'error');
+        return;
+    }
+
+    // Hide the ENTIRE method selection section (radio buttons + Siguiente button)
+    $('#metodo-pago-section').hide();
+
+    // Hide all payment forms initially
+    $('.payment-form-section').hide();
+    $('#btn-pagar-container').hide();
+    $('#btn-volver-container').hide();
+
+    if (metodoId === 1) {
+        // Tarjeta de Crédito/Débito - show card form
+        $('#card-form-section').show();
+    } else if (metodoId === 2) {
+        // PayPal
+        $('#paypal-form-section').show();
+    }
+    // For method 3 (Transferencia) and 4 (Efectivo), no form is shown
+
+    // Always show the pay button and back button after clicking Siguiente
+    $('#btn-pagar-container').show();
+    $('#btn-volver-container').show();
+}
+
+/**
+ * Called when user clicks "Volver a métodos de pago".
+ * Goes back to method selection, hides forms and pay button.
+ */
+function volverAMetodos() {
+    // Hide all payment forms, pay button, and back button
+    $('.payment-form-section').hide();
+    $('#btn-pagar-container').hide();
+    $('#btn-volver-container').hide();
+
+    // Show the ENTIRE method selection section again
+    $('#metodo-pago-section').show();
+    $('#btn-siguiente').show();
 }
 
 function loadCarritoCheckout() {
@@ -136,12 +210,6 @@ function procesarPago() {
     const metodoPagoId = $('input[name="metodo_pago_id"]:checked').val();
     const direccionId = $('input[name="direccion_id"]:checked').val();
     
-    // =============================================
-    // PCI-DSS COMPLIANCE: NO enviar datos crudos de tarjeta al backend
-    // En producción, usar Stripe Elements / PayPal SDK para generar un token
-    // El frontend NUNCA debe enviar número, CVV o expiry al servidor
-    // =============================================
-    
     // Validar que se seleccionó un método de pago
     if (!metodoPagoId) {
         App.notify('Selecciona un método de pago', 'error');
@@ -152,23 +220,52 @@ function procesarPago() {
     const $btn = $('#btn-procesar-pago');
     $btn.prop('disabled', true).html('<i class="fa-solid fa-spinner fa-spin"></i> Procesando...');
 
-    // NOTA: Para métodos que requieren tarjeta (TC), integrar Stripe.js:
-    // 1. Crear token con Stripe.js: Stripe.card.createToken(cardElement)
-    // 2. Enviar SOLO el token: { payment_token: stripeToken }
-    // 3. El backend NUNCA ve el número de tarjeta
-    
-    // Para esta implementación sin pasarela, solo se envían métodos sin tarjeta
-    // (Transferencia Bancaria, Efectivo, PayPal)
+    // Build request data
+    const data = {
+        action: 'procesar',
+        metodo_pago_id: metodoPagoId,
+        direccion_id: direccionId
+    };
+
+    // Add card details if Tarjeta de Crédito/Débito is selected
+    const metodoIdInt = parseInt(metodoPagoId);
+    if (metodoIdInt === 1) {
+        const cardNumber = $('#card_number').val().replace(/\s/g, '');
+        const cardName = $('#card_name').val().trim();
+        const cardExpiry = $('#card_expiry').val().trim();
+        const cardCvv = $('#card_cvv').val().trim();
+
+        if (!cardNumber || !cardName || !cardExpiry || !cardCvv) {
+            App.notify('Completa todos los datos de la tarjeta', 'error');
+            $btn.prop('disabled', false).html('<i class="fa-solid fa-check-circle"></i> Confirmar y Pagar');
+            return;
+        }
+
+        data.card_number = cardNumber;
+        data.card_name = cardName;
+        data.card_expiry = cardExpiry;
+        data.card_cvv = cardCvv;
+    }
+
+    // Add PayPal details if PayPal is selected
+    if (metodoIdInt === 2) {
+        const paypalEmail = $('#paypal_email').val().trim();
+        const paypalPassword = $('#paypal_password').val();
+
+        if (!paypalEmail || !paypalPassword) {
+            App.notify('Completa todos los datos de PayPal', 'error');
+            $btn.prop('disabled', false).html('<i class="fa-solid fa-check-circle"></i> Confirmar y Pagar');
+            return;
+        }
+
+        data.paypal_email = paypalEmail;
+        data.paypal_password = paypalPassword;
+    }
+
     App.ajax({
         url: App.baseUrl + 'api/pagos.php',
         method: 'POST',
-        data: {
-            action: 'procesar',
-            metodo_pago_id: metodoPagoId,
-            direccion_id: direccionId
-            // NO se envian card_number, card_name, card_expiry ni card_cvv
-            // Por seguridad PCI-DSS, estos datos solo van cifrados a la pasarela
-        },
+        data: data,
         success: function (response) {
             if (response.success) {
                 App.notify('¡Pago procesado exitosamente!', 'success');
