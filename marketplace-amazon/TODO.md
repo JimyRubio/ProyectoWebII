@@ -1,4 +1,4 @@
-# TODO - Correcciones de Pago y Cupones
+# TODO - Correcciones de Pago, Cupones y Carrito
 
 ## ✅ Plan Aprobado - COMPLETADO
 
@@ -65,3 +65,37 @@ Reemplazar todas las llamadas a `confirm()` de JavaScript por un modal animado y
 
 #### 8. `views/vendedores/pos.php:214` - Limpiar ticket
 - [x] Reemplazado `confirm('¿Limpiar ticket actual?')` por `App.confirm(...)` con tipo `warning`
+
+---
+
+# 🎫 Corrección de Input de Cupón en Checkout y Nueva Sección de Cupón en Carrito
+
+## ✅ COMPLETADO
+
+### Problema
+El input de texto para aplicar cupón en la página de checkout (`checkout.php`) utilizaba variables CSS que no existen en el sistema de temas:
+- `var(--input-bg)` → No existe (la correcta es `var(--bg-input)`)
+- `var(--card-border)` → No existe (la correcta es `var(--border-color)`)
+
+Esto causaba que el input tuviera un fondo transparente, haciéndolo invisible y dando la apariencia de estar desactivado.
+
+### Cambios realizados
+
+#### 1. `views/pagos/checkout.php` - Corrección de variables CSS en input de cupón
+- [x] `background: var(--input-bg)` → `background: var(--bg-input)`
+- [x] `border: 1px solid var(--card-border)` → `border: 1.5px solid var(--border-color)`
+- [x] Mejorado placeholder: "Ingresa el código" → "Ingresa el código del cupón"
+- [x] Agregado `font-size: 0.95rem` para consistencia visual
+
+#### 2. `views/carrito/index.php` - Nueva sección de cupón en la página del carrito
+- [x] Agregada estructura de grid de 2 columnas (`.carrito-grid`)
+- [x] Columna izquierda: items del carrito (existente)
+- [x] Columna derecha: nueva sección de cupón con input, botón aplicar, y estado de cupón aplicado
+- [x] IDs únicos para evitar conflictos con el checkout (sufijo `-carrito`)
+- [x] Estilos CSS responsivos para el grid y componentes de cupón
+
+#### 3. `public/js/modules/carrito.js` - Nuevas funciones de cupón para el carrito
+- [x] `aplicarCuponCarrito()` - Aplica cupón desde la página del carrito vía API
+- [x] `removerCuponCarrito()` - Remueve cupón desde la página del carrito vía API
+- [x] Evento `keypress` para Enter en el input de cupón del carrito
+- [x] Integración con `loadCarrito()` para actualizar los totales al aplicar/remover cupón

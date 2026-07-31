@@ -259,3 +259,105 @@ function updateQty(itemId, delta) {
     });
 }
 
+/**
+ * Aplica un cupón de descuento desde la página del carrito
+ */
+function aplicarCuponCarrito() {
+    const codigo = $('#cupon-codigo-carrito').val().trim().toUpperCase();
+    const $mensaje = $('#cupon-mensaje-carrito');
+
+    if (!codigo) {
+        App.notify('Ingresa un código de cupón', 'error');
+        return;
+    }
+
+    // Deshabilitar botón mientras se procesa
+    const $btn = $('#btn-aplicar-cupon-carrito');
+    $btn.prop('disabled', true).html('<i class="fa-solid fa-spinner fa-spin"></i>');
+
+    $mensaje.removeClass('success error').html('');
+
+    App.ajax({
+        url: App.baseUrl + 'api/carrito.php',
+        method: 'POST',
+        data: { action: 'apply_coupon', codigo: codigo },
+        success: function (response) {
+            if (response.success) {
+                const data = response.data;
+                const cupon = data.cupon;
+
+                // Mostrar cupón aplicado
+                $('#cupon-form-carrito').hide();
+                $('#cupon-codigo-display-carrito').text(cupon.codigo || codigo);
+
+                let valorDisplay = '';
+                if (cupon.tipo_descuento === 'porcentaje') {
+                    valorDisplay = cupon.valor + '% de descuento';
+                } else {
+                    valorDisplay = App.formatCurrency(cupon.valor) + ' de descuento';
+                }
+                $('#cupon-descuento-display-carrito').text(valorDisplay);
+                $('#cupon-aplicado-carrito').show();
+                $mensaje.removeClass('error').addClass('success').html('¡Cupón aplicado exitosamente!').show();
+
+                // Recargar el carrito para reflejar los descuentos
+                loadCarrito();
+
+                App.notify('¡Cupón aplicado!', 'success');
+            } else {
+                $mensaje.removeClass('success').addClass('error').html(App.escapeHtml(response.message || 'El cupón no pudo ser aplicado')).show();
+            }
+        },
+        error: function (xhr) {
+            let msg = 'Error al aplicar el cupón';
+            try {
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    msg = xhr.responseJSON.message;
+                }
+            } catch (e) {}
+            $mensaje.removeClass('success').addClass('error').html(App.escapeHtml(msg)).show();
+        },
+        complete: function () {
+            $btn.prop('disabled', false).html('<i class="fa-solid fa-check"></i> Aplicar');
+        }
+    });
+}
+
+/**
+ * Remueve el cupón de descuento desde la página del carrito
+ */
+function removerCuponCarrito() {
+    const $mensaje = $('#cupon-mensaje-carrito');
+
+    App.ajax({
+        url: App.baseUrl + 'api/carrito.php',
+        method: 'POST',
+        data: { action: 'remove_coupon' },
+        success: function (response) {
+            if (response.success) {
+                // Ocultar cupón aplicado y mostrar formulario
+                $('#cupon-aplicado-carrito').hide();
+                $('#cupon-form-carrito').show();
+                $('#cupon-codigo-carrito').val('');
+                $mensaje.removeClass('success error').html('');
+
+                // Recargar el carrito para reflejar la eliminación del descuento
+                loadCarrito();
+
+                App.notify('Cupón removido', 'info');
+            }
+        },
+        error: function () {
+            App.notify('Error al remover el cupón', 'error');
+        }
+    });
+}
+
+// Habilitar Enter para aplicar cupón en la página del carrito
+$(document).on('keypress', '#cupon-codigo-carrito', function (e) {
+    if (e.which === 13) {
+        e.preventDefault();
+        aplicarCuponCarrito();
+    }
+});
+
