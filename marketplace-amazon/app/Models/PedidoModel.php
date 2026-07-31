@@ -6,20 +6,22 @@ class PedidoModel extends Model {
     /**
      * Crea un pedido a partir de un carrito de compras
      */
-    public function createOrder(int $clienteId, array $items, float $subtotal, float $costoEnvio = 0.00, ?int $direccionId = null): int {
+    public function createOrder(int $clienteId, array $items, float $subtotal, float $costoEnvio = 0.00, ?int $direccionId = null, float $descuentos = 0.00): int {
         $this->beginTransaction();
         try {
             $numeroPedido = 'ORD-' . strtoupper(uniqid());
-            $total = $subtotal + $costoEnvio;
+            $total = ($subtotal + $costoEnvio) - $descuentos;
+            if ($total < 0) $total = 0;
 
-            $sqlOrder = "INSERT INTO pedidos (cliente_id, numero_pedido, estado, estado_pago, subtotal, costo_envio, total, direccion_envio_id, fecha_pedido)
-                         VALUES (:cliente_id, :numero_pedido, 'pendiente', 'pendiente', :subtotal, :costo_envio, :total, :direccion_id, NOW())";
+            $sqlOrder = "INSERT INTO pedidos (cliente_id, numero_pedido, estado, estado_pago, subtotal, descuentos, costo_envio, total, direccion_envio_id, fecha_pedido)
+                         VALUES (:cliente_id, :numero_pedido, 'pendiente', 'pendiente', :subtotal, :descuentos, :costo_envio, :total, :direccion_id, NOW())";
             
             $stmtOrder = $this->db->prepare($sqlOrder);
             $stmtOrder->execute([
                 ':cliente_id' => $clienteId,
                 ':numero_pedido' => $numeroPedido,
                 ':subtotal' => $subtotal,
+                ':descuentos' => $descuentos,
                 ':costo_envio' => $costoEnvio,
                 ':total' => $total,
                 ':direccion_id' => $direccionId
@@ -55,12 +57,59 @@ class PedidoModel extends Model {
         }
     }
 
-    /**
-     * Procesa y confirma el pedido invocando el Stored Procedure CALL procesar_pedido(?)
+/**
+     * Procesa y confirma el pedido (actualiza estado, stock y totales)
+     * Reemplaza el Stored Procedure 'procesar_pedido' que no existe en la BD
      */
     public function procesarPedidoSP(int $pedidoId): bool {
-        $stmt = $this->db->prepare("CALL procesar_pedido(:pedido_id)");
-        return $stmt->execute([':pedido_id' => $pedidoId]);
+        $this->beginTransaction();
+        try {
+            // 1. Actualizar estado del pedido a confirmado
+            $stmtOrder = $this->db->prepare("UPDATE pedidos SET estado = 'confirmado', fecha_confirmacion = NOW() WHERE id = :id AND estado = 'pendiente'");
+            $stmtOrder->execute([':id' => $pedidoId]);
+
+            // 2. Obtener los items del pedido
+            $stmtItems = $this->db->prepare("SELECT producto_id, cantidad FROM pedido_items WHERE pedido_id = :pedido_id");
+            $stmtItems->execute([':pedido_id' => $pedidoId]);
+            $items = $stmtItems->fetchAll();
+
+            // 3. Actualizar stock y total_vendidos de cada producto
+            foreach ($items as $item) {
+                $productoId = (int)$item['producto_id'];
+                $cantidad = (int)$item['cantidad'];
+
+                // Descontar stock
+                $stmtStock = $this->db->prepare("UPDATE productos SET stock = stock - :cantidad, total_vendidos = total_vendidos + :cantidad2 WHERE id = :producto_id AND stock >= :cantidad3");
+                $stmtStock->execute([
+                    ':cantidad' => $cantidad,
+                    ':cantidad2' => $cantidad,
+                    ':cantidad3' => $cantidad,
+                    ':producto_id' => $productoId
+                ]);
+
+                // Si stock llegó a 0, marcar como agotado
+                $stmtCheck = $this->db->prepare("UPDATE productos SET estado = 'agotado' WHERE id = :id AND stock <= 0 AND estado = 'activo'");
+                $stmtCheck->execute([':id' => $productoId]);
+            }
+
+            // 4. Insertar en historial de estados
+            $stmtHist = $this->db->prepare("INSERT INTO historial_estados_pedido (pedido_id, estado_anterior, estado_nuevo, comentario) VALUES (:pedido_id, 'pendiente', 'confirmado', 'Pedido procesado y confirmado exitosamente')");
+            $stmtHist->execute([':pedido_id' => $pedidoId]);
+
+            // 5. Registrar en auditoría
+            $stmtAudit = $this->db->prepare("INSERT INTO auditoria (usuario_id, accion, tabla_afectada, registro_id, datos_nuevos) VALUES (NULL, 'PROCESAR_PEDIDO', 'pedidos', :pedido_id, :datos)");
+            $stmtAudit->execute([
+                ':pedido_id' => $pedidoId,
+                ':datos' => json_encode(['estado' => 'confirmado'])
+            ]);
+
+            $this->commit();
+            return true;
+        } catch (Exception $e) {
+            $this->rollBack();
+            error_log("Error procesarPedidoSP: " . $e->getMessage());
+            return false;
+        }
     }
 
     /**

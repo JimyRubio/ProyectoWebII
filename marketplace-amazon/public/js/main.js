@@ -65,20 +65,27 @@ $(document).ready(function () {
     // 4. Cerrar sesión
     $('#btn-logout').on('click', function (e) {
         e.preventDefault();
-        if (confirm('¿Cerrar sesión?')) {
-            App.ajax({
-                url: App.baseUrl + 'api/auth.php?action=logout',
-                method: 'POST',
-                success: function (response) {
-                    if (response.success) {
-                        App.notify('Sesión cerrada correctamente', 'info');
-                        setTimeout(function () {
-                            window.location.href = App.baseUrl;
-                        }, 1000);
+        App.confirm('¿Estás seguro de que deseas cerrar sesión?', {
+            type: 'warning',
+            title: 'Cerrar Sesión',
+            confirmText: 'Sí, cerrar sesión',
+            cancelText: 'Cancelar'
+        }).then(function (confirmed) {
+            if (confirmed) {
+                App.ajax({
+                    url: App.baseUrl + 'api/auth.php?action=logout',
+                    method: 'POST',
+                    success: function (response) {
+                        if (response.success) {
+                            App.notify('Sesión cerrada correctamente', 'info');
+                            setTimeout(function () {
+                                window.location.href = App.baseUrl;
+                            }, 1000);
+                        }
                     }
-                }
-            });
-        }
+                });
+            }
+        });
     });
 
     // 5. Abrir carrito - Redirige a la página de carrito

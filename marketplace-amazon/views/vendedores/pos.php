@@ -210,14 +210,20 @@ $(document).ready(function() {
         filtrarProductosPOS();
     });
 
-    $('#btn-pos-limpiar').on('click', function() {
-        if (confirm('¿Limpiar ticket actual?')) {
+$('#btn-pos-limpiar').on('click', function() {
+        App.confirm('Se eliminarán todos los productos del ticket actual. Esta acción no se puede deshacer.', {
+            type: 'warning',
+            title: 'Limpiar Ticket',
+            confirmText: 'Sí, limpiar',
+            cancelText: 'Cancelar'
+        }).then(function (confirmed) {
+            if (!confirmed) return;
             posItems = [];
             posCuponAplicado = null;
             $('#pos-cupon-input').val('');
             $('#pos-cupon-result').hide();
             renderPOSSidebar();
-        }
+        });
     });
 
     $('#form-factura').on('submit', function(e) {

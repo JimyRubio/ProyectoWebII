@@ -172,9 +172,16 @@ function bindCarritoEvents() {
     });
 
     $('#btn-vaciar-carrito').off('click').on('click', function () {
-        if (confirm('¿Vaciar el carrito por completo?')) {
-            clearCart();
-        }
+        App.confirm('Se eliminarán todos los productos del carrito. Esta acción no se puede deshacer.', {
+            type: 'danger',
+            title: 'Vaciar Carrito',
+            confirmText: 'Sí, vaciar carrito',
+            cancelText: 'Cancelar'
+        }).then(function (confirmed) {
+            if (confirmed) {
+                clearCart();
+            }
+        });
     });
 
     $('#btn-checkout').off('click').on('click', function () {

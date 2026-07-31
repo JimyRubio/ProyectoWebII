@@ -79,10 +79,11 @@ class PagoController {
         }
 
         try {
-            // 1. Crear pedido
+            // 1. Crear pedido (incluyendo descuentos del cupón si existen)
             require_once ROOT_PATH . 'app/Models/PedidoModel.php';
             $pedidoModel = new PedidoModel();
-            $pedidoId = $pedidoModel->createOrder($clienteId, $cart['items'], $cart['subtotal'], 0.00, $direccionId);
+            $descuentos = (float)($cart['descuentos'] ?? 0.00);
+            $pedidoId = $pedidoModel->createOrder($clienteId, $cart['items'], $cart['subtotal'], 0.00, $direccionId, $descuentos);
 
             // 2. Registrar pago
             $pagoData = [

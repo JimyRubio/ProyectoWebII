@@ -276,8 +276,14 @@ function clearImagePreview() {
 }
 
 function eliminarProducto(id) {
-    if(!confirm('¿Eliminar este producto?')) return;
-    App.ajax({
+    App.confirm('¿Estás seguro de que deseas eliminar este producto? Esta acción no se puede deshacer.', {
+        type: 'danger',
+        title: 'Eliminar Producto',
+        confirmText: 'Sí, eliminar',
+        cancelText: 'Cancelar'
+    }).then(function (confirmed) {
+        if (!confirmed) return;
+        App.ajax({
         url: App.baseUrl + 'api/productos.php',
         method: 'POST',
         data: { action: 'delete', id: id },

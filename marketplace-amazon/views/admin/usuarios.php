@@ -257,9 +257,14 @@ function filtrarUsuarios() {
 }
 
 function toggleUsuario(usuarioId) {
-    if (!confirm('&iquest;Cambiar estado de este usuario?')) return;
-
-    App.ajax({
+    App.confirm('¿Estás seguro de que deseas cambiar el estado de este usuario?', {
+        type: 'warning',
+        title: 'Cambiar Estado',
+        confirmText: 'Sí, cambiar estado',
+        cancelText: 'Cancelar'
+    }).then(function (confirmed) {
+        if (!confirmed) return;
+        App.ajax({
         url: App.baseUrl + 'api/clientes.php',
         method: 'POST',
         data: {

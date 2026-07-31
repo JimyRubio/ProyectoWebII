@@ -164,16 +164,23 @@ function validarCupon() {
 }
 
 function eliminarPromocion(id) {
-    if (!confirm('¿Estás seguro de eliminar esta promoción?')) return;
-    App.ajax({
-        url: App.baseUrl + 'api/promociones.php',
-        method: 'POST',
-        data: { action: 'delete', id: id },
-        success: function (response) {
-            if (response.success) {
-                App.notify('Promoción eliminada correctamente', 'info');
-                loadPromociones();
+    App.confirm('Esta promoción se eliminará permanentemente. Los cupones asociados dejarán de funcionar.', {
+        type: 'danger',
+        title: 'Eliminar Promoción',
+        confirmText: 'Sí, eliminar',
+        cancelText: 'Cancelar'
+    }).then(function (confirmed) {
+        if (!confirmed) return;
+        App.ajax({
+            url: App.baseUrl + 'api/promociones.php',
+            method: 'POST',
+            data: { action: 'delete', id: id },
+            success: function (response) {
+                if (response.success) {
+                    App.notify('Promoción eliminada correctamente', 'info');
+                    loadPromociones();
+                }
             }
-        }
+        });
     });
 }

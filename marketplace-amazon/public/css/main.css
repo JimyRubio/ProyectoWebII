@@ -400,6 +400,111 @@ body,
 }
 
 /* --------------------------------------------------------------------------
+   4.1 CONFIRM MODAL (Reemplazo profesional de confirm())
+   -------------------------------------------------------------------------- */
+.confirm-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.25s ease-out;
+    padding: 20px;
+}
+
+.confirm-card {
+    background: var(--bg-card);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    padding: 36px 32px 28px;
+    max-width: 420px;
+    width: 100%;
+    text-align: center;
+    animation: bounceIn 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4);
+    position: relative;
+    overflow: hidden;
+}
+
+[data-theme="light"] .confirm-card {
+    background: rgba(255, 255, 255, 0.98);
+    border-color: rgba(0, 0, 0, 0.1);
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.15);
+}
+
+.confirm-card .confirm-icon {
+    width: 72px;
+    height: 72px;
+    margin: 0 auto 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    animation: float 2.5s ease-in-out infinite;
+}
+
+.confirm-card .confirm-icon i {
+    font-size: 2.2rem;
+}
+
+.confirm-card h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: var(--text-primary);
+}
+
+.confirm-card p {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    margin-bottom: 28px;
+    line-height: 1.6;
+}
+
+.confirm-card .confirm-buttons {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+.confirm-card .confirm-buttons button {
+    flex: 1;
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: var(--font-sans);
+    transition: all 0.2s ease;
+}
+
+.confirm-card .confirm-btn-cancel {
+    border: 1px solid var(--border-color);
+    background: var(--bg-input);
+    color: var(--text-primary);
+}
+
+.confirm-card .confirm-btn-cancel:hover {
+    background: var(--bg-input-focus);
+    transform: translateY(-1px);
+}
+
+.confirm-card .confirm-btn-confirm {
+    border: none;
+    color: #FFFFFF;
+}
+
+.confirm-card .confirm-btn-confirm:hover {
+    transform: translateY(-2px);
+}
+
+/* --------------------------------------------------------------------------
    5. ANIMATION UTILITY CLASSES
    -------------------------------------------------------------------------- */
 .animate-fade-in-up {
