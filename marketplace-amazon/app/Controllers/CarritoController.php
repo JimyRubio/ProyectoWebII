@@ -132,4 +132,62 @@ class CarritoController {
             Response::error('Error al vaciar carrito', 500);
         }
     }
+
+    /**
+     * Aplica un cupón de descuento al carrito
+     */
+    public function applyCoupon(): void {
+        $clienteId = $this->getClienteId();
+        if ($clienteId === null) {
+            Response::error('Debe iniciar sesión para aplicar un cupón', 401);
+        }
+
+        $codigo = strtoupper(trim($_POST['codigo'] ?? ''));
+        if (empty($codigo)) {
+            Response::error('Ingrese un código de cupón válido', 400);
+        }
+
+        // Validar el cupón usando el PromocionModel
+        require_once ROOT_PATH . 'app/Models/PromocionModel.php';
+        $promocionModel = new PromocionModel();
+        $cupon = $promocionModel->validarCupon($codigo);
+
+        if (!$cupon) {
+            Response::error('El cupón no es válido o ha expirado', 404);
+        }
+
+        // Aplicar el descuento al carrito
+        $result = $this->model->applyCoupon($clienteId, $cupon);
+        if ($result === false) {
+            // Verificar si fue por mínimo de compra
+            $cart = $this->model->getCartByClienteId($clienteId);
+            if (!empty($cupon['minimo_compra']) && $cart['subtotal'] < (float)$cupon['minimo_compra']) {
+                Response::error('El monto mínimo de compra para este cupón es de L. ' . number_format((float)$cupon['minimo_compra'], 2), 400);
+            }
+            Response::error('No se pudo aplicar el cupón. Verifica que el carrito no esté vacío.', 400);
+        }
+
+        $updatedCart = $this->model->getCartByClienteId($clienteId);
+        Response::success([
+            'cart' => $updatedCart,
+            'cupon' => $cupon
+        ], '¡Cupón aplicado exitosamente!');
+    }
+
+    /**
+     * Remueve el cupón de descuento del carrito
+     */
+    public function removeCoupon(): void {
+        $clienteId = $this->getClienteId();
+        if ($clienteId === null) {
+            Response::error('Debe iniciar sesión', 401);
+        }
+
+        if ($this->model->removeCoupon($clienteId)) {
+            $updatedCart = $this->model->getCartByClienteId($clienteId);
+            Response::success($updatedCart, 'Cupón removido del carrito');
+        } else {
+            Response::error('Error al remover el cupón', 500);
+        }
+    }
 }

@@ -147,6 +147,18 @@ function renderResumenCompra(cart) {
         `;
     });
 
+    // Mostrar descuento si existe
+    let descuentoHtml = '';
+    const descuentos = parseFloat(cart.descuentos) || 0;
+    if (descuentos > 0) {
+        descuentoHtml = `
+            <div class="total-row" style="color:#10B981;">
+                <span>Descuento cupón</span>
+                <span>-${App.formatCurrency(descuentos)}</span>
+            </div>
+        `;
+    }
+
     const html = `
         <h3>Resumen de Compra</h3>
         <div class="resumen-items">${itemsHtml}</div>
@@ -155,6 +167,7 @@ function renderResumenCompra(cart) {
                 <span>Subtotal</span>
                 <span>${App.formatCurrency(cart.subtotal)}</span>
             </div>
+            ${descuentoHtml}
             <div class="total-row">
                 <span>Envío</span>
                 <span>Por calcular</span>
@@ -168,6 +181,110 @@ function renderResumenCompra(cart) {
 
     $container.html(html);
 }
+
+/**
+ * Aplica un cupón de descuento al carrito
+ */
+function aplicarCupon() {
+    const codigo = $('#cupon-codigo').val().trim().toUpperCase();
+    const $mensaje = $('#cupon-mensaje');
+
+    if (!codigo) {
+        App.notify('Ingresa un código de cupón', 'error');
+        return;
+    }
+
+    // Deshabilitar botón mientras se procesa
+    const $btn = $('#btn-aplicar-cupon');
+    $btn.prop('disabled', true).html('<i class="fa-solid fa-spinner fa-spin"></i>');
+
+    $mensaje.removeClass('success error').html('');
+
+    App.ajax({
+        url: App.baseUrl + 'api/carrito.php',
+        method: 'POST',
+        data: { action: 'apply_coupon', codigo: codigo },
+        success: function (response) {
+            if (response.success) {
+                const data = response.data;
+                const cupon = data.cupon;
+
+                // Mostrar cupón aplicado
+                $('#cupon-form').hide();
+                $('#cupon-codigo-display').text(cupon.codigo || codigo);
+
+                let valorDisplay = '';
+                if (cupon.tipo_descuento === 'porcentaje') {
+                    valorDisplay = cupon.valor + '% de descuento';
+                } else {
+                    valorDisplay = App.formatCurrency(cupon.valor) + ' de descuento';
+                }
+                $('#cupon-descuento-display').text(valorDisplay);
+                $('#cupon-aplicado').show();
+                $mensaje.removeClass('error').addClass('success').html('¡Cupón aplicado exitosamente!').show();
+
+                // Actualizar resumen de compra con el carrito actualizado
+                renderResumenCompra(data.cart);
+
+                App.notify('¡Cupón aplicado!', 'success');
+            } else {
+                $mensaje.removeClass('success').addClass('error').html(App.escapeHtml(response.message || 'El cupón no pudo ser aplicado')).show();
+            }
+        },
+        error: function (xhr) {
+            let msg = 'Error al aplicar el cupón';
+            try {
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    msg = xhr.responseJSON.message;
+                }
+            } catch (e) {}
+            $mensaje.removeClass('success').addClass('error').html(App.escapeHtml(msg)).show();
+        },
+        complete: function () {
+            $btn.prop('disabled', false).html('<i class="fa-solid fa-check"></i> Aplicar');
+        }
+    });
+}
+
+/**
+ * Remueve el cupón de descuento del carrito
+ */
+function removerCupon() {
+    const $mensaje = $('#cupon-mensaje');
+
+    App.ajax({
+        url: App.baseUrl + 'api/carrito.php',
+        method: 'POST',
+        data: { action: 'remove_coupon' },
+        success: function (response) {
+            if (response.success) {
+                // Ocultar cupón aplicado y mostrar formulario
+                $('#cupon-aplicado').hide();
+                $('#cupon-form').show();
+                $('#cupon-codigo').val('');
+                $mensaje.removeClass('success error').html('');
+
+                // Actualizar resumen de compra
+                renderResumenCompra(response.data);
+
+                App.notify('Cupón removido', 'info');
+            }
+        },
+        error: function () {
+            App.notify('Error al remover el cupón', 'error');
+        }
+    });
+}
+
+// Habilitar Enter para aplicar cupón
+$(document).ready(function () {
+    $(document).on('keypress', '#cupon-codigo', function (e) {
+        if (e.which === 13) {
+            e.preventDefault();
+            aplicarCupon();
+        }
+    });
+});
 
 function loadDireccionesCheckout() {
     App.ajax({

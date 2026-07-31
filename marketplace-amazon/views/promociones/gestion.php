@@ -203,3 +203,5 @@ require_once __DIR__ . '/../layouts/header.php';
     color: #F87171;
 }
 </style>
+
+<?php require_once __DIR__ . '/../layouts/footer.php'; ?>

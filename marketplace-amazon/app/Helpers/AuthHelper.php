@@ -57,6 +57,7 @@ class AuthHelper {
     /**
      * Verifica que la IP y User-Agent coincidan con los registrados al inicio de sesión
      * En localhost/desarrollo permite que la IP varíe entre ::1 y 127.0.0.1
+     * También tolera pequeñas variaciones en User-Agent entre peticiones en el mismo navegador.
      */
     private static function verifySessionConsistency(): bool {
         $currentIP = Security::getClientIP();
@@ -69,15 +70,47 @@ class AuthHelper {
 
         // En desarrollo local, ser tolerantes con cambios de IP (::1 vs 127.0.0.1)
         $sessionIP = $_SESSION['ip_address'];
+        $sessionUA = $_SESSION['user_agent'];
+        
         $localhostIPs = ['127.0.0.1', '::1', 'localhost', '0.0.0.0'];
         $isLocalEnv = in_array($currentIP, $localhostIPs) || in_array($sessionIP, $localhostIPs);
         
         if ($isLocalEnv) {
-            // En localhost solo validamos User-Agent, ignoramos IP
-            return $_SESSION['user_agent'] === $currentUA;
+            // En localhost solo validamos User-Agent de forma flexible
+            // Toleramos cambios menores en User-Agent (extensiones, versiones de Chrome)
+            if ($sessionUA === $currentUA) {
+                return true;
+            }
+            // Si el User-Agent difiere, verificamos que al menos el navegador base coincida
+            // Esto tolera cambios por extensiones del navegador que modifican el UA
+            $sessionUAShort = substr($sessionUA, 0, 50);
+            $currentUAShort = substr($currentUA, 0, 50);
+            if ($sessionUAShort === $currentUAShort) {
+                // Actualizar el UA registrado para evitar falsos positivos futuros
+                $_SESSION['user_agent'] = $currentUA;
+                return true;
+            }
+            // Si el UA cambió drásticamente, sospechoso
+            return false;
         }
 
-        return $sessionIP === $currentIP && $_SESSION['user_agent'] === $currentUA;
+        // En producción: validación exacta de IP y User-Agent
+        if ($sessionIP !== $currentIP) {
+            return false;
+        }
+        
+        // Para User-Agent en producción, también aplicamos tolerancia parcial
+        if ($sessionUA !== $currentUA) {
+            $sessionUAShort = substr($sessionUA, 0, 80);
+            $currentUAShort = substr($currentUA, 0, 80);
+            if ($sessionUAShort === $currentUAShort) {
+                $_SESSION['user_agent'] = $currentUA;
+                return true;
+            }
+            return false;
+        }
+        
+        return true;
     }
 
     /**

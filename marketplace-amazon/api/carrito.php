@@ -28,6 +28,10 @@ switch ($method) {
             $controller->remove();
         } elseif ($action === 'clear') {
             $controller->clear();
+        } elseif ($action === 'apply_coupon') {
+            $controller->applyCoupon();
+        } elseif ($action === 'remove_coupon') {
+            $controller->removeCoupon();
         } else {
             Response::error('Acción de carrito no válida', 400);
         }

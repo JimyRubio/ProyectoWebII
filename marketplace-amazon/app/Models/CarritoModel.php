@@ -176,7 +176,7 @@ class CarritoModel extends Model {
         }
     }
 
-    /**
+/**
      * Vacía el carrito por completo y recalcula totales
      */
     public function clearCart(int $cartId): bool {
@@ -190,6 +190,73 @@ class CarritoModel extends Model {
         } catch (Exception $e) {
             $this->db->rollBack();
             error_log("Error clearCart: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Aplica un cupón de descuento al carrito del cliente
+     * Calcula el descuento según el tipo (porcentaje o monto_fijo) y valida el mínimo de compra
+     */
+    public function applyCoupon(int $clienteId, array $cupon): bool {
+        $cart = $this->getCartByClienteId($clienteId);
+        if (empty($cart['items'])) {
+            return false;
+        }
+
+        $subtotal = $cart['subtotal'];
+
+        // Validar mínimo de compra
+        if (!empty($cupon['minimo_compra']) && $subtotal < (float)$cupon['minimo_compra']) {
+            return false;
+        }
+
+        // Calcular descuento
+        $descuento = 0;
+        if ($cupon['tipo_descuento'] === 'porcentaje') {
+            $descuento = $subtotal * ((float)$cupon['valor'] / 100);
+            // Aplicar máximo descuento si existe
+            if (!empty($cupon['maximo_descuento']) && $descuento > (float)$cupon['maximo_descuento']) {
+                $descuento = (float)$cupon['maximo_descuento'];
+            }
+        } elseif ($cupon['tipo_descuento'] === 'monto_fijo') {
+            $descuento = (float)$cupon['valor'];
+        }
+
+        $descuento = round($descuento, 2);
+
+        // Guardar info del cupón en el carrito (codigo, descuento)
+        $this->db->beginTransaction();
+        try {
+            $stmt = $this->db->prepare("UPDATE carritos SET descuentos = ?, total = subtotal - ? WHERE id = ?");
+            $stmt->execute([$descuento, $descuento, $cart['id']]);
+            $this->db->commit();
+            return true;
+        } catch (Exception $e) {
+            $this->db->rollBack();
+            error_log("Error applyCoupon: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Remueve el cupón de descuento del carrito
+     */
+    public function removeCoupon(int $clienteId): bool {
+        $cart = $this->getCartByClienteId($clienteId);
+        if (!$cart || $cart['id'] <= 0) {
+            return false;
+        }
+
+        $this->db->beginTransaction();
+        try {
+            $stmt = $this->db->prepare("UPDATE carritos SET descuentos = 0, total = subtotal WHERE id = ?");
+            $stmt->execute([$cart['id']]);
+            $this->db->commit();
+            return true;
+        } catch (Exception $e) {
+            $this->db->rollBack();
+            error_log("Error removeCoupon: " . $e->getMessage());
             return false;
         }
     }

@@ -106,8 +106,33 @@ require_once __DIR__ . '/../layouts/header.php';
             </div>
         </div>
 
-        <!-- Columna derecha: Resumen -->
+<!-- Columna derecha: Resumen -->
         <div class="checkout-right">
+            <!-- Sección de Cupón -->
+            <div class="checkout-section" id="cupon-section">
+                <h3><i class="fa-solid fa-tag"></i> ¿Tienes un cupón?</h3>
+                <div id="cupon-form">
+                    <div class="cupon-input-group">
+                        <input type="text" id="cupon-codigo" class="form-control" placeholder="Ingresa el código" maxlength="50" style="flex:1;padding:10px 14px;border:1px solid var(--card-border);border-radius:8px;background:var(--input-bg);color:var(--text-primary);">
+                        <button class="btn-primary" id="btn-aplicar-cupon" onclick="aplicarCupon()" style="padding:10px 18px;white-space:nowrap;">
+                            <i class="fa-solid fa-check"></i> Aplicar
+                        </button>
+                    </div>
+                    <div id="cupon-mensaje" style="margin-top:10px;font-size:0.85rem;"></div>
+                </div>
+                <div id="cupon-aplicado" style="display:none;">
+                    <div class="cupon-aplicado-card">
+                        <div class="cupon-info">
+                            <span class="cupon-codigo-display" id="cupon-codigo-display"></span>
+                            <span class="cupon-descuento-display" id="cupon-descuento-display"></span>
+                        </div>
+                        <button class="btn-remove-cupon" onclick="removerCupon()" title="Remover cupón">
+                            <i class="fa-solid fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
             <div id="resumen-compra" class="checkout-section">
                 <!-- Carga dinámica vía AJAX (pagos.js) -->
             </div>
@@ -234,6 +259,64 @@ require_once __DIR__ . '/../layouts/header.php';
 .resumen-totals {
     border-top: 1px solid var(--card-border);
     padding-top: 15px;
+}
+
+.cupon-input-group {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.cupon-aplicado-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(16,185,129,0.1);
+    border: 1px solid rgba(16,185,129,0.3);
+    border-radius: 10px;
+    padding: 12px 16px;
+}
+
+.cupon-aplicado-card .cupon-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.cupon-codigo-display {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--secondary-accent);
+    letter-spacing: 1px;
+}
+
+.cupon-descuento-display {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.btn-remove-cupon {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 6px;
+    transition: all 0.2s;
+}
+
+.btn-remove-cupon:hover {
+    background: rgba(239,68,68,0.15);
+    color: #EF4444;
+}
+
+#cupon-mensaje.success {
+    color: #10B981;
+}
+
+#cupon-mensaje.error {
+    color: #EF4444;
 }
 
 @media (max-width: 1024px) {
