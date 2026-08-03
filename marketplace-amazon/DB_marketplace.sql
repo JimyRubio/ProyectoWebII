@@ -617,6 +617,13 @@ CREATE TABLE cupones (
     INDEX idx_codigo (codigo)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- Cupones de ejemplo (después de la tabla cupones)
+INSERT INTO cupones (codigo, descripcion, tipo_descuento, valor, minimo_compra, maximo_descuento, fecha_inicio, fecha_fin, usa_veces, usa_por_cliente, activo) VALUES
+('BIENVENIDO10', '10% de descuento para nuevos clientes', 'porcentaje', 10.00, 0.00, NULL, '2024-01-01 00:00:00', '2030-12-31 23:59:59', 0, 1, 1),
+('VERANO25', '25% de descuento en ofertas de verano', 'porcentaje', 25.00, 500.00, 500.00, '2024-06-01 00:00:00', '2030-08-31 23:59:59', 0, 1, 1),
+('DESCUENTO50', 'L. 50 de descuento en tu compra', 'monto_fijo', 50.00, 300.00, NULL, '2024-01-01 00:00:00', '2030-12-31 23:59:59', 0, 1, 1),
+('FREESHIP', 'Envío gratis en compras mayores a L. 1,000', 'monto_fijo', 100.00, 1000.00, NULL, '2024-01-01 00:00:00', '2030-12-31 23:59:59', 0, 1, 1);
+
 -- Tabla 34: recompensas
 CREATE TABLE recompensas (
     id INT PRIMARY KEY AUTO_INCREMENT,

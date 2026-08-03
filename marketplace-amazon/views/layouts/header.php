@@ -58,6 +58,7 @@ $is_auth_page = $is_auth_page ?? false;
                         <a href="<?php echo BASE_URL; ?>views/analytics/dashboard.php"><i class="fa-solid fa-chart-line"></i> Dashboard</a>
                         <a href="<?php echo BASE_URL; ?>views/productos/gestion.php"><i class="fa-solid fa-boxes"></i> Productos</a>
                         <a href="<?php echo BASE_URL; ?>views/admin/usuarios.php"><i class="fa-solid fa-users-gear"></i> Usuarios</a>
+                        <a href="<?php echo BASE_URL; ?>views/admin/cupones.php"><i class="fa-solid fa-ticket"></i> Cupones</a>
                     </div>
                 </div>
 

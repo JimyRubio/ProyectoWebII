@@ -3,3 +3,7 @@ Stack trace:
 #0 {main}
   thrown in Command line code on line 1
 [29-Jul-2026 19:31:24 America/Mexico_City] PHP Parse error:  syntax error, unexpected token "\", expecting end of file in Command line code on line 1
+[02-Aug-2026 19:35:34 America/Mexico_City] PHP Parse error:  syntax error, unexpected token "=", expecting end of file in Command line code on line 1
+[02-Aug-2026 19:36:10 America/Mexico_City] PHP Parse error:  syntax error, unexpected token "=" in Command line code on line 1
+[02-Aug-2026 19:56:31 America/Mexico_City] PHP Warning:  session_cache_limiter(): Session cache limiter cannot be changed after headers have already been sent (sent from C:\Users\JimyR\Documents\GitHub\ProyectoWebII\marketplace-amazon\seed_cupones.php on line 25) in C:\Users\JimyR\Documents\GitHub\ProyectoWebII\marketplace-amazon\config\config.php on line 38
+[02-Aug-2026 19:56:31 America/Mexico_City] PHP Warning:  session_start(): Session cannot be started after headers have already been sent (sent from C:\Users\JimyR\Documents\GitHub\ProyectoWebII\marketplace-amazon\seed_cupones.php on line 25) in C:\Users\JimyR\Documents\GitHub\ProyectoWebII\marketplace-amazon\config\config.php on line 41

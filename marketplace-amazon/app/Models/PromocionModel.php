@@ -86,9 +86,14 @@ class PromocionModel extends Model {
 
     /**
      * Valida y consulta un cupón de descuento por su código
+     * Considera: activo = 1, fecha_inicio <= NOW() y fecha_fin >= NOW()
      */
     public function validarCupon(string $codigo): ?array {
-        $sql = "SELECT * FROM cupones WHERE codigo = :codigo AND activo = 1 AND fecha_fin >= NOW()";
+        $sql = "SELECT * FROM cupones 
+                WHERE codigo = :codigo 
+                  AND activo = 1 
+                  AND fecha_inicio <= NOW() 
+                  AND fecha_fin >= NOW()";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([':codigo' => strtoupper(trim($codigo))]);
         $cupon = $stmt->fetch();

@@ -1,101 +1,62 @@
-# TODO - Correcciones de Pago, Cupones y Carrito
+# TODO - Sistema de Cupones Funcional + CRUD Admin
 
-## ✅ Plan Aprobado - COMPLETADO
-
-### 1. Arreglar error del Stored Procedure `procesar_pedido`
-- [x] **PedidoModel.php**: Reemplazar `procesarPedidoSP()` con lógica PHP inline
-  - Actualizar estado del pedido a 'confirmado' + fecha_confirmacion
-  - Actualizar stock de cada producto (UPDATE directo)
-  - Actualizar `total_vendidos` en productos
-  - Insertar en historial_estados_pedido
-  - Registrar en auditoría
-  - Manejo de transacciones y rollback en caso de error
-
-### 2. Incluir descuento del cupón al crear el pedido
-- [x] **PedidoModel.php**: Modificar `createOrder()` para aceptar y aplicar descuentos (nuevo parámetro `$descuentos = 0.00`)
-- [x] **PagoController.php**: Pasar `$cart['descuentos']` del carrito al `createOrder()`
-
-### 3. Verificar caja de texto de cupón visible
-- [x] **checkout.php**: Confirmar que el input `#cupon-codigo` existe y está visible
-  - El input `<input type="text" id="cupon-codigo">` ya está presente en el DOM
-  - El botón "Aplicar" ya está conectado a `aplicarCupon()`
-  - La función `aplicarCupon()` en `pagos.js` funciona correctamente
-  - El cupón ya se persiste en el carrito vía `CarritoModel::applyCoupon()`
-
----
-
-# 🚀 Reemplazo de `confirm()` nativo por Modal Profesional con CSS y Animaciones
-
-## ✅ Plan Aprobado - COMPLETADO
+## Plan Aprobado - COMPLETADO ✅
 
 ### Objetivo
-Reemplazar todas las llamadas a `confirm()` de JavaScript por un modal animado y profesional llamado `App.confirm()`, que retorna una Promise para mantener el flujo asíncrono.
+Hacer funcional el sistema de cupones del marketplace: sembrar datos de ejemplo, crear CRUD de cupones en el panel admin y mejorar la validación.
 
-### Cambios realizados
+### Pasos Realizados
 
-#### 1. `public/js/utils.js` - Nueva función `App.confirm()`
-- [x] Crea dinámicamente un modal overlay con animación bounceIn
-- [x] Soporta tipo de acción (`danger`, `warning`, `info`) con colores e iconos personalizados
-- [x] Botones "Confirmar" y "Cancelar" con estilos consistentes del tema
-- [x] Retorna una Promise que resuelve a `true`/`false`
-- [x] Se limpia del DOM automáticamente al resolver
-- [x] Cierra con tecla Escape o click en overlay
+#### 1. Modelo de Cupones (CRUD)
+- [x] **app/Models/CuponModel.php**: Creado modelo con métodos:
+  - `getAll()` - listar todos los cupones
+  - `getById(int $id)` - obtener un cupón por ID
+  - `getActivos()` - listar cupones activos y vigentes
+  - `create(array $data)` - crear cupón
+  - `update(int $id, array $data)` - actualizar cupón
+  - `delete(int $id)` - eliminar cupón
+  - `toggleActivo(int $id)` - activar/desactivar
+  - `validarCupon(string $codigo)` - validar código (activo + fechas)
 
-#### 2. `public/css/main.css` - Estilos del modal de confirmación
-- [x] Overlay con backdrop-filter blur
-- [x] Card con efecto glassmorphism y tema dark/light
-- [x] Animación bounceIn en la entrada
-- [x] Icono animado con float según el tipo
-- [x] Botones con los estilos existentes del theme
+#### 2. Mejorar validación de fechas en PromocionModel
+- [x] **app/Models/PromocionModel.php**: Modificado `validarCupon()` para validar también `fecha_inicio <= NOW()`
 
-#### 3. `public/js/main.js:68` - Cerrar sesión
-- [x] Reemplazado `confirm('¿Cerrar sesión?')` por `App.confirm(...)` con tipo `warning`
+#### 3. API de Cupones
+- [x] **api/cupones.php**: Creado endpoint con acciones:
+  - GET `all` - listar todos (admin, requiere auth)
+  - GET `activos` - listar cupones activos (público)
+  - GET/POST `validar` - validar cupón (público)
+  - POST `store` - crear cupón
+  - POST `update` - actualizar cupón
+  - POST `delete` - eliminar cupón
+  - POST `toggle` - activar/desactivar cupón
 
-#### 4. `public/js/modules/carrito.js:175` - Vaciar carrito
-- [x] Reemplazado `confirm('¿Vaciar el carrito por completo?')` por `App.confirm(...)` con tipo `danger`
+#### 4. Controlador de Cupones
+- [x] **app/Controllers/CuponController.php**: Controlador con validaciones de datos, fechas y CSRF
 
-#### 5. `public/js/modules/promociones.js:167` - Eliminar promoción
-- [x] Reemplazado `confirm('¿Estás seguro de eliminar esta promoción?')` por `App.confirm(...)` con tipo `danger`
+#### 5. Vista Admin de Cupones
+- [x] **views/admin/cupones.php**: Vista con tabla de cupones + formulario crear/editar + botones de acción (editar, toggle, eliminar)
 
-#### 6. `views/admin/usuarios.php:260` - Cambiar estado de usuario
-- [x] Reemplazado `confirm('¿Cambiar estado de este usuario?')` por `App.confirm(...)` con tipo `warning`
+#### 6. JS del módulo de cupones
+- [x] **public/js/modules/cupones.js**: Lógica AJAX para CRUD de cupones en admin
 
-#### 7. `views/productos/gestion.php:279` - Eliminar producto
-- [x] Reemplazado `confirm('¿Eliminar este producto?')` por `App.confirm(...)` con tipo `danger`
+#### 7. Agregar enlace en menú Admin
+- [x] **views/layouts/header.php**: Agregado link "Cupones" en dropdown del menú Admin
 
-#### 8. `views/vendedores/pos.php:214` - Limpiar ticket
-- [x] Reemplazado `confirm('¿Limpiar ticket actual?')` por `App.confirm(...)` con tipo `warning`
+#### 8. Sembrar datos en SQL
+- [x] **DB_marketplace.sql**: Agregados INSERT de cupones de ejemplo después de la Tabla 33
+- [x] **Base de datos local**: Insertados 4 cupones de ejemplo (BIENVENIDO10, VERANO25, DESCUENTO50, FREESHIP)
 
----
+#### 9. Pruebas realizadas
+- [x] Validación de sintaxis PHP de todos los archivos nuevos/modificados (sin errores)
+- [x] Servidor PHP iniciado en localhost:8080 (responde 200)
+- [x] API `promociones.php?action=validar` → Cupón BIENVENIDO10 válido ✅
+- [x] API `cupones.php?action=validar` → Cupón VERANO25 válido ✅
+- [x] API `cupones.php?action=activos` → Devuelve 4 cupones activos ✅
+- [x] API `cupones.php?action=all` sin sesión → 401 (protegido correctamente) ✅
+- [x] Vista admin cupones → Carga correctamente ✅
+- [x] Prueba integral: agregar producto al carrito + aplicar cupón 10% → descuento correcto (1999.98 → 200) ✅
 
-# 🎫 Corrección de Input de Cupón en Checkout y Nueva Sección de Cupón en Carrito
+#### 10. Limpieza
+- [x] Eliminados scripts temporales (`check_db.php`, `seed_cupones.php`, `test_flujo_cupon.php`)
 
-## ✅ COMPLETADO
-
-### Problema
-El input de texto para aplicar cupón en la página de checkout (`checkout.php`) utilizaba variables CSS que no existen en el sistema de temas:
-- `var(--input-bg)` → No existe (la correcta es `var(--bg-input)`)
-- `var(--card-border)` → No existe (la correcta es `var(--border-color)`)
-
-Esto causaba que el input tuviera un fondo transparente, haciéndolo invisible y dando la apariencia de estar desactivado.
-
-### Cambios realizados
-
-#### 1. `views/pagos/checkout.php` - Corrección de variables CSS en input de cupón
-- [x] `background: var(--input-bg)` → `background: var(--bg-input)`
-- [x] `border: 1px solid var(--card-border)` → `border: 1.5px solid var(--border-color)`
-- [x] Mejorado placeholder: "Ingresa el código" → "Ingresa el código del cupón"
-- [x] Agregado `font-size: 0.95rem` para consistencia visual
-
-#### 2. `views/carrito/index.php` - Nueva sección de cupón en la página del carrito
-- [x] Agregada estructura de grid de 2 columnas (`.carrito-grid`)
-- [x] Columna izquierda: items del carrito (existente)
-- [x] Columna derecha: nueva sección de cupón con input, botón aplicar, y estado de cupón aplicado
-- [x] IDs únicos para evitar conflictos con el checkout (sufijo `-carrito`)
-- [x] Estilos CSS responsivos para el grid y componentes de cupón
-
-#### 3. `public/js/modules/carrito.js` - Nuevas funciones de cupón para el carrito
-- [x] `aplicarCuponCarrito()` - Aplica cupón desde la página del carrito vía API
-- [x] `removerCuponCarrito()` - Remueve cupón desde la página del carrito vía API
-- [x] Evento `keypress` para Enter en el input de cupón del carrito
-- [x] Integración con `loadCarrito()` para actualizar los totales al aplicar/remover cupón
