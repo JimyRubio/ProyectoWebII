@@ -111,10 +111,10 @@ require_once __DIR__ . '/../layouts/header.php';
             <!-- Sección de Cupón -->
             <div class="checkout-section" id="cupon-section">
                 <h3><i class="fa-solid fa-tag"></i> ¿Tienes un cupón?</h3>
-                <div id="cupon-form">
+<div id="cupon-form">
                     <div class="cupon-input-group">
-                        <input type="text" id="cupon-codigo" class="form-control" placeholder="Ingresa el código del cupón" maxlength="50" style="flex:1;padding:10px 14px;border:1.5px solid var(--border-color);border-radius:8px;background:var(--bg-input);color:var(--text-primary);font-size:0.95rem;">
-                        <button class="btn-primary" id="btn-aplicar-cupon" onclick="aplicarCupon()" style="padding:10px 18px;white-space:nowrap;">
+                        <input type="text" id="cupon-codigo" class="form-control" placeholder="Ingresa el código del cupón" maxlength="50" style="width:100%;padding:14px 16px;border:1.5px solid var(--border-color);border-radius:8px;background:var(--bg-input);color:var(--text-primary);font-size:1rem;box-sizing:border-box;">
+                        <button class="btn-primary" id="btn-aplicar-cupon" onclick="aplicarCupon()" style="width:100%;padding:14px;font-size:1rem;white-space:nowrap;">
                             <i class="fa-solid fa-check"></i> Aplicar
                         </button>
                     </div>
@@ -263,8 +263,9 @@ require_once __DIR__ . '/../layouts/header.php';
 
 .cupon-input-group {
     display: flex;
+    flex-direction: column;
     gap: 10px;
-    align-items: center;
+    width: 100%;
 }
 
 .cupon-aplicado-card {

@@ -1,10 +1,12 @@
-# TODO - Corrección: Vista de Gestión de Promociones desloguea
+# TODO - Cambios de Cupones
 
-## Pasos a completar:
+## Estado del plan
+- [x] 1. Explorar archivos relevantes (carrito/index.php, pagos/checkout.php, carrito.js, pagos.js, carrito.css)
+- [x] 2. Confirmar plan con el usuario
 
-- [x] 1. Analizar el código fuente y entender la causa raíz
-- [x] 2. Obtener aprobación del plan
-- [x] 3. **Agregar `footer.php`** a `views/promociones/gestion.php`
-- [x] 4. **Mejorar `AuthHelper::verifySessionConsistency()`** para manejar mejor IPs en localhost
-- [ ] 5. Verificar solución (pendiente de confirmación del usuario)
-
+## Pasos de implementación
+- [x] 1. Eliminar la sección de cupón de la página del carrito (views/carrito/index.php)
+- [x] 2. Dejar el carrito a ancho completo tras quitar la barra lateral
+- [x] 3. Agrandar el cuadro de texto del cupón en el checkout (views/pagos/checkout.php): ancho completo y botón debajo
+- [x] 4. Limpiar el CSS/JS de cupón del carrito que ya no se usa
+- [x] 5. Verificar visualmente (archivos revisados y confirmados)
