@@ -263,21 +263,22 @@ function toggleUsuario(usuarioId) {
         confirmText: 'Sí, cambiar estado',
         cancelText: 'Cancelar'
     }).then(function (confirmed) {
-        if (!confirmed) return;
+if (!confirmed) return;
         App.ajax({
-        url: App.baseUrl + 'api/clientes.php',
-        method: 'POST',
-        data: {
-            action: 'toggle_usuario',
-            usuario_id: usuarioId,
-            csrf_token: App.getCsrfToken()
-        },
-        success: function(response) {
-            if (response.success) {
-                App.notify(response.message, 'success');
-                loadUsuarios();
+            url: App.baseUrl + 'api/clientes.php',
+            method: 'POST',
+            data: {
+                action: 'toggle_usuario',
+                usuario_id: usuarioId,
+                csrf_token: App.getCsrfToken()
+            },
+            success: function(response) {
+                if (response.success) {
+                    App.notify(response.message, 'success');
+                    loadUsuarios();
+                }
             }
-        }
+        });
     });
 }
 </script>

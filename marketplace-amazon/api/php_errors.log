@@ -101,3 +101,6 @@ Stack trace:
 [29-Jul-2026 19:52:12 America/Mexico_City] Error de conexión a la Base de Datos: SQLSTATE[HY000] [1045] Access denied for user 'root'@'localhost' (using password: YES)
 [29-Jul-2026 19:52:12 America/Mexico_City] Error de conexión a la Base de Datos: SQLSTATE[HY000] [1045] Access denied for user 'root'@'localhost' (using password: YES)
 [02-Aug-2026 20:05:24 America/Mexico_City] Login fallido: email=admin@marketzone.com, intentos=1, IP=::1
+[02-Aug-2026 21:32:21 America/Mexico_City] Pago procesado: Pedido #2, Método ID=1, Monto=26299.98
+[04-Aug-2026 07:21:20 America/Mexico_City] Login fallido: email=admin@marketzone.com, intentos=1, IP=::1
+[04-Aug-2026 07:54:02 America/Mexico_City] Login fallido: email=admin@marketzone.com, intentos=1, IP=::1

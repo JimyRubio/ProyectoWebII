@@ -281,18 +281,19 @@ function eliminarProducto(id) {
         title: 'Eliminar Producto',
         confirmText: 'Sí, eliminar',
         cancelText: 'Cancelar'
-    }).then(function (confirmed) {
+}).then(function (confirmed) {
         if (!confirmed) return;
         App.ajax({
-        url: App.baseUrl + 'api/productos.php',
-        method: 'POST',
-        data: { action: 'delete', id: id },
-        success: function(response) {
-            if(response.success) {
-                App.notify('Producto eliminado', 'info');
-                loadGestionProductos(gestionPage);
+            url: App.baseUrl + 'api/productos.php',
+            method: 'POST',
+            data: { action: 'delete', id: id },
+            success: function(response) {
+                if(response.success) {
+                    App.notify('Producto eliminado', 'info');
+                    loadGestionProductos(gestionPage);
+                }
             }
-        }
+        });
     });
 }
 </script>
