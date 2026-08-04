@@ -8,11 +8,16 @@ class VendedorController {
         $this->model = new VendedorModel();
     }
 
-    /**
+/**
      * Lista todos los vendedores del marketplace
      */
     public function index(): void {
-        Response::success($this->model->getAll(), 'Lista de vendedores');
+        try {
+            Response::success($this->model->getAll(), 'Lista de vendedores');
+        } catch (Exception $e) {
+            error_log("Error en VendedorController::index: " . $e->getMessage());
+            Response::error('Error al obtener los vendedores', 500);
+        }
     }
 
     /**
@@ -23,11 +28,16 @@ class VendedorController {
         $user = AuthHelper::user();
         $vendedorId = $user['vendedor_id'] ?? 1;
 
-        $vendedor = $this->model->getProfile($vendedorId);
-        if (!$vendedor) {
-            Response::error('Vendedor no encontrado', 404);
+        try {
+            $vendedor = $this->model->getProfile($vendedorId);
+            if (!$vendedor) {
+                Response::error('Vendedor no encontrado', 404);
+            }
+            Response::success($vendedor, 'Perfil del vendedor');
+        } catch (Exception $e) {
+            error_log("Error en VendedorController::profile: " . $e->getMessage());
+            Response::error('Error al obtener el perfil del vendedor', 500);
         }
-        Response::success($vendedor, 'Perfil del vendedor');
     }
 
     /**
@@ -38,7 +48,12 @@ class VendedorController {
         $user = AuthHelper::user();
         $vendedorId = $user['vendedor_id'] ?? 1;
 
-        $metrics = $this->model->getDashboardMetrics($vendedorId);
-        Response::success($metrics, 'Métricas Seller Central');
+        try {
+            $metrics = $this->model->getDashboardMetrics($vendedorId);
+            Response::success($metrics, 'Métricas Seller Central');
+        } catch (Exception $e) {
+            error_log("Error en VendedorController::dashboard: " . $e->getMessage());
+            Response::error('Error al obtener las métricas del vendedor', 500);
+        }
     }
 }

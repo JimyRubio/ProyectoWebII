@@ -8,15 +8,20 @@ class MensajeriaController {
         $this->model = new MensajeriaModel();
     }
 
-    /**
+/**
      * Lista las conversaciones del usuario
      */
     public function conversaciones(): void {
         AuthHelper::requireAuth();
         $user = AuthHelper::user();
         $tipo = AuthHelper::hasRole('Vendedor') ? 'vendedor' : 'cliente';
-        $conversaciones = $this->model->getConversaciones($user['id'], $tipo);
-        Response::success($conversaciones, 'Conversaciones del usuario');
+        try {
+            $conversaciones = $this->model->getConversaciones($user['id'], $tipo);
+            Response::success($conversaciones, 'Conversaciones del usuario');
+        } catch (Exception $e) {
+            error_log("Error en MensajeriaController::conversaciones: " . $e->getMessage());
+            Response::error('Error al obtener las conversaciones', 500);
+        }
     }
 
     /**
@@ -28,8 +33,13 @@ class MensajeriaController {
         if ($conversacionId <= 0) {
             Response::error('ID de conversación inválido', 400);
         }
-        $mensajes = $this->model->getMensajes($conversacionId);
-        Response::success($mensajes, 'Mensajes de la conversación');
+        try {
+            $mensajes = $this->model->getMensajes($conversacionId);
+            Response::success($mensajes, 'Mensajes de la conversación');
+        } catch (Exception $e) {
+            error_log("Error en MensajeriaController::mensajes: " . $e->getMessage());
+            Response::error('Error al obtener los mensajes', 500);
+        }
     }
 
 /**

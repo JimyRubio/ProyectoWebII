@@ -59,7 +59,7 @@ class ClienteController {
         Response::success($direcciones, 'Direcciones obtenidas');
     }
 
-    /**
+/**
      * [Admin] Obtiene lista de todos los usuarios del sistema
      */
     public function listaUsuarios(): void {
@@ -72,14 +72,13 @@ class ClienteController {
             Response::error('Acceso denegado. Solo administradores', 403);
         }
 
-        // Prepared statement para prevenir SQLi
-        $stmt = $this->model->db->prepare("SELECT u.id, u.nombre, u.apellido, u.email, u.rol_id, r.nombre as rol_nombre, u.activo, u.created_at
-                                          FROM usuarios u
-                                          INNER JOIN roles r ON u.rol_id = r.id
-                                          ORDER BY u.id ASC");
-        $stmt->execute();
-        $usuarios = $stmt->fetchAll() ?: [];
-        Response::success($usuarios, 'Lista de usuarios');
+        try {
+            $usuarios = $this->model->listaUsuarios();
+            Response::success($usuarios, 'Lista de usuarios');
+        } catch (Exception $e) {
+            error_log("Error en listaUsuarios: " . $e->getMessage());
+            Response::error('Error al obtener la lista de usuarios', 500);
+        }
     }
 
     /**
@@ -99,25 +98,23 @@ class ClienteController {
             Response::error('ID de usuario no válido', 400);
         }
 
-        // Obtener estado actual
-        $stmt = $this->model->db->prepare("SELECT activo, rol_id FROM usuarios WHERE id = :id");
-        $stmt->execute([':id' => $usuarioId]);
-        $usuario = $stmt->fetch();
+        try {
+            $usuario = $this->model->getUsuarioById($usuarioId);
+            if (!$usuario) {
+                Response::error('Usuario no encontrado', 404);
+            }
 
-        if (!$usuario) {
-            Response::error('Usuario no encontrado', 404);
+            // No permitir desactivar a otro admin
+            if ((int)$usuario['rol_id'] === 1 && $usuarioId !== $user['id']) {
+                Response::error('No puedes desactivar a otro administrador', 403);
+            }
+
+            $resultado = $this->model->toggleUsuario($usuarioId);
+            Response::success(['activo' => $resultado['activo']], $resultado['activo'] ? 'Usuario activado' : 'Usuario desactivado');
+        } catch (Exception $e) {
+            error_log("Error en toggleUsuario: " . $e->getMessage());
+            Response::error('Error al cambiar el estado del usuario', 500);
         }
-
-        // No permitir desactivar a otro admin
-        if ((int)$usuario['rol_id'] === 1 && $usuarioId !== $user['id']) {
-            Response::error('No puedes desactivar a otro administrador', 403);
-        }
-
-        $nuevoEstado = $usuario['activo'] ? 0 : 1;
-        $stmtUpd = $this->model->db->prepare("UPDATE usuarios SET activo = :activo WHERE id = :id");
-        $stmtUpd->execute([':activo' => $nuevoEstado, ':id' => $usuarioId]);
-
-        Response::success(['activo' => (bool)$nuevoEstado], $nuevoEstado ? 'Usuario activado' : 'Usuario desactivado');
     }
 
     /**

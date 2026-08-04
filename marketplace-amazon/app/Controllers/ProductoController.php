@@ -274,15 +274,26 @@ class ProductoController {
         }
     }
 
-    /**
+/**
      * Elimina un producto
      */
     public function delete(int $id): void {
         AuthHelper::requireAuth();
-        if ($this->model->delete($id)) {
-            Response::success(null, 'Producto eliminado');
-        } else {
-            Response::error('Error al eliminar producto', 500);
+
+        $token = $_POST['csrf_token'] ?? $_SERVER['HTTP_X_CSRF_TOKEN'] ?? null;
+        if (!Security::verifyCsrfToken($token)) {
+            Response::error('Token CSRF no válido o expirado', 403);
+        }
+
+        try {
+            if ($this->model->delete($id)) {
+                Response::success(null, 'Producto eliminado');
+            } else {
+                Response::error('Error al eliminar producto', 500);
+            }
+        } catch (Exception $e) {
+            error_log("Error al eliminar producto: " . $e->getMessage());
+            Response::error('Error al eliminar el producto', 500);
         }
     }
 }

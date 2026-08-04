@@ -140,12 +140,163 @@ class ClienteModel extends Model {
         return (int)$this->db->lastInsertId();
     }
 
-    /**
+/**
      * Elimina una dirección
      */
     public function deleteDireccion(int $direccionId, int $clienteId): bool {
         $sql = "DELETE FROM direcciones WHERE id = :id AND cliente_id = :cliente_id";
         $stmt = $this->db->prepare($sql);
         return $stmt->execute([':id' => $direccionId, ':cliente_id' => $clienteId]);
+    }
+
+    /**
+     * Registra un usuario con un rol específico desde el panel de administración
+     * Crea los registros dependientes según el rol (cliente+carrito, vendedor+tienda)
+     *
+     * @param array $data Datos del usuario (nombre, apellido, email, password, rol_id, etc.)
+     * @return int ID del usuario creado
+     */
+    public function registerUserByRole(array $data): int {
+        $this->beginTransaction();
+        try {
+            // 1. Insertar usuario
+            $sqlUser = "INSERT INTO usuarios (email, password_hash, nombre, apellido, telefono, genero, fecha_nacimiento, direccion, rol_id, activo, created_at)
+                        VALUES (:email, :password_hash, :nombre, :apellido, :telefono, :genero, :fecha_nacimiento, :direccion, :rol_id, 1, NOW())";
+            $stmtUser = $this->db->prepare($sqlUser);
+            $stmtUser->execute([
+                ':email' => $data['email'],
+                ':password_hash' => Security::hashPassword($data['password']),
+                ':nombre' => $data['nombre'],
+                ':apellido' => $data['apellido'] ?? '',
+                ':telefono' => $data['telefono'] ?? null,
+                ':genero' => $data['genero'] ?? null,
+                ':fecha_nacimiento' => $data['fecha_nacimiento'] ?? null,
+                ':direccion' => $data['direccion'] ?? null,
+                ':rol_id' => (int)$data['rol_id']
+            ]);
+
+            $usuarioId = (int)$this->db->lastInsertId();
+
+            // 2. Crear registros dependientes según el rol
+            if ($data['rol_id'] == 3) {
+                // Cliente + Carrito
+                $sqlCliente = "INSERT INTO clientes (usuario_id, tipo_cliente, fecha_registro) VALUES (:uid, 'regular', NOW())";
+                $this->db->prepare($sqlCliente)->execute([':uid' => $usuarioId]);
+                $clienteId = (int)$this->db->lastInsertId();
+                $this->db->prepare("INSERT INTO carritos (cliente_id) VALUES (:cid)")->execute([':cid' => $clienteId]);
+            } elseif ($data['rol_id'] == 2) {
+                // Vendedor + Tienda
+                $nombreEmpresa = $data['nombre_empresa'] ?? ($data['nombre'] . ' Store');
+                $sqlVendedor = "INSERT INTO vendedores (usuario_id, nombre_empresa, fecha_registro) VALUES (:uid, :empresa, NOW())";
+                $this->db->prepare($sqlVendedor)->execute([':uid' => $usuarioId, ':empresa' => $nombreEmpresa]);
+                $vendedorId = (int)$this->db->lastInsertId();
+
+                $slug = strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '-', $nombreEmpresa))) . '-' . $vendedorId;
+                $sqlTienda = "INSERT INTO tiendas (vendedor_id, nombre_tienda, slug, activa, fecha_creacion) VALUES (:vid, :nombre, :slug, 1, NOW())";
+                $this->db->prepare($sqlTienda)->execute([':vid' => $vendedorId, ':nombre' => $nombreEmpresa, ':slug' => $slug]);
+            }
+            // Admin (rol 1) no necesita tablas adicionales
+
+            $this->commit();
+            return $usuarioId;
+        } catch (Exception $e) {
+            $this->rollBack();
+            throw $e;
+        }
+    }
+
+    /**
+     * Obtiene la lista de todos los usuarios con su rol (para administración)
+     */
+    public function listaUsuarios(): array {
+        $sql = "SELECT u.id, u.nombre, u.apellido, u.email, u.rol_id, r.nombre as rol_nombre, u.activo, u.created_at
+                FROM usuarios u
+                INNER JOIN roles r ON u.rol_id = r.id
+                ORDER BY u.id ASC";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll() ?: [];
+    }
+
+    /**
+     * Obtiene un usuario por ID con su rol
+     */
+    public function getUsuarioById(int $usuarioId): ?array {
+        $sql = "SELECT id, activo, rol_id FROM usuarios WHERE id = :id";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([':id' => $usuarioId]);
+        $usuario = $stmt->fetch();
+        return $usuario ?: null;
+    }
+
+/**
+     * Activa o desactiva un usuario según su estado actual
+     * @return array ['activo' => bool, 'id' => int]
+     */
+    public function toggleUsuario(int $usuarioId): array {
+        $nuevoEstado = $this->db->prepare("SELECT activo FROM usuarios WHERE id = :id");
+        $nuevoEstado->execute([':id' => $usuarioId]);
+        $row = $nuevoEstado->fetch();
+        $activo = $row ? (int)$row['activo'] : 0;
+
+        $nuevoValor = $activo ? 0 : 1;
+        $stmtUpd = $this->db->prepare("UPDATE usuarios SET activo = :activo WHERE id = :id");
+        $stmtUpd->execute([':activo' => $nuevoValor, ':id' => $usuarioId]);
+
+        return ['activo' => (bool)$nuevoValor, 'id' => $usuarioId];
+    }
+
+    /**
+     * Marca todos los tokens de recuperación de contraseña no usados como usados
+     */
+    public function invalidarTokensReset(int $usuarioId): void {
+        $stmt = $this->db->prepare("UPDATE tokens_autenticacion SET usado = 1 WHERE usuario_id = :uid AND tipo = 'reset_password' AND usado = 0");
+        $stmt->execute([':uid' => $usuarioId]);
+    }
+
+    /**
+     * Crea un token de recuperación de contraseña para un usuario
+     */
+    public function crearTokenReset(int $usuarioId, string $token, string $expiry): void {
+        $stmt = $this->db->prepare("INSERT INTO tokens_autenticacion (usuario_id, token, tipo, expira_en, usado, ip_creacion, user_agent) VALUES (:uid, :token, 'reset_password', :expira, 0, :ip, :ua)");
+        $stmt->execute([
+            ':uid' => $usuarioId,
+            ':token' => $token,
+            ':expira' => $expiry,
+            ':ip' => Security::getClientIP(),
+            ':ua' => $_SERVER['HTTP_USER_AGENT'] ?? ''
+        ]);
+    }
+
+    /**
+     * Busca un usuario por token de reset válido y no expirado
+     */
+    public function findUsuarioByToken(string $token): ?array {
+        $sql = "SELECT ta.usuario_id as id FROM tokens_autenticacion ta 
+                WHERE ta.token = :token AND ta.tipo = 'reset_password' 
+                AND ta.expira_en > NOW() AND ta.usado = 0";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([':token' => $token]);
+        $row = $stmt->fetch();
+        return $row ?: null;
+    }
+
+    /**
+     * Marca un token específico como usado
+     */
+    public function marcarTokenUsado(string $token): void {
+        $stmt = $this->db->prepare("UPDATE tokens_autenticacion SET usado = 1 WHERE token = :token");
+        $stmt->execute([':token' => $token]);
+    }
+
+    /**
+     * Actualiza la contraseña de un usuario
+     */
+    public function updatePassword(int $usuarioId, string $passwordHash): void {
+        $stmt = $this->db->prepare("UPDATE usuarios SET password_hash = :password_hash WHERE id = :id");
+        $stmt->execute([
+            ':password_hash' => $passwordHash,
+            ':id' => $usuarioId
+        ]);
     }
 }

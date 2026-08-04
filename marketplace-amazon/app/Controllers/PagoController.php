@@ -8,11 +8,16 @@ class PagoController {
         $this->model = new PagoModel();
     }
 
-    /**
+/**
      * Retorna métodos de pago disponibles
      */
     public function metodos(): void {
-        Response::success($this->model->getMetodos(), 'Métodos de pago activos');
+        try {
+            Response::success($this->model->getMetodos(), 'Métodos de pago activos');
+        } catch (Exception $e) {
+            error_log("Error en PagoController::metodos: " . $e->getMessage());
+            Response::error('Error al obtener los métodos de pago', 500);
+        }
     }
 
     /**
@@ -22,7 +27,12 @@ class PagoController {
         AuthHelper::requireAuth();
         $user = AuthHelper::user();
         $clienteId = $user['cliente_id'] ?? 1;
-        Response::success($this->model->getOpcionesGuardadas($clienteId), 'Opciones de pago guardadas');
+        try {
+            Response::success($this->model->getOpcionesGuardadas($clienteId), 'Opciones de pago guardadas');
+        } catch (Exception $e) {
+            error_log("Error en PagoController::opcionesGuardadas: " . $e->getMessage());
+            Response::error('Error al obtener las opciones de pago guardadas', 500);
+        }
     }
 
     /**

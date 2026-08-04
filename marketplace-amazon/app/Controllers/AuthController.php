@@ -201,7 +201,7 @@ class AuthController {
             return;
         }
 
-        try {
+try {
             // Generar token único
             $resetToken = bin2hex(random_bytes(32));
             $expiry = date('Y-m-d H:i:s', strtotime('+1 hour'));
@@ -209,18 +209,10 @@ class AuthController {
             $userName = trim(($user['nombre'] ?? '') . ' ' . ($user['apellido'] ?? ''));
 
             // Marcar tokens anteriores como usados
-            $stmtMark = $this->model->db->prepare("UPDATE tokens_autenticacion SET usado = 1 WHERE usuario_id = :uid AND tipo = 'reset_password' AND usado = 0");
-            $stmtMark->execute([':uid' => $usuarioId]);
+            $this->model->invalidarTokensReset($usuarioId);
 
             // Insertar nuevo token en la tabla tokens_autenticacion
-            $stmtInsert = $this->model->db->prepare("INSERT INTO tokens_autenticacion (usuario_id, token, tipo, expira_en, usado, ip_creacion, user_agent) VALUES (:uid, :token, 'reset_password', :expira, 0, :ip, :ua)");
-            $stmtInsert->execute([
-                ':uid' => $usuarioId,
-                ':token' => $resetToken,
-                ':expira' => $expiry,
-                ':ip' => Security::getClientIP(),
-                ':ua' => $_SERVER['HTTP_USER_AGENT'] ?? ''
-            ]);
+            $this->model->crearTokenReset($usuarioId, $resetToken, $expiry);
 
             // Cargar MailHelper y enviar correo
             require_once ROOT_PATH . 'app/Helpers/MailHelper.php';
@@ -276,13 +268,9 @@ class AuthController {
             Response::error($passValidation['message'], 400);
         }
 
-        try {
+try {
             // Buscar usuario por token válido y no expirado
-            $stmt = $this->model->db->prepare("SELECT ta.usuario_id as id FROM tokens_autenticacion ta 
-                                                WHERE ta.token = :token AND ta.tipo = 'reset_password' 
-                                                AND ta.expira_en > NOW() AND ta.usado = 0");
-            $stmt->execute([':token' => $resetToken]);
-            $tokenRow = $stmt->fetch();
+            $tokenRow = $this->model->findUsuarioByToken($resetToken);
 
             if (!$tokenRow) {
                 Security::logAccess(null, 'reset_password_invalid_token', 'Token inválido o expirado');
@@ -292,15 +280,10 @@ class AuthController {
             $usuarioId = (int)$tokenRow['id'];
 
             // Actualizar contraseña
-            $stmtUpd = $this->model->db->prepare("UPDATE usuarios SET password_hash = :password_hash WHERE id = :id");
-            $stmtUpd->execute([
-                ':password_hash' => Security::hashPassword($password),
-                ':id' => $usuarioId
-            ]);
+            $this->model->updatePassword($usuarioId, Security::hashPassword($password));
 
             // Marcar token como usado
-            $stmtTokenUsed = $this->model->db->prepare("UPDATE tokens_autenticacion SET usado = 1 WHERE token = :token");
-            $stmtTokenUsed->execute([':token' => $resetToken]);
+            $this->model->marcarTokenUsado($resetToken);
 
             Security::logAccess($usuarioId, 'reset_password_success', 'Contraseña restablecida exitosamente');
 

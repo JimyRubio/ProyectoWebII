@@ -8,11 +8,16 @@ class PromocionController {
         $this->model = new PromocionModel();
     }
 
-    /**
+/**
      * Retorna lista de promociones vigentes
      */
     public function index(): void {
-        Response::success($this->model->getActivas(), 'Promociones y ofertas activas');
+        try {
+            Response::success($this->model->getActivas(), 'Promociones y ofertas activas');
+        } catch (Exception $e) {
+            error_log("Error en PromocionController::index: " . $e->getMessage());
+            Response::error('Error al obtener las promociones', 500);
+        }
     }
 
     /**
@@ -20,7 +25,12 @@ class PromocionController {
      */
     public function all(): void {
         AuthHelper::requireAuth();
-        Response::success($this->model->getAll(), 'Todas las promociones');
+        try {
+            Response::success($this->model->getAll(), 'Todas las promociones');
+        } catch (Exception $e) {
+            error_log("Error en PromocionController::all: " . $e->getMessage());
+            Response::error('Error al obtener las promociones', 500);
+        }
     }
 
     /**

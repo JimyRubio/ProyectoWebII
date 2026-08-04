@@ -110,14 +110,15 @@ class AnalyticsModel extends Model {
      * Fallback: Obtiene tendencia desde la tabla pedidos cuando metricas_diarias está vacía
      */
     private function getSalesTrendFromOrders(string $startDate, int $limit): array {
-        $sql = "SELECT DATE_FORMAT(p.fecha_pedido, '%d/%m') as dia, 
+$sql = "SELECT DATE(p.fecha_pedido) as fecha_dia,
+                       DATE_FORMAT(p.fecha_pedido, '%d/%m') as dia, 
                        COALESCE(COUNT(p.id), 0) as total_pedidos,
                        COALESCE(SUM(p.total), 0) as total_ventas
                 FROM pedidos p
                 WHERE p.fecha_pedido >= :start_date 
                   AND p.estado != 'cancelado'
-                GROUP BY DATE_FORMAT(p.fecha_pedido, '%d/%m'), DATE(p.fecha_pedido)
-                ORDER BY DATE(p.fecha_pedido) ASC
+                GROUP BY DATE(p.fecha_pedido), DATE_FORMAT(p.fecha_pedido, '%d/%m')
+                ORDER BY fecha_dia ASC
                 LIMIT :limit_num";
         
         $stmt = $this->db->prepare($sql);

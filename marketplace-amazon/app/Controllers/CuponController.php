@@ -158,7 +158,7 @@ class CuponController {
         }
     }
 
-    /**
+/**
      * Elimina un cupón
      */
     public function delete(int $id): void {
@@ -169,10 +169,15 @@ class CuponController {
             Response::error('Token CSRF no válido o expirado', 403);
         }
 
-        if ($this->model->delete($id)) {
-            Response::success(null, 'Cupón eliminado');
-        } else {
-            Response::error('Error al eliminar cupón', 500);
+        try {
+            if ($this->model->delete($id)) {
+                Response::success(null, 'Cupón eliminado');
+            } else {
+                Response::error('Error al eliminar cupón', 500);
+            }
+        } catch (Exception $e) {
+            error_log("Error al eliminar cupón: " . $e->getMessage());
+            Response::error('Error al eliminar el cupón', 500);
         }
     }
 
@@ -192,10 +197,15 @@ class CuponController {
             Response::error('ID de cupón no válido', 400);
         }
 
-        if ($this->model->toggleActivo($id)) {
-            Response::success(null, 'Estado del cupón actualizado');
-        } else {
-            Response::error('Error al cambiar estado del cupón', 500);
+        try {
+            if ($this->model->toggleActivo($id)) {
+                Response::success(null, 'Estado del cupón actualizado');
+            } else {
+                Response::error('Error al cambiar estado del cupón', 500);
+            }
+        } catch (Exception $e) {
+            error_log("Error al cambiar estado del cupón: " . $e->getMessage());
+            Response::error('Error al cambiar el estado del cupón', 500);
         }
     }
 }

@@ -1,62 +1,25 @@
-# TODO - Sistema de Cupones Funcional + CRUD Admin
+# TODO - Auditoría y Reescritura de Endpoints PHP (Arquitectura 3 Capas)
 
-## Plan Aprobado - COMPLETADO ✅
+## Bugs Críticos (rompen JSON)
+- [x] 1. `app/Models/ProductoModel.php` - Corregir `getAll()` (bindValue PARAM_INT para LIMIT/OFFSET)
+- [x] 2. `app/Models/AnalyticsModel.php` - Corregir `getSalesTrendFromOrders()` (only_full_group_by)
 
-### Objetivo
-Hacer funcional el sistema de cupones del marketplace: sembrar datos de ejemplo, crear CRUD de cupones en el panel admin y mejorar la validación.
+## Arquitectura de 3 capas (SQL fuera de capa de Presentación)
+- [x] 3. `api/admin_register.php` - Refactorizar SQL crudo a `ClienteModel::registerUserByRole()`
+- [x] 4. `app/Models/ClienteModel.php` - Agregar `registerUserByRole()`, `listaUsuarios()`, `toggleUsuario()`
+- [x] 5. `app/Controllers/ClienteController.php` - Mover SQL a Modelo + try-catch
+- [x] 6. `app/Controllers/AuthController.php` - Mover SQL de tokens a Modelo + try-catch
 
-### Pasos Realizados
+## Manejo de errores (Try-Catch para JSON válido)
+- [x] 7. `app/Controllers/ProductoController.php` - try-catch en `delete()` + CSRF
+- [x] 8. `app/Controllers/CarritoController.php` - Validar autenticación en `add()`
+- [x] 9. `app/Controllers/VendedorController.php` - try-catch
+- [x] 10. `app/Controllers/TiendaController.php` - try-catch
+- [x] 11. `app/Controllers/CuponController.php` - try-catch
+- [x] 12. `app/Controllers/PagoController.php` - try-catch
+- [x] 13. `app/Controllers/PromocionController.php` - try-catch
+- [x] 14. `app/Controllers/MensajeriaController.php` - try-catch
 
-#### 1. Modelo de Cupones (CRUD)
-- [x] **app/Models/CuponModel.php**: Creado modelo con métodos:
-  - `getAll()` - listar todos los cupones
-  - `getById(int $id)` - obtener un cupón por ID
-  - `getActivos()` - listar cupones activos y vigentes
-  - `create(array $data)` - crear cupón
-  - `update(int $id, array $data)` - actualizar cupón
-  - `delete(int $id)` - eliminar cupón
-  - `toggleActivo(int $id)` - activar/desactivar
-  - `validarCupon(string $codigo)` - validar código (activo + fechas)
-
-#### 2. Mejorar validación de fechas en PromocionModel
-- [x] **app/Models/PromocionModel.php**: Modificado `validarCupon()` para validar también `fecha_inicio <= NOW()`
-
-#### 3. API de Cupones
-- [x] **api/cupones.php**: Creado endpoint con acciones:
-  - GET `all` - listar todos (admin, requiere auth)
-  - GET `activos` - listar cupones activos (público)
-  - GET/POST `validar` - validar cupón (público)
-  - POST `store` - crear cupón
-  - POST `update` - actualizar cupón
-  - POST `delete` - eliminar cupón
-  - POST `toggle` - activar/desactivar cupón
-
-#### 4. Controlador de Cupones
-- [x] **app/Controllers/CuponController.php**: Controlador con validaciones de datos, fechas y CSRF
-
-#### 5. Vista Admin de Cupones
-- [x] **views/admin/cupones.php**: Vista con tabla de cupones + formulario crear/editar + botones de acción (editar, toggle, eliminar)
-
-#### 6. JS del módulo de cupones
-- [x] **public/js/modules/cupones.js**: Lógica AJAX para CRUD de cupones en admin
-
-#### 7. Agregar enlace en menú Admin
-- [x] **views/layouts/header.php**: Agregado link "Cupones" en dropdown del menú Admin
-
-#### 8. Sembrar datos en SQL
-- [x] **DB_marketplace.sql**: Agregados INSERT de cupones de ejemplo después de la Tabla 33
-- [x] **Base de datos local**: Insertados 4 cupones de ejemplo (BIENVENIDO10, VERANO25, DESCUENTO50, FREESHIP)
-
-#### 9. Pruebas realizadas
-- [x] Validación de sintaxis PHP de todos los archivos nuevos/modificados (sin errores)
-- [x] Servidor PHP iniciado en localhost:8080 (responde 200)
-- [x] API `promociones.php?action=validar` → Cupón BIENVENIDO10 válido ✅
-- [x] API `cupones.php?action=validar` → Cupón VERANO25 válido ✅
-- [x] API `cupones.php?action=activos` → Devuelve 4 cupones activos ✅
-- [x] API `cupones.php?action=all` sin sesión → 401 (protegido correctamente) ✅
-- [x] Vista admin cupones → Carga correctamente ✅
-- [x] Prueba integral: agregar producto al carrito + aplicar cupón 10% → descuento correcto (1999.98 → 200) ✅
-
-#### 10. Limpieza
-- [x] Eliminados scripts temporales (`check_db.php`, `seed_cupones.php`, `test_flujo_cupon.php`)
-
+## Verificación
+- [ ] 15. Verificación sintáctica con `php -l`
+- [ ] 16. Re-auditoría final para confirmar que todo se completó

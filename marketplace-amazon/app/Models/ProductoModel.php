@@ -32,13 +32,27 @@ class ProductoModel extends Model {
             $params[':tienda_id'] = $tienda_id;
         }
 
-        $sql .= " ORDER BY p.id DESC LIMIT :limit OFFSET :offset";
-
-        $params[':limit'] = $limit;
-        $params[':offset'] = $offset;
+$sql .= " ORDER BY p.id DESC LIMIT :limit OFFSET :offset";
 
         $stmt = $this->db->prepare($sql);
-        $stmt->execute($params);
+
+        // Bindear cada parámetro de forma explícita
+        if (!empty($search)) {
+            $stmt->bindValue(':search_nombre', '%' . $search . '%', PDO::PARAM_STR);
+            $stmt->bindValue(':search_sku', '%' . $search . '%', PDO::PARAM_STR);
+            $stmt->bindValue(':search_desc', '%' . $search . '%', PDO::PARAM_STR);
+        }
+        if ($categoria_id !== null && $categoria_id > 0) {
+            $stmt->bindValue(':categoria_id', $categoria_id, PDO::PARAM_INT);
+        }
+        if ($tienda_id !== null && $tienda_id > 0) {
+            $stmt->bindValue(':tienda_id', $tienda_id, PDO::PARAM_INT);
+        }
+        // LIMIT y OFFSET deben bindearse como INT (con EMULATE_PREPARES=false)
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+
+        $stmt->execute();
 
         return $stmt->fetchAll();
     }

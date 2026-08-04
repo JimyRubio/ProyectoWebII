@@ -34,11 +34,17 @@ class CarritoController {
         Response::success($cart, 'Contenido del carrito');
     }
 
-    public function add(): void {
+public function add(): void {
         // Verificar CSRF
         $token = $_POST['csrf_token'] ?? $_SERVER['HTTP_X_CSRF_TOKEN'] ?? null;
         if (!Security::verifyCsrfToken($token)) {
             Response::error('Token de seguridad no válido. Recarga la página.', 403);
+        }
+
+        // Requerir autenticación para agregar al carrito (evita FK error con cliente_id null)
+        $clienteId = $this->getClienteId();
+        if ($clienteId === null) {
+            Response::error('Debe iniciar sesión para agregar productos al carrito', 401);
         }
 
         $productoId = (int)($_POST['producto_id'] ?? 0);
@@ -53,7 +59,6 @@ class CarritoController {
             Response::error('Producto no encontrado', 404);
         }
 
-        $clienteId = $this->getClienteId();
         $cart = $this->model->getCartByClienteId($clienteId);
 
         $precio = (float)($producto['precio_oferta'] ?? $producto['precio']);
