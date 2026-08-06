@@ -35,6 +35,34 @@ class ProductoController {
         ], 'Productos obtenidos correctamente');
     }
 
+/**
+     * Retorna todos los productos (incluyendo inactivos/descontinuados)
+     * para la vista de gestión de inventario de admin y vendedor.
+     */
+    public function gestion(): void {
+        $page = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
+        $limit = isset($_GET['limit']) ? max(1, (int)$_GET['limit']) : 10;
+        $search = isset($_GET['search']) ? Security::sanitizeString($_GET['search']) : '';
+        $categoriaId = isset($_GET['categoria_id']) ? (int)$_GET['categoria_id'] : null;
+        $tiendaId = isset($_GET['tienda_id']) ? (int)$_GET['tienda_id'] : null;
+
+        $offset = ($page - 1) * $limit;
+
+        $productos = $this->model->getAll($limit, $offset, $search, $categoriaId, $tiendaId, true);
+        $total = $this->model->countFiltered($search, $categoriaId, $tiendaId, true);
+        $totalPages = ceil($total / $limit);
+
+        Response::success([
+            'productos' => $productos,
+            'pagination' => [
+                'current_page' => $page,
+                'limit' => $limit,
+                'total_records' => $total,
+                'total_pages' => $totalPages
+            ]
+        ], 'Productos obtenidos correctamente');
+    }
+
     /**
      * Retorna productos destacados para la página principal
      */

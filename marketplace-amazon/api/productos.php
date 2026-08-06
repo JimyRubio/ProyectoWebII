@@ -17,8 +17,10 @@ switch ($method) {
             $controller->relacionados();
         } elseif ($action === 'resenas') {
             $controller->resenas();
-        } elseif ($action === 'all') {
+} elseif ($action === 'all') {
             $controller->index();
+        } elseif ($action === 'gestion') {
+            $controller->gestion();
         } elseif ($id !== null && $id > 0) {
             $controller->show($id);
         } else {

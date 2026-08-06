@@ -43,14 +43,7 @@ require_once __DIR__ . '/../layouts/header.php';
             <p style="color:var(--text-secondary);font-size:0.85rem;">Revisa pedidos recibidos y su estado</p>
         </div>
     </a>
-    <a href="<?php echo BASE_URL; ?>views/promociones/gestion.php" class="kpi-card" style="text-decoration:none;padding:20px;display:flex;align-items:center;gap:15px;">
-        <i class="fa-solid fa-tags" style="font-size:2rem;color:var(--price-color)"></i>
-        <div>
-            <strong style="font-size:1.1rem;">Promociones</strong>
-            <p style="color:var(--text-secondary);font-size:0.85rem;">Crea ofertas y descuentos especiales</p>
-        </div>
-    </a>
-    <a href="<?php echo BASE_URL; ?>views/mensajeria/chat.php" class="kpi-card" style="text-decoration:none;padding:20px;display:flex;align-items:center;gap:15px;">
+<a href="<?php echo BASE_URL; ?>views/mensajeria/chat.php" class="kpi-card" style="text-decoration:none;padding:20px;display:flex;align-items:center;gap:15px;">
         <i class="fa-regular fa-comments" style="font-size:2rem;color:var(--chart-purple)"></i>
         <div>
             <strong style="font-size:1.1rem;">Mensajería</strong>

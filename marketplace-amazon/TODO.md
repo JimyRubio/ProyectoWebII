@@ -1,25 +1,18 @@
-# TODO - Auditoría y Reescritura de Endpoints PHP (Arquitectura 3 Capas)
+# TODO - Tarea: Quitar Promociones del vendedor y arreglar bug de productos inactivos
 
-## Bugs Críticos (rompen JSON)
-- [x] 1. `app/Models/ProductoModel.php` - Corregir `getAll()` (bindValue PARAM_INT para LIMIT/OFFSET)
-- [x] 2. `app/Models/AnalyticsModel.php` - Corregir `getSalesTrendFromOrders()` (only_full_group_by)
+## Pasos
+- [x] 1. Leer archivos relevantes (header, dashboard, gestion, ProductoModel, ProductoController, api/productos)
+- [x] 2. Plan aprobado por el usuario
 
-## Arquitectura de 3 capas (SQL fuera de capa de Presentación)
-- [x] 3. `api/admin_register.php` - Refactorizar SQL crudo a `ClienteModel::registerUserByRole()`
-- [x] 4. `app/Models/ClienteModel.php` - Agregar `registerUserByRole()`, `listaUsuarios()`, `toggleUsuario()`
-- [x] 5. `app/Controllers/ClienteController.php` - Mover SQL a Modelo + try-catch
-- [x] 6. `app/Controllers/AuthController.php` - Mover SQL de tokens a Modelo + try-catch
-
-## Manejo de errores (Try-Catch para JSON válido)
-- [x] 7. `app/Controllers/ProductoController.php` - try-catch en `delete()` + CSRF
-- [x] 8. `app/Controllers/CarritoController.php` - Validar autenticación en `add()`
-- [x] 9. `app/Controllers/VendedorController.php` - try-catch
-- [x] 10. `app/Controllers/TiendaController.php` - try-catch
-- [x] 11. `app/Controllers/CuponController.php` - try-catch
-- [x] 12. `app/Controllers/PagoController.php` - try-catch
-- [x] 13. `app/Controllers/PromocionController.php` - try-catch
-- [x] 14. `app/Controllers/MensajeriaController.php` - try-catch
+## Implementación
+- [x] 3. `views/layouts/header.php`: quitar enlace "Promociones" del menú de vendedor
+- [x] 4. `views/vendedores/dashboard.php`: quitar tarjeta quick-link "Promociones"
+- [x] 5. `app/Models/ProductoModel.php`: agregar parámetro `$allEstados` a `getAll()` y `countFiltered()`
+- [x] 6. `app/Controllers/ProductoController.php`: agregar método `gestion()`
+- [x] 7. `api/productos.php`: agregar ruta `action=gestion`
+- [x] 8. `views/productos/gestion.php`: usar `action=gestion` en `loadGestionProductos()`
 
 ## Verificación
-- [ ] 15. Verificación sintáctica con `php -l`
-- [ ] 16. Re-auditoría final para confirmar que todo se completó
+- [x] 9. Verificación de sintaxis PHP de todos los archivos modificados (sin errores)
+- [ ] 10. Probar en navegador que los productos inactivos/descontinuados aparecen en gestión
+- [ ] 11. Confirmar que catálogo público solo muestra activos

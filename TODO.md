@@ -1,12 +1,10 @@
-# TODO - Cambios de Cupones
+# TODO - Cupones en Vendedor
 
-## Estado del plan
-- [x] 1. Explorar archivos relevantes (carrito/index.php, pagos/checkout.php, carrito.js, pagos.js, carrito.css)
-- [x] 2. Confirmar plan con el usuario
-
-## Pasos de implementación
-- [x] 1. Eliminar la sección de cupón de la página del carrito (views/carrito/index.php)
-- [x] 2. Dejar el carrito a ancho completo tras quitar la barra lateral
-- [x] 3. Agrandar el cuadro de texto del cupón en el checkout (views/pagos/checkout.php): ancho completo y botón debajo
-- [x] 4. Limpiar el CSS/JS de cupón del carrito que ya no se usa
-- [x] 5. Verificar visualmente (archivos revisados y confirmados)
+## Pasos
+- [x] 1. Analizar arquitectura de cupones admin y vendedor
+- [x] 2. Plan aprobado
+- [x] 3. Crear `views/vendedores/cupones.php` (vista de cupones para vendedor)
+- [x] 4. Crear `public/js/modules/cupon_vendedor.js` (lógica de cupones vendedor)
+- [x] 5. Enlazar "Cupones" en menú del vendedor (`header.php`)
+- [x] 6. Mejorar el POS para respetar `minimo_compra` al aplicar descuento
+- [x] 7. Implementación completa

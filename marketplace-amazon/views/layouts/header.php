@@ -62,15 +62,15 @@ $is_auth_page = $is_auth_page ?? false;
                     </div>
                 </div>
 
-                <!-- Menú para Vendedor -->
+<!-- Menú para Vendedor -->
                 <div class="nav-dropdown" id="seller-menu" style="display:none;">
                     <a href="#" class="nav-link dropdown-trigger"><i class="fa-solid fa-store"></i> Vendedor ▾</a>
                     <div class="dropdown-content">
                         <a href="<?php echo BASE_URL; ?>views/vendedores/dashboard.php"><i class="fa-solid fa-chart-simple"></i> Dashboard</a>
                         <a href="<?php echo BASE_URL; ?>views/vendedores/pos.php"><i class="fa-solid fa-cash-register"></i> Punto de Venta</a>
-                        <a href="<?php echo BASE_URL; ?>views/productos/gestion.php"><i class="fa-solid fa-box"></i> Mis Productos</a>
+<a href="<?php echo BASE_URL; ?>views/productos/gestion.php"><i class="fa-solid fa-box"></i> Mis Productos</a>
                         <a href="<?php echo BASE_URL; ?>views/pedidos/historial.php"><i class="fa-solid fa-receipt"></i> Pedidos</a>
-                        <a href="<?php echo BASE_URL; ?>views/promociones/gestion.php"><i class="fa-solid fa-tags"></i> Promociones</a>
+                        <a href="<?php echo BASE_URL; ?>views/vendedores/cupones.php"><i class="fa-solid fa-ticket"></i> Cupones</a>
                         <a href="<?php echo BASE_URL; ?>views/mensajeria/chat.php"><i class="fa-solid fa-comment"></i> Mensajes</a>
                     </div>
                 </div>

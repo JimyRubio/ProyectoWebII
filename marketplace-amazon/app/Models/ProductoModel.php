@@ -5,14 +5,18 @@ class ProductoModel extends Model {
     /**
      * Obtiene una lista paginada y filtrada de productos
      */
-    public function getAll(int $limit = 10, int $offset = 0, string $search = '', ?int $categoria_id = null, ?int $tienda_id = null): array {
+public function getAll(int $limit = 10, int $offset = 0, string $search = '', ?int $categoria_id = null, ?int $tienda_id = null, bool $allEstados = false): array {
         $sql = "SELECT p.*, c.nombre as categoria_nombre, t.nombre_tienda, 
                        (SELECT url FROM imagenes_productos WHERE producto_id = p.id ORDER BY principal DESC, orden ASC LIMIT 1) as imagen_principal
                 FROM productos p
                 INNER JOIN categorias c ON p.categoria_id = c.id
                 INNER JOIN tiendas t ON p.tienda_id = t.id
-                WHERE p.estado = 'activo'";
+                WHERE 1=1";
         
+        if (!$allEstados) {
+            $sql .= " AND p.estado = 'activo'";
+        }
+
         $params = [];
 
         if (!empty($search)) {
@@ -60,8 +64,11 @@ $sql .= " ORDER BY p.id DESC LIMIT :limit OFFSET :offset";
     /**
      * Cuenta el total de productos según los filtros aplicados
      */
-    public function countFiltered(string $search = '', ?int $categoria_id = null, ?int $tienda_id = null): int {
-        $sql = "SELECT COUNT(*) as total FROM productos p WHERE p.estado = 'activo'";
+public function countFiltered(string $search = '', ?int $categoria_id = null, ?int $tienda_id = null, bool $allEstados = false): int {
+        $sql = "SELECT COUNT(*) as total FROM productos p WHERE 1=1";
+        if (!$allEstados) {
+            $sql .= " AND p.estado = 'activo'";
+        }
         $params = [];
 
         if (!empty($search)) {

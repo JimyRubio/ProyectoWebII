@@ -164,8 +164,8 @@ $(document).ready(function() {
 let gestionPage = 1;
 function loadGestionProductos(page) {
     gestionPage = page;
-    App.ajax({
-        url: App.baseUrl + 'api/productos.php',
+App.ajax({
+        url: App.baseUrl + 'api/productos.php?action=gestion',
         method: 'GET',
         data: { page: page, limit: 10 },
         success: function(response) {

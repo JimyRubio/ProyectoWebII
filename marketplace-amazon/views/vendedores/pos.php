@@ -379,16 +379,20 @@ function renderPOSSidebar() {
 
     $container.html(html);
     
-    // Calcular descuento por cupón
+// Calcular descuento por cupón
     let descuento = 0;
     if (posCuponAplicado) {
-        if (posCuponAplicado.tipo_descuento === 'porcentaje') {
-            descuento = subtotal * (posCuponAplicado.valor / 100);
-            if (posCuponAplicado.maximo_descuento && descuento > parseFloat(posCuponAplicado.maximo_descuento)) {
-                descuento = parseFloat(posCuponAplicado.maximo_descuento);
+        // Respetar mínimo de compra del cupón
+        const minimo = posCuponAplicado.minimo_compra ? parseFloat(posCuponAplicado.minimo_compra) : 0;
+        if (subtotal >= minimo) {
+            if (posCuponAplicado.tipo_descuento === 'porcentaje') {
+                descuento = subtotal * (posCuponAplicado.valor / 100);
+                if (posCuponAplicado.maximo_descuento && descuento > parseFloat(posCuponAplicado.maximo_descuento)) {
+                    descuento = parseFloat(posCuponAplicado.maximo_descuento);
+                }
+            } else if (posCuponAplicado.tipo_descuento === 'monto_fijo') {
+                descuento = parseFloat(posCuponAplicado.valor);
             }
-        } else if (posCuponAplicado.tipo_descuento === 'monto_fijo') {
-            descuento = parseFloat(posCuponAplicado.valor);
         }
     }
     
@@ -460,15 +464,19 @@ function generarFactura() {
     }));
     const subtotal = posItems.reduce((a, i) => a + i.subtotal, 0);
     
-    let descuento = 0;
+let descuento = 0;
     if (posCuponAplicado) {
-        if (posCuponAplicado.tipo_descuento === 'porcentaje') {
-            descuento = subtotal * (posCuponAplicado.valor / 100);
-            if (posCuponAplicado.maximo_descuento && descuento > parseFloat(posCuponAplicado.maximo_descuento)) {
-                descuento = parseFloat(posCuponAplicado.maximo_descuento);
+        // Respetar mínimo de compra del cupón
+        const minimo = posCuponAplicado.minimo_compra ? parseFloat(posCuponAplicado.minimo_compra) : 0;
+        if (subtotal >= minimo) {
+            if (posCuponAplicado.tipo_descuento === 'porcentaje') {
+                descuento = subtotal * (posCuponAplicado.valor / 100);
+                if (posCuponAplicado.maximo_descuento && descuento > parseFloat(posCuponAplicado.maximo_descuento)) {
+                    descuento = parseFloat(posCuponAplicado.maximo_descuento);
+                }
+            } else if (posCuponAplicado.tipo_descuento === 'monto_fijo') {
+                descuento = parseFloat(posCuponAplicado.valor);
             }
-        } else if (posCuponAplicado.tipo_descuento === 'monto_fijo') {
-            descuento = parseFloat(posCuponAplicado.valor);
         }
     }
     
