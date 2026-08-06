@@ -1,4 +1,4 @@
-d<?php
+<?php
 require_once __DIR__ . '/../Models/TiendaModel.php';
 
 class TiendaController {
