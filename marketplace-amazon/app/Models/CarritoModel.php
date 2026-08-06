@@ -182,8 +182,11 @@ class CarritoModel extends Model {
     public function clearCart(int $cartId): bool {
         $this->db->beginTransaction();
         try {
-            $stmt = $this->db->prepare("DELETE FROM carrito_items WHERE carrito_id = ?");
+        $stmt = $this->db->prepare("DELETE FROM carrito_items WHERE carrito_id = ?");
             $stmt->execute([$cartId]);
+            // Resetear el cupón/descuento para que cada compra requiera aplicar cupón nuevamente
+            $stmtDesc = $this->db->prepare("UPDATE carritos SET descuentos = 0, total = subtotal WHERE id = ?");
+            $stmtDesc->execute([$cartId]);
             $this->recalcularTotales($cartId);
             $this->db->commit();
             return true;
