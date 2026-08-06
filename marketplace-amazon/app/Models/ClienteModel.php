@@ -64,8 +64,8 @@ class ClienteModel extends Model {
     /**
      * Obtiene el perfil completo del cliente por usuario_id
      */
-    public function getProfile(int $usuarioId): ?array {
-        $sql = "SELECT u.id, u.email, u.nombre, u.apellido, u.telefono, u.direccion, u.genero, u.fecha_nacimiento,
+public function getProfile(int $usuarioId): ?array {
+        $sql = "SELECT u.id, u.email, u.nombre, u.apellido, u.telefono, u.direccion, u.genero, u.fecha_nacimiento, u.avatar,
                        c.id as cliente_id, c.tipo_cliente, c.puntos_lealtad,
                        GREATEST(
                            COALESCE((SELECT SUM(total) FROM pedidos WHERE cliente_id = c.id AND estado = 'entregado'), 0),
@@ -98,6 +98,18 @@ class ClienteModel extends Model {
             ':apellido' => $data['apellido'] ?? '',
             ':telefono' => $data['telefono'] ?? '',
             ':direccion' => $data['direccion'] ?? '',
+            ':usuario_id' => $usuarioId
+        ]);
+    }
+
+/**
+     * Actualiza el avatar (foto de perfil) del usuario
+     */
+    public function updateAvatar(int $usuarioId, string $avatarUrl): bool {
+        $sql = "UPDATE usuarios SET avatar = :avatar WHERE id = :usuario_id";
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute([
+            ':avatar' => $avatarUrl,
             ':usuario_id' => $usuarioId
         ]);
     }

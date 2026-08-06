@@ -29,6 +29,54 @@ require_once __DIR__ . '/../layouts/header.php';
     flex-wrap: wrap;
 }
 
+.perfil-avatar {
+    display: flex;
+    align-items: center;
+}
+
+.avatar-wrap {
+    position: relative;
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    overflow: visible;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.perfil-avatar-img {
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--secondary-accent);
+    background: rgba(255,255,255,0.05);
+}
+
+.avatar-upload-btn {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--secondary-accent);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 0.85rem;
+    border: 2px solid var(--card-bg);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.avatar-upload-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 12px rgba(59,130,246,0.5);
+}
+
 .perfil-stats {
     display: flex;
     gap: 25px;

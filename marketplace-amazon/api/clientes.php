@@ -25,11 +25,13 @@ switch ($method) {
         }
         break;
 
-    case 'POST':
+case 'POST':
         if ($action === 'update_profile') {
             $controller->updateProfile();
         } elseif ($action === 'add_direccion') {
             $controller->storeDireccion();
+        } elseif ($action === 'update_avatar') {
+            $controller->updateAvatar();
         } elseif ($action === 'toggle_usuario') {
             $controller->toggleUsuario();
         } else {

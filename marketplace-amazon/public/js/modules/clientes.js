@@ -40,10 +40,20 @@ function renderPerfil(profile) {
     const $container = $('#perfil-container');
     if (!$container.length) return;
 
+const avatarHtml = profile.avatar
+        ? `<img src="${App.baseUrl.replace(/\/$/, '')}${profile.avatar}" alt="Foto de perfil" class="perfil-avatar-img">`
+        : `<i class="fa-solid fa-user-circle" style="font-size:4rem;color:var(--secondary-accent)"></i>`;
+
     const html = `
         <div class="perfil-header">
             <div class="perfil-avatar">
-                <i class="fa-solid fa-user-circle" style="font-size:4rem;color:var(--secondary-accent)"></i>
+                <div class="avatar-wrap">
+                    ${avatarHtml}
+                    <label class="avatar-upload-btn" for="avatar-input" title="Subir foto de perfil">
+                        <i class="fa-solid fa-camera"></i>
+                    </label>
+                    <input type="file" id="avatar-input" accept="image/jpeg,image/png,image/gif,image/webp" style="display:none;">
+                </div>
             </div>
             <div class="perfil-info">
                 <h2>${profile.nombre} ${profile.apellido}</h2>
@@ -51,10 +61,6 @@ function renderPerfil(profile) {
                 <p class="perfil-tipo"><span class="badge-${profile.tipo_cliente}">${profile.tipo_cliente.toUpperCase()}</span></p>
             </div>
             <div class="perfil-stats">
-                <div class="stat-item">
-                    <span class="stat-value">${App.formatCurrency(profile.total_compras)}</span>
-                    <span class="stat-label">Total Compras</span>
-                </div>
                 <div class="stat-item">
                     <span class="stat-value">${profile.total_pedidos}</span>
                     <span class="stat-label">Pedidos</span>
@@ -148,8 +154,13 @@ function renderPerfil(profile) {
     $container.html(html);
     loadDirecciones();
 
-    $('#btn-add-direccion').on('click', function () {
+$('#btn-add-direccion').on('click', function () {
         $('#form-add-direccion-wrapper').slideToggle();
+    });
+
+    // Subir avatar al seleccionar archivo
+    $('#avatar-input').on('change', function () {
+        updateAvatar();
     });
 }
 
@@ -202,6 +213,49 @@ function updateProfile() {
         success: function (response) {
             if (response.success) {
                 App.notify('Perfil actualizado correctamente', 'success');
+            }
+        }
+    });
+}
+
+function updateAvatar() {
+    const $input = $('#avatar-input');
+    if (!$input.length || !$input[0].files || $input[0].files.length === 0) {
+        App.notify('Selecciona una imagen primero', 'warning');
+        return;
+    }
+
+    const file = $input[0].files[0];
+    // Validar tipo
+    const tiposPermitidos = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    if (!tiposPermitidos.includes(file.type)) {
+        App.notify('Formato no permitido. Usa JPG, PNG, GIF o WebP', 'error');
+        $input.val('');
+        return;
+    }
+    // Validar tamaño (máx 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+        App.notify('La imagen supera los 5MB', 'error');
+        $input.val('');
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append('action', 'update_avatar');
+    formData.append('avatar', file);
+
+    App.ajax({
+        url: App.baseUrl + 'api/clientes.php',
+        method: 'POST',
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function (response) {
+            if (response.success) {
+                App.notify('Foto de perfil actualizada', 'success');
+                loadPerfil(); // Recargar perfil para mostrar la nueva imagen
+            } else {
+                App.notify(response.message || 'Error al subir la imagen', 'error');
             }
         }
     });
