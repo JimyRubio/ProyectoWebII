@@ -318,7 +318,7 @@ const App = {
 
         $container.html(html);
 
-        $container.find('.page-btn:not(.disabled)').on('click', function () {
+$container.find('.page-btn:not(.disabled)').on('click', function () {
             const selectedPage = parseInt($(this).data('page'));
             if (typeof onPageChange === 'function') {
                 onPageChange(selectedPage);
@@ -326,3 +326,103 @@ const App = {
         });
     }
 };
+
+/* ==========================================================================
+   GLOBAL CUSTOM SELECT (Dropdown Personalizado)
+   Convierte automáticamente todos los <select> con clase .form-select o
+   dentro de .catalogo-filters en un dropdown personalizado. Esto garantiza
+   que el panel desplegado use el color de fondo del tema (oscuro en modo
+   oscuro, claro en modo claro) en cualquier navegador.
+   ========================================================================== */
+$(function () {
+    function initCustomSelect($select) {
+        if ($select.data('custom-select-initialized')) return;
+        $select.data('custom-select-initialized', true);
+
+        // Obtener el/los textos de las opciones
+        const options = $select.find('option').map(function () {
+            return { value: this.value, text: $(this).text() };
+        }).get();
+
+        const selectedValue = $select.val();
+        const selectedText = $select.find('option:selected').text();
+
+        // Construir el wrapper del dropdown personalizado
+        const $wrapper = $('<div class="custom-select"></div>');
+
+        // Trigger
+        const $trigger = $(
+            '<button type="button" class="custom-select-trigger">' +
+                '<span class="custom-select-selected"></span>' +
+                '<span class="custom-select-arrow"><i class="fa-solid fa-chevron-down"></i></span>' +
+            '</button>'
+        );
+        $trigger.find('.custom-select-selected').text(selectedText);
+        $wrapper.append($trigger);
+
+        // Panel con opciones
+        const $panel = $('<div class="custom-select-panel"></div>');
+        options.forEach(function (opt, idx) {
+            const $opt = $(
+                '<div class="custom-select-option' + (opt.value === selectedValue ? ' selected' : '') + '" data-value="' + opt.value + '" data-index="' + idx + '">' + opt.text + '</div>'
+            );
+            $panel.append($opt);
+        });
+        $wrapper.append($panel);
+
+        // Mover el select nativo dentro del wrapper (oculto) para mantener el valor
+        $select.detach().appendTo($wrapper).attr('tabindex', '-1');
+
+        // Insertar el wrapper en lugar del select
+        $select.after($wrapper);
+        $wrapper.prepend($select);
+
+        // Eventos
+        $trigger.on('click', function (e) {
+            e.stopPropagation();
+            const $open = $wrapper.hasClass('open');
+            $('.custom-select').removeClass('open');
+            if (!$open) $wrapper.addClass('open');
+        });
+
+        $wrapper.find('.custom-select-option').on('click', function () {
+            const val = $(this).data('value');
+            const text = $(this).text();
+            $select.val(val).trigger('change');
+            $trigger.find('.custom-select-selected').text(text);
+            $wrapper.find('.custom-select-option').removeClass('selected');
+            $(this).addClass('selected');
+            $wrapper.removeClass('open');
+        });
+
+        // Sincronizar si el valor cambia programáticamente
+        $select.on('change', function () {
+            const v = $(this).val();
+            const text = $(this).find('option:selected').text();
+            $trigger.find('.custom-select-selected').text(text);
+            $wrapper.find('.custom-select-option').removeClass('selected');
+            $wrapper.find('.custom-select-option[data-value="' + v + '"]').addClass('selected');
+        });
+    }
+
+    // Cerrar todos los dropdowns al hacer click fuera
+    $(document).on('click', function (e) {
+        if (!$(e.target).closest('.custom-select').length) {
+            $('.custom-select').removeClass('open');
+        }
+    });
+
+    // Inicializar selects existentes en el DOM al cargar
+    function initAllCustomSelects() {
+        $('.form-select, .catalogo-filters select').each(function () {
+            initCustomSelect($(this));
+        });
+    }
+
+    initAllCustomSelects();
+
+    // Re-inicializar cuando se renderice contenido dinámico (AJAX)
+    $(document).on('ajaxComplete', function () {
+        initAllCustomSelects();
+    });
+});

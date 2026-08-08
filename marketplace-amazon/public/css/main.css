@@ -133,6 +133,9 @@
     --z-overlay: 300;
     --z-modal: 400;
     --z-toast: 500;
+
+    /* Native Component Rendering (selects, scrollbars, etc.) */
+    --color-scheme: dark;
 }
 
 /* --------------------------------------------------------------------------
@@ -181,6 +184,9 @@
     --gradient-accent-subtle: linear-gradient(135deg, rgba(20, 184, 166, 0.06) 0%, rgba(13, 148, 136, 0.03) 100%);
     --gradient-hero: linear-gradient(135deg, #F8FAFC 0%, #E2E8F0 50%, #F1F5F9 100%);
     --gradient-card: linear-gradient(180deg, rgba(255, 255, 255, 0.8) 0%, rgba(241, 245, 249, 0.9) 100%);
+
+    /* Native Component Rendering (selects, scrollbars, etc.) */
+    --color-scheme: light;
 }
 
 /* --------------------------------------------------------------------------
@@ -198,6 +204,7 @@ html {
     scroll-behavior: smooth;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    color-scheme: var(--color-scheme);
 }
 
 body {
@@ -1130,6 +1137,7 @@ body,
     font-size: 0.95rem;
     outline: none;
     transition: all var(--transition-base);
+    color-scheme: var(--color-scheme);
     appearance: none;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2394A3B8' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
     background-repeat: no-repeat;

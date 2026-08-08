@@ -117,7 +117,10 @@ require_once __DIR__ . '/../layouts/header.php';
 
 <script>
 $(document).ready(function() {
-    loadGestionProductos(1);
+    // Cargar la página desde la URL si viene como parámetro (ej. al volver de editar)
+    var urlParams = new URLSearchParams(window.location.search);
+    var initialPage = parseInt(urlParams.get('page')) || 1;
+    loadGestionProductos(initialPage);
 
     // Cargar categorías en el select
     App.ajax({
@@ -199,8 +202,8 @@ function renderGestionProductos(productos) {
                 <td>${App.formatCurrency(p.precio)}</td>
                 <td>${p.stock}</td>
                 <td><span class="badge-${estadoBadge[p.estado] || 'info'}">${p.estado}</span></td>
-                <td>
-                    <a href="${App.baseUrl}views/productos/editar.php?id=${p.id}" class="action-btn edit"><i class="fa-solid fa-pen"></i></a>
+<td>
+                    <a href="${App.baseUrl}views/productos/editar.php?id=${p.id}&page=${gestionPage}" class="action-btn edit"><i class="fa-solid fa-pen"></i></a>
                     <button class="action-btn delete" onclick="eliminarProducto(${p.id})"><i class="fa-solid fa-trash"></i></button>
                 </td>
             </tr>

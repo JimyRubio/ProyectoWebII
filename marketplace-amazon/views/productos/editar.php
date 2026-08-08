@@ -5,15 +5,17 @@ $module_js = "productos.js";
 require_once __DIR__ . '/../layouts/header.php';
 
 $producto_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+$page = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
+$gestion_url = BASE_URL . 'views/productos/gestion.php' . ($page > 1 ? '?page=' . $page : '');
 if ($producto_id <= 0) {
-    header('Location: ' . BASE_URL . 'views/productos/gestion.php');
+    header('Location: ' . $gestion_url);
     exit;
 }
 ?>
 
 <div class="gestion-header">
     <h1><i class="fa-solid fa-pen-to-square"></i> Editar Producto</h1>
-    <a href="<?php echo BASE_URL; ?>views/productos/gestion.php" class="btn-primary" style="text-decoration:none;padding:10px 20px;background:var(--secondary-gradient);width:auto;">
+<a href="<?php echo $gestion_url; ?>" class="btn-primary" style="text-decoration:none;padding:10px 20px;background:var(--secondary-gradient);width:auto;">
         <i class="fa-solid fa-arrow-left"></i> Volver a Gestión
     </a>
 </div>
@@ -131,7 +133,7 @@ if ($producto_id <= 0) {
             <button type="submit" class="btn-primary" id="btn-save-edit" style="padding:14px 35px;font-size:1rem;">
                 <i class="fa-solid fa-save"></i> Guardar Cambios
             </button>
-            <a href="<?php echo BASE_URL; ?>views/productos/gestion.php" class="btn-secondary" style="text-decoration:none;padding:14px 25px;display:inline-flex;align-items:center;gap:8px;border:1px solid var(--card-border);border-radius:8px;color:var(--text-secondary);">
+<a href="<?php echo $gestion_url; ?>" class="btn-secondary" style="text-decoration:none;padding:14px 25px;display:inline-flex;align-items:center;gap:8px;border:1px solid var(--card-border);border-radius:8px;color:var(--text-secondary);">
                 <i class="fa-solid fa-times"></i> Cancelar
             </a>
         </div>
@@ -187,8 +189,8 @@ $(document).ready(function() {
                 $('#edit-loading').html(
                     '<div style="color:#EF4444;">' +
                     '<i class="fa-solid fa-triangle-exclamation" style="font-size:2rem;display:block;margin-bottom:10px;"></i>' +
-                    '<p>Producto no encontrado</p>' +
-                    '<a href="' + App.baseUrl + 'views/productos/gestion.php" class="btn-primary" style="display:inline-block;margin-top:15px;">Volver a Gestión</a>' +
+'<p>Producto no encontrado</p>' +
+                    '<a href="' + '<?php echo $gestion_url; ?>' + '" class="btn-primary" style="display:inline-block;margin-top:15px;">Volver a Gestión</a>' +
                     '</div>'
                 );
             }
@@ -197,8 +199,8 @@ $(document).ready(function() {
             $('#edit-loading').html(
                 '<div style="color:#EF4444;">' +
                 '<i class="fa-solid fa-triangle-exclamation" style="font-size:2rem;display:block;margin-bottom:10px;"></i>' +
-                '<p>Error al cargar el producto</p>' +
-                '<a href="' + App.baseUrl + 'views/productos/gestion.php" class="btn-primary" style="display:inline-block;margin-top:15px;">Volver a Gestión</a>' +
+'<p>Error al cargar el producto</p>' +
+                '<a href="' + '<?php echo $gestion_url; ?>' + '" class="btn-primary" style="display:inline-block;margin-top:15px;">Volver a Gestión</a>' +
                 '</div>'
             );
         }
@@ -305,14 +307,14 @@ $(document).ready(function() {
         App.ajax({
             url: App.baseUrl + 'api/productos.php',
             method: 'POST',
-            data: $.param(data),
+data: $.param(data),
             success: function(response) {
-                if (response.success) {
-                    App.notify('Producto actualizado exitosamente', 'success');
-                    setTimeout(function() {
-                        window.location.href = App.baseUrl + 'views/productos/gestion.php';
-                    }, 1500);
-                } else {
+            if (response.success) {
+                App.notify('Producto actualizado exitosamente', 'success');
+                setTimeout(function() {
+                    window.location.href = '<?php echo $gestion_url; ?>';
+                }, 1500);
+            } else {
                     App.notify(response.message || 'Error al actualizar', 'error');
                     $btn.prop('disabled', false).html('<i class="fa-solid fa-save"></i> Guardar Cambios');
                 }
