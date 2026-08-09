@@ -147,16 +147,20 @@ function loadIndexProducts(page) {
     });
 }
 
-function loadProductsByCategory(categoriaId) {
+function loadProductsByCategory(categoriaId, page) {
+    page = page || 1;
+    currentPage = page;
+    currentCategoryId = categoriaId;
+
     App.ajax({
         url: App.baseUrl + 'api/productos.php',
         method: 'GET',
-        data: { categoria_id: categoriaId, limit: 12 },
+        data: { categoria_id: categoriaId, page: page, limit: 12 },
         success: function (response) {
             if (response.success && response.data) {
                 renderProductsGrid('#productos-destacados', response.data.productos);
                 App.renderPagination('#productos-pagination', response.data.pagination, function (newPage) {
-                    loadProductsByCategory(currentCategoryId);
+                    loadProductsByCategory(currentCategoryId, newPage);
                 });
             } else {
                 $('#productos-destacados').html('<div class="no-products-msg"><p>No se encontraron productos en esta categoría.</p></div>');
