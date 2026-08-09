@@ -1,6 +1,9 @@
 /* ==========================================================================
-   MARKETPLACE AMAZON - MÓDULO JS DE PAGOS (pagos.js)
-   ========================================================================== */
+    MARKETPLACE AMAZON - MÓDULO JS DE PAGOS (pagos.js)
+    ========================================================================== */
+
+// Código de cupón aplicado en la sesión de checkout (se envía al servidor al procesar pago)
+let appliedCouponCode = null;
 
 $(document).ready(function () {
     if ($('#checkout-container').length) {
@@ -213,6 +216,9 @@ function aplicarCupon() {
                 $('#cupon-form').hide();
                 $('#cupon-codigo-display').text(cupon.codigo || codigo);
 
+                // Guardar el código aplicado para enviarlo en el formulario de pago
+                appliedCouponCode = cupon.codigo || codigo;
+
                 let valorDisplay = '';
                 if (cupon.tipo_descuento === 'porcentaje') {
                     valorDisplay = cupon.valor + '% de descuento';
@@ -263,6 +269,9 @@ function removerCupon() {
                 $('#cupon-form').show();
                 $('#cupon-codigo').val('');
                 $mensaje.removeClass('success error').html('');
+
+                // Limpiar código aplicado en la sesión de checkout
+                appliedCouponCode = null;
 
                 // Actualizar resumen de compra
                 renderResumenCompra(response.data);
@@ -378,6 +387,9 @@ function procesarPago() {
         data.paypal_email = paypalEmail;
         data.paypal_password = paypalPassword;
     }
+
+    // Añadir código de cupón si existe (requerido por el servidor para aplicar descuento)
+    data.codigo_cupon = appliedCouponCode || '';
 
     App.ajax({
         url: App.baseUrl + 'api/pagos.php',

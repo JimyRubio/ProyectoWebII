@@ -89,10 +89,35 @@ class PagoController {
         }
 
         try {
-            // 1. Crear pedido (incluyendo descuentos del cupón si existen)
+            // 1. Crear pedido (solo incluir descuento si el cliente envió un código de cupón válido)
             require_once ROOT_PATH . 'app/Models/PedidoModel.php';
+            require_once ROOT_PATH . 'app/Models/PromocionModel.php';
             $pedidoModel = new PedidoModel();
-            $descuentos = (float)($cart['descuentos'] ?? 0.00);
+
+            // Por seguridad, no confiar en el valor almacenado en el carrito: solo aceptar descuento si se provee un código válido ahora
+            $codigoCupon = Security::sanitizeString($_POST['codigo_cupon'] ?? '');
+            $descuentos = 0.00;
+            if (!empty($codigoCupon)) {
+                $promocionModel = new PromocionModel();
+                $cupon = $promocionModel->validarCupon($codigoCupon);
+                if (!$cupon) {
+                    Response::error('Código de cupón no válido', 400);
+                }
+
+                // Calcular el descuento de forma determinista en el servidor (sin modificar el carrito aquí)
+                $subtotal = $cart['subtotal'];
+                $calculo = 0.00;
+                if ($cupon['tipo_descuento'] === 'porcentaje') {
+                    $calculo = $subtotal * ((float)$cupon['valor'] / 100);
+                    if (!empty($cupon['maximo_descuento']) && $calculo > (float)$cupon['maximo_descuento']) {
+                        $calculo = (float)$cupon['maximo_descuento'];
+                    }
+                } elseif ($cupon['tipo_descuento'] === 'monto_fijo') {
+                    $calculo = (float)$cupon['valor'];
+                }
+                $descuentos = round($calculo, 2);
+            }
+
             $pedidoId = $pedidoModel->createOrder($clienteId, $cart['items'], $cart['subtotal'], 0.00, $direccionId, $descuentos);
 
             // 2. Registrar pago

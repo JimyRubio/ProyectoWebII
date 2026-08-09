@@ -173,6 +173,11 @@ public function add(): void {
         }
 
         $updatedCart = $this->model->getCartByClienteId($clienteId);
+        // Guardar en sesión que este cliente aplicó este código (permitir que getCart muestre el descuento)
+        if (session_status() !== PHP_SESSION_ACTIVE) {
+            @session_start();
+        }
+        $_SESSION['applied_coupon_' . $clienteId] = $codigo;
         Response::success([
             'cart' => $updatedCart,
             'cupon' => $cupon
@@ -189,6 +194,12 @@ public function add(): void {
         }
 
         if ($this->model->removeCoupon($clienteId)) {
+            // Limpiar indicación en sesión
+            if (session_status() !== PHP_SESSION_ACTIVE) {
+                @session_start();
+            }
+            unset($_SESSION['applied_coupon_' . $clienteId]);
+
             $updatedCart = $this->model->getCartByClienteId($clienteId);
             Response::success($updatedCart, 'Cupón removido del carrito');
         } else {

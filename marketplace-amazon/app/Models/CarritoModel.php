@@ -59,7 +59,22 @@ class CarritoModel extends Model {
         }
         $cart['total_items'] = $totalItems;
         $cart['subtotal'] = round($subtotal, 2);
-        $cart['total'] = round($subtotal - (float)($cart['descuentos'] ?? 0), 2);
+        // Sólo mostrar descuentos si existe un cupón aplicado en la sesión del cliente.
+        // Esto evita que descuentos residuales en la BD se muestren sin que el cliente haya ingresado un código.
+        $descuentosDb = (float)($cart['descuentos'] ?? 0);
+        $showDescuento = false;
+        if ($clienteId !== null && $clienteId > 0) {
+            if (session_status() !== PHP_SESSION_ACTIVE) {
+                @session_start();
+            }
+            $sessKey = 'applied_coupon_' . $clienteId;
+            if (!empty($_SESSION[$sessKey])) {
+                $showDescuento = true;
+            }
+        }
+
+        $cart['descuentos'] = $showDescuento ? round($descuentosDb, 2) : 0.00;
+        $cart['total'] = round($subtotal - $cart['descuentos'], 2);
 
         return $cart;
     }
