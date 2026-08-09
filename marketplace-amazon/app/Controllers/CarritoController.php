@@ -16,6 +16,12 @@ class CarritoController {
         return $user['cliente_id'] ?? null;
     }
 
+    private function startSession(): void {
+        if (session_status() !== PHP_SESSION_ACTIVE) {
+            @session_start();
+        }
+    }
+
     public function index(): void {
         $clienteId = $this->getClienteId();
         if ($clienteId === null) {
@@ -172,12 +178,11 @@ public function add(): void {
             Response::error('No se pudo aplicar el cupón. Verifica que el carrito no esté vacío.', 400);
         }
 
-        $updatedCart = $this->model->getCartByClienteId($clienteId);
-        // Guardar en sesión que este cliente aplicó este código (permitir que getCart muestre el descuento)
-        if (session_status() !== PHP_SESSION_ACTIVE) {
-            @session_start();
-        }
+        // Guardar en sesión antes de recalcular el carrito para que la respuesta ya refleje el descuento.
+        $this->startSession();
         $_SESSION['applied_coupon_' . $clienteId] = $codigo;
+
+        $updatedCart = $this->model->getCartByClienteId($clienteId);
         Response::success([
             'cart' => $updatedCart,
             'cupon' => $cupon
@@ -194,10 +199,7 @@ public function add(): void {
         }
 
         if ($this->model->removeCoupon($clienteId)) {
-            // Limpiar indicación en sesión
-            if (session_status() !== PHP_SESSION_ACTIVE) {
-                @session_start();
-            }
+            $this->startSession();
             unset($_SESSION['applied_coupon_' . $clienteId]);
 
             $updatedCart = $this->model->getCartByClienteId($clienteId);

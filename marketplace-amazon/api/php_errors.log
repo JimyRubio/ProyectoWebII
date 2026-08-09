@@ -111,3 +111,6 @@ Stack trace:
 [06-Aug-2026 17:12:44 America/Mexico_City] Login fallido: email=jimya.rubio@gmail.com, intentos=1, IP=::1
 [08-Aug-2026 14:53:26 America/Mexico_City] Login fallido: email=admin@marketzone.com, intentos=1, IP=::1
 [09-Aug-2026 15:07:46 America/Mexico_City] Pago procesado: Pedido #5, Método ID=1, Monto=2900
+[09-Aug-2026 15:08:55 America/Mexico_City] Pago procesado: Pedido #6, Método ID=4, Monto=3220
+[09-Aug-2026 15:26:58 America/Mexico_City] Pago procesado: Pedido #7, Método ID=4, Monto=4150
+[09-Aug-2026 15:28:25 America/Mexico_City] Login fallido: email=jimya.rubio@gmail.com, intentos=1, IP=::1
